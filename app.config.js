@@ -1,0 +1,17 @@
+module.exports = {
+  name: "WiMi Social App",
+  slug: "wimi-social-app",
+  version: "1.0.0",
+  orientation: "portrait",
+  userInterfaceStyle: "light",
+  assetBundlePatterns: ["**/*"],
+  ios: {
+    supportsTablet: true
+  },
+  android: {
+    adaptiveIcon: {
+      backgroundColor: "#ffffff"
+    }
+  },
+  web: {}
+}; 
