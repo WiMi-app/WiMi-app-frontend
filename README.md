@@ -1,64 +1,50 @@
-# WiMi Social App
+# Welcome to your Expo app 👋
 
-A simple social media application built with React Native.
+This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
-## Features
+## Get started
 
-- Login screen
-- News feed with posts
-- Ability to create new posts
-- Like functionality
-- User profiles
-- Navigation between screens
+1. Install dependencies
 
-## Prerequisites
+   ```bash
+   npm install
+   ```
 
-Before you begin, ensure you have the following installed:
-- [Node.js](https://nodejs.org/)
-- [Expo CLI](https://docs.expo.dev/get-started/installation/)
+2. Start the app
 
-## Installation
+   ```bash
+    npx expo start
+   ```
 
-1. Clone the repository:
-```
-git clone https://github.com/yourusername/wimi-social-app.git
-cd wimi-social-app
-```
+In the output, you'll find options to open the app in a
 
-2. Install dependencies:
-```
-npm install
-```
+- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
+- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
+- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
+- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-## Running the App
+You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-To start the development server:
+## Get a fresh project
 
-```
-npm start
+When you're ready, run:
+
+```bash
+npm run reset-project
 ```
 
-This will start the Expo development server. You can then:
+This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-- Use the Expo Go app on your iOS or Android device to scan the QR code
-- Press 'a' to open in an Android emulator
-- Press 'i' to open in an iOS simulator
+## Learn more
 
-## Project Structure
+To learn more about developing your project with Expo, look at the following resources:
 
-```
-.
-├── App.js              # Main application component with navigation
-├── app
-│   ├── components      # Reusable components
-│   │   └── PostCard.js # Component for displaying posts
-│   └── screens         # Application screens
-│       ├── HomeScreen.js     # News feed screen
-│       ├── LoginScreen.js    # Authentication screen
-│       └── ProfileScreen.js  # User profile screen
-└── index.js            # Entry point
-```
+- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
+- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
 
-## Mock Data
+## Join the community
 
-The app currently uses mock data for demonstration purposes. In a real app, you would connect to a backend API. 
+Join our community of developers creating universal apps.
+
+- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
+- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
