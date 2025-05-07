@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from "react-native"
-import GolfChallengeCard from "../components/challengecard"
+import GolfChallengeCard from "../components/challenge/challengecard"
 import { ImageSourcePropType } from 'react-native';
 
 export default function ChallengeScreen() {

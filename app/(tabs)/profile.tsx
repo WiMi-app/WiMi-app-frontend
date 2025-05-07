@@ -1,5 +1,5 @@
 import * as React from "react";
-
+import ProfileStats from "../components/profile/profilestats";
 import { StyleSheet, Text, View, Pressable, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -27,22 +27,7 @@ const ProfileScreen = () => {
               <Text style={styles.username}>@john_doe</Text>
             </View>
           </View>
-          <View style={styles.profileStats}>
-            <View style={styles.post}>
-              <Text style={styles.posts}>Posts</Text>
-              <Text style={styles.text}>32</Text>
-            </View>
-            <View style={styles.profileStatsChild} />
-            <View style={styles.post}>
-              <Text style={styles.posts}>Followers</Text>
-              <Text style={styles.text}>2.1K</Text>
-            </View>
-            <View style={styles.profileStatsChild} />
-            <View style={styles.post}>
-              <Text style={styles.posts}>Following</Text>
-              <Text style={styles.text}>316</Text>
-            </View>
-          </View>
+          <ProfileStats posts = {0} followers={1_000_000} following={1_000}/>
           <View style={styles.profileButtons}>
             <Pressable style={styles.editProfileButton}>
               <Text style={styles.editProfile}>Edit Profile</Text>
@@ -175,50 +160,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
-    gap: Gap.gap_lg,
-  },
-  posts: {
-    position: "relative",
-    fontSize: FontSize.size_xs,
-    lineHeight: 19,
-    fontWeight: "500",
-    fontFamily: FontFamily.interMedium,
-    color: Color.colorLightslategray,
-    textAlign: "left",
-  },
-  text: {
-    position: "relative",
-    fontSize: FontSize.size_base,
-    letterSpacing: 0,
-    lineHeight: 24,
-    fontWeight: "600",
-    fontFamily: FontFamily.interSemiBold,
-    color: Color.greyscale900,
-    textAlign: "left",
-  },
-  post: {
-    flex: 1,
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    gap: Gap.gap_sm,
-  },
-  profileStatsChild: {
-    position: "relative",
-    borderRadius: Border.br_8xs,
-    backgroundColor: Color.greyscale200,
-    width: 2,
-    height: 42,
-  },
-  profileStats: {
-    alignSelf: "stretch",
-    borderRadius: Border.br_xs,
-    backgroundColor: Color.greyscale50,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 12,
-    paddingVertical: Padding.p_base,
     gap: Gap.gap_lg,
   },
   editProfile: {
@@ -368,6 +309,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     minWidth: 360,
     maxWidth: 500,
+    padding: 20
   },
 });
 

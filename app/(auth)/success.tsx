@@ -2,8 +2,8 @@ import { View, Text, StyleSheet, SafeAreaView } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import Button from "../components/button_"
 import { Ionicons } from "@expo/vector-icons"
-import BouncingCircle from "../components/ball"
-import AnimatedCheck from "../components/twinkle"
+import BouncingCircle from "../components/animations/ball"
+import AnimatedCheck from "../components/animations/twinkle"
 const RegisterSuccessScreen = () => {
   const navigation = useNavigation()
 
