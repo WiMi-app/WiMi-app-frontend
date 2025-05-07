@@ -144,13 +144,15 @@ const RegisterScreen = () => {
               }
             />
 
-            <Button title="Create Account" onPress={handleRegister} loading={loading} style={styles.registerButton} />
+            <Button title="Create Account" onPress={handleRegister} loading={loading} style={styles.registerButton}
+              variant="gradient"
+              gradientColors={['#5858E8', '#9B5EFC']}  />
           </View>
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>
               Already have an account?{" "}
-              <Text style={styles.link} onPress={() => navigation.navigate("Login")}>
+              <Text style={styles.link} onPress={() => navigation.navigate("login")}>
                 Sign In
               </Text>
             </Text>

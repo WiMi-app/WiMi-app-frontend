@@ -2,7 +2,8 @@ import { View, Text, StyleSheet, SafeAreaView } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import Button from "../components/button_"
 import { Ionicons } from "@expo/vector-icons"
-
+import BouncingCircle from "../components/ball"
+import AnimatedCheck from "../components/twinkle"
 const RegisterSuccessScreen = () => {
   const navigation = useNavigation()
 
@@ -11,15 +12,18 @@ const RegisterSuccessScreen = () => {
       <View style={styles.content}>
         <View style={styles.successContainer}>
           <View style={styles.iconContainer}>
-            <Ionicons name="checkmark-circle" size={80} color="#5A67D8" />
+          <AnimatedCheck/>
+          <BouncingCircle/>
           </View>
-          <Text style={styles.title}>Registration Successful!</Text>
+          <Text style={styles.title}>Congratulations!</Text>
           <Text style={styles.message}>
-            Your account has been created successfully. You can now sign in to access your account.
+            Your account is ready to use! You will be redirected to the home page in a few seconds.
           </Text>
         </View>
 
-        <Button title="Sign In" onPress={() => navigation.navigate("Login")} style={styles.button} />
+        <Button title="Sign In" onPress={() => navigation.navigate("Login")} style={styles.button} 
+                 variant="gradient"
+                 gradientColors={['#5858E8', '#9B5EFC']}  />
       </View>
     </SafeAreaView>
   )
@@ -41,6 +45,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   iconContainer: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems:'center',
     marginBottom: 24,
   },
   title: {
@@ -55,7 +62,7 @@ const styles = StyleSheet.create({
     color: "#6B7280",
     textAlign: "center",
     marginBottom: 32,
-    paddingHorizontal: 24,
+    paddingHorizontal: 2,
   },
   button: {
     marginBottom: 24,

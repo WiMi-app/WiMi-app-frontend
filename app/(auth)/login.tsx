@@ -69,7 +69,7 @@ const LoginScreen = () => {
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
               <Ionicons name="arrow-back" size={24} color="#1F2937" />
             </TouchableOpacity>
-            <Text style={styles.title}>Sign In</Text>
+            <Text style={styles.title}>Log In</Text>
           </View>
 
           <View style={styles.form}>
@@ -101,13 +101,15 @@ const LoginScreen = () => {
               <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
             </TouchableOpacity>
 
-            <Button title="Sign In" onPress={handleLogin} loading={loading} style={styles.loginButton} />
+            <Button title="Log In" onPress={handleLogin} loading={loading} style={styles.loginButton}
+              variant="gradient"
+              gradientColors={['#5858E8', '#9B5EFC']}  />
           </View>
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>
               Don't have an account?{" "}
-              <Text style={styles.link} onPress={() => navigation.navigate("Register")}>
+              <Text style={styles.link} onPress={() => navigation.navigate("register")}>
                 Sign Up
               </Text>
             </Text>
