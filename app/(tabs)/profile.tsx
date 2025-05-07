@@ -2,6 +2,7 @@ import * as React from "react";
 import ProfileStats from "../components/profile/profilestats";
 import { StyleSheet, Text, View, Pressable, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import ProfilePhoto from "../components/profile/profilephoto";
 import {
   FontFamily,
   Color,
@@ -17,17 +18,18 @@ const ProfileScreen = () => {
       <View style={styles.content}>
         <View style={styles.profileInfoLayout}>
           <View style={styles.profilePicname}>
-            {/* <Image
-              style={styles.profilePicIcon}
-              contentFit="cover"
-              source={require("../assets/profile-pic.png")}
-            /> */}
+
+            <ProfilePhoto photo={require('../../assets/test/profile.png')} Status={1} size={60}/>
+
             <View style={styles.profileName}>
               <Text style={styles.name}>John Doe</Text>
               <Text style={styles.username}>@john_doe</Text>
             </View>
+
           </View>
+          
           <ProfileStats posts = {0} followers={1_000_000} following={1_000}/>
+
           <View style={styles.profileButtons}>
             <Pressable style={styles.editProfileButton}>
               <Text style={styles.editProfile}>Edit Profile</Text>
@@ -161,6 +163,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     gap: Gap.gap_lg,
+    padding: 1
   },
   editProfile: {
     alignSelf: "stretch",

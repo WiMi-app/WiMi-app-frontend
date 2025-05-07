@@ -1,7 +1,7 @@
 import { Tabs } from "expo-router"
 import { Ionicons } from "@expo/vector-icons"
 import { View, Image, StyleSheet } from "react-native"
-
+import ProfilePhoto from "../components/profile/profilephoto"
 export default function TabsLayout() {
   return (
     <Tabs
@@ -57,9 +57,7 @@ export default function TabsLayout() {
         name="profile"
         options={{
           tabBarIcon: ({ focused }) => (
-            <View style={[styles.profileContainer, focused && styles.profileContainerActive]}>
-              <Image source={{ uri: "https://via.placeholder.com/150" }} style={styles.profileImage} />
-            </View>
+            <ProfilePhoto photo = {require('../../assets/test/profile.png')} Status={ focused ? 2 : 0 } size={30}/>
           )
         }}
       />
@@ -68,20 +66,6 @@ export default function TabsLayout() {
 }
 
 const styles = StyleSheet.create({
-  profileContainer: {
-    borderRadius: 15,
-    overflow: "hidden",
-    borderWidth: 2,
-    borderColor: "#CCCCCC",
-  },
-  profileContainerActive: {
-    borderColor: "#6C5CE7",
-  },
-  profileImage: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-  },
   Logo: {
     width: 24,
     height: 24,
