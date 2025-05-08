@@ -17,7 +17,10 @@ interface ButtonProps {
   disabled?: boolean;
   style?: ViewStyle;
   textStyle?: TextStyle;
-  gradientColors?: string[]; // New prop for gradient colors
+  gradientColors?: string[];
+  borderColor?: string;
+  customTextColor?: string;
+  backgroundColor?: string;
 }
 
 const Button = ({
@@ -28,26 +31,46 @@ const Button = ({
   disabled = false,
   style,
   textStyle,
-  gradientColors = ['#667eea', '#764ba2'], // default gradient
+  gradientColors = ['#667eea', '#764ba2'],
+  borderColor,
+  customTextColor,
+  backgroundColor,
 }: ButtonProps) => {
   const getTextStyle = () => {
+    const baseTextStyle =
+      variant === 'outline' ? styles.outlineButtonText : styles.buttonText;
+
+    return [
+      baseTextStyle,
+      customTextColor && { color: customTextColor },
+      textStyle,
+    ];
+  };
+
+  const getButtonStyle = () => {
     switch (variant) {
+      case 'secondary':
+        return styles.secondaryButton;
       case 'outline':
-        return styles.outlineButtonText;
+        return styles.outlineButton;
       default:
-        return styles.buttonText;
+        return styles.primaryButton;
     }
   };
 
   const content = loading ? (
-    <ActivityIndicator color={variant === 'outline' ? '#5A67D8' : '#FFFFFF'} />
+    <ActivityIndicator
+      color={customTextColor || (variant === 'outline' ? '#000000' : '#FFFFFF')}
+    />
   ) : (
-    <Text style={[getTextStyle(), textStyle]}>{title}</Text>
+    <Text style={getTextStyle()}>{title}</Text>
   );
 
   const buttonStyles = [
     styles.button,
     variant !== 'gradient' && getButtonStyle(),
+    backgroundColor && { backgroundColor },
+    borderColor && { borderColor, borderWidth: 1 },
     disabled && styles.disabledButton,
     style,
   ];
@@ -64,21 +87,14 @@ const Button = ({
       </LinearGradient>
     </TouchableOpacity>
   ) : (
-    <TouchableOpacity style={buttonStyles} onPress={onPress} disabled={disabled || loading}>
+    <TouchableOpacity
+      style={buttonStyles}
+      onPress={onPress}
+      disabled={disabled || loading}
+    >
       {content}
     </TouchableOpacity>
   );
-};
-
-const getButtonStyle = () => {
-  switch (variant) {
-    case 'secondary':
-      return styles.secondaryButton;
-    case 'outline':
-      return styles.outlineButton;
-    default:
-      return styles.primaryButton;
-  }
 };
 
 const styles = StyleSheet.create({

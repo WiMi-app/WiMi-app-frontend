@@ -10,11 +10,13 @@ import {
   Platform,
   ScrollView,
   SafeAreaView,
+  Alert
 } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import { Ionicons } from "@expo/vector-icons"
 import Input from "../components/input"
 import Button from "../components/button_"
+import { supabase } from "../lib/supabase"
 
 const LoginScreen = () => {
   const navigation = useNavigation()
@@ -48,18 +50,23 @@ const LoginScreen = () => {
     return isValid
   }
 
-  const handleLogin = () => {
-    if (validateForm()) {
-      setLoading(true)
-      // Simulate API call
-      setTimeout(() => {
-        setLoading(false)
-        // Navigate to home screen or show error
-        // For demo purposes, we'll just log the credentials
-        console.log("Login with:", { email, password })
-      }, 1500)
+  async function handleLogin() {
+    setLoading(true)
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    })
+  
+    setLoading(false)
+  
+    if (error) {
+      Alert.alert(error.message)
+    } else {
+      // Navigate if login is successful
+      navigation.navigate('(tabs)') // or your desired route
     }
   }
+
 
   return (
     <SafeAreaView style={styles.container}>

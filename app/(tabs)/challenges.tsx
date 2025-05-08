@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from "react-native"
 import GolfChallengeCard from "../components/challenge/challengecard"
 import { ImageSourcePropType } from 'react-native';
-
+import CustomPathCarousel from "../components/animations/scroll";
 export default function ChallengeScreen() {
 
   interface PlayerAvatar {
@@ -18,10 +18,11 @@ export default function ChallengeScreen() {
 
   return (
     <View style={styles.container}>
-      <GolfChallengeCard   title = "Challenge"
+     {/*<GolfChallengeCard   title = "Challenge"
   description = "Test your focus and see how many strokes it takes to sink the ball!"
   backgroundImage = "https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?q=80&w=2070"
-  playerAvatars = {avatars} playerCount = {15} onPress = {()=>{}} />
+  playerAvatars = {avatars} playerCount = {15} onPress = {()=>{}} /> */}
+    <CustomPathCarousel/>
     </View>
   )
 }

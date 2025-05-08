@@ -2,13 +2,8 @@ import React from 'react';
 import {
   View,
   Text,
-  Image,
   StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  ImageSourcePropType,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import {
     FontFamily,
     Color,
@@ -19,7 +14,7 @@ import {
   } from "../../(tabs)/GlobalStyles";
 
 
-export interface StatsPage {
+interface StatsPage {
     posts?: number,
     followers?: number,
     following?:number
