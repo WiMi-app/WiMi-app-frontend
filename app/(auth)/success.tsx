@@ -21,7 +21,7 @@ const RegisterSuccessScreen = () => {
           </Text>
         </View>
 
-        <Button title="Sign In" onPress={() => navigation.navigate("Login")} style={styles.button} 
+        <Button title="Sign In" onPress={() => navigation.navigate("login")} style={styles.button} 
                  variant="gradient"
                  gradientColors={['#5858E8', '#9B5EFC']}  />
       </View>
