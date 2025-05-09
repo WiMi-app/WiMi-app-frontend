@@ -4,6 +4,9 @@ export const FontFamily = {
     interSemiBold: "Inter-SemiBold",
     interRegular: "Inter-Regular",
     interBold: "Inter-Bold",
+    poppinsSemiBold: "Poppins-SemiBold",
+    poppinsRegular: "Poppins-Regular",
+    poppinsMedium: "Poppins-Medium",
   };
   /* font sizes */
   export const FontSize = {
@@ -21,16 +24,20 @@ export const FontFamily = {
     primary600Base: "#2563eb",
     colorBlack: "#000",
     colorLightslategray: "#94a3b8",
+    gray1: "#838383",
+    black: "#202226",
   };
   /* Gaps */
   export const Gap = {
     gap_sm: 4,
     gap_md: 8,
     gap_lg: 16,
+    gap_0: 0,
   };
   /* Paddings */
   export const Padding = {
     p_base: 16,
+    p_9xl: 28,
   };
   /* border radiuses */
   export const Border = {
