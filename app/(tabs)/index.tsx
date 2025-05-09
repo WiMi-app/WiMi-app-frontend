@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet } from "react-native"
 import { useRouter } from 'expo-router';
 import { Button } from 'react-native';
+import Token from "../components/auth/session";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -9,7 +10,8 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Home</Text>
       <Text style={styles.subtitle}>Welcome to your new app!</Text>
-      <Button title="Go to Login" onPress={() => router.push('(auth)/logi')} />
+      <Token/>
+      <Button title="Go to Login" onPress={() => router.push('(auth)/login')} />
     </View>
   )
 }

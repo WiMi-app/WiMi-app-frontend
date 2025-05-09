@@ -2,6 +2,7 @@ import { Tabs } from "expo-router"
 import { Ionicons } from "@expo/vector-icons"
 import { View, Image, StyleSheet } from "react-native"
 import ProfilePhoto from "../components/profile/profilephoto"
+import Logo from "../components/icons/logo"
 export default function TabsLayout() {
   return (
     <Tabs
