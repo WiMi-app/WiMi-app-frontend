@@ -9,7 +9,7 @@ import {
 import SimplifyNumber from "../simplify_num";
 import { LinearGradient } from "expo-linear-gradient";
 import MaskedView from '@react-native-masked-view/masked-view';
-import CommentIcon from "../icons/comment";
+import CommentIcon from "../icons/comment_icon";
 
 interface comment {
     comment_count?: number
