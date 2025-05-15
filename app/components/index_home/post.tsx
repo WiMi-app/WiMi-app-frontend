@@ -14,7 +14,8 @@ import {
     Border,
     Padding,
   } from "../../(tabs)/GlobalStyles";
-
+import LikeButton from "./like_button";
+import SimplifyNumber from '../simplify_num';
 
 interface PostElements {
     profile_name?: string,
@@ -39,13 +40,6 @@ const Post: React.FC<PostElements> = ({
       'default_profile_pic': require('../../../assets/profile img.png'),
       'default_post_pic': require('../../../assets/ice-bucket-photo.png'),
     };
-
-    const SimplifyNumber = (num: number): string => {
-        if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1) + 'B';
-        if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + 'M';
-        if (num >= 1_000) return (num / 1_000).toFixed(1) + 'K';
-        return num.toString();
-      };
 
   return (
         <View style={[styles.post, styles.postFlexBox]}>
@@ -107,7 +101,8 @@ const Post: React.FC<PostElements> = ({
             </Text>
           </View>
           <View style={styles.postButton}>
-            <Pressable style={[styles.heartButton, styles.buttonFlexBox]}>
+            <LikeButton like_count={num_likes}/>
+            {/* <Pressable style={[styles.heartButton, styles.buttonFlexBox]}>
               <View style={styles.heart}>
                 <Image 
                   width={20} 
@@ -116,7 +111,7 @@ const Post: React.FC<PostElements> = ({
                 />
               </View>
               <Text style={[styles.suggested, styles.suggestedTypo]}>{SimplifyNumber(num_likes)}</Text>
-            </Pressable>
+            </Pressable> */}
             <Pressable style={[styles.commentButton, styles.buttonFlexBox]}>
               <Image 
                 style={styles.heart} 
