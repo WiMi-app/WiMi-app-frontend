@@ -17,6 +17,7 @@ import {
 import LikeButton from "./like_button";
 import SimplifyNumber from '../simplify_num';
 import CommentButton from './comment_button';
+import ShareButton from './share_button';
 
 interface PostElements {
     profile_name?: string,
@@ -103,14 +104,9 @@ const Post: React.FC<PostElements> = ({
           </View>
           <View style={styles.postButton}>
             <LikeButton like_count={num_likes}/>
-            <CommentButton comment_count={11}/>
+            <CommentButton comment_count={num_comments}/>
             <View style={styles.deadSpace} />
-            <Image
-              style={styles.shareButtonIcon}
-              width={20}
-              height={20}
-              source={require("../../../assets/share button.png")}
-            />
+            <ShareButton message="IGNORE THIS TEST FOR HOME SHARE BUTTON"/>
           </View>
         </View>
   );
