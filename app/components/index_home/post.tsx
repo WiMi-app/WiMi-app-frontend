@@ -16,6 +16,7 @@ import {
   } from "../../(tabs)/GlobalStyles";
 import LikeButton from "./like_button";
 import SimplifyNumber from '../simplify_num';
+import CommentButton from './comment_button';
 
 interface PostElements {
     profile_name?: string,
@@ -102,26 +103,7 @@ const Post: React.FC<PostElements> = ({
           </View>
           <View style={styles.postButton}>
             <LikeButton like_count={num_likes}/>
-            {/* <Pressable style={[styles.heartButton, styles.buttonFlexBox]}>
-              <View style={styles.heart}>
-                <Image 
-                  width={20} 
-                  height={20}
-                  source={require("../../../assets/heart button.png")}
-                />
-              </View>
-              <Text style={[styles.suggested, styles.suggestedTypo]}>{SimplifyNumber(num_likes)}</Text>
-            </Pressable> */}
-            <Pressable style={[styles.commentButton, styles.buttonFlexBox]}>
-              <Image 
-                style={styles.heart} 
-                width={20} 
-                height={20}
-                resizeMode="cover"
-                source={require("../../../assets/comment button.png")} 
-              />
-              <Text style={[styles.suggested, styles.suggestedTypo]}>{SimplifyNumber(num_comments)}</Text>
-            </Pressable>
+            <CommentButton comment_count={11}/>
             <View style={styles.deadSpace} />
             <Image
               style={styles.shareButtonIcon}
