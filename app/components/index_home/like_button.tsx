@@ -23,24 +23,36 @@ const LikeButton = ({
     <Pressable style={[styles.heartButton, styles.buttonFlexBox]} 
     onPress={() => setLiked((isLiked) => !isLiked)}>
         <MaskedView maskElement={<MaterialCommunityIcons
-                    name={liked ? "heart" : "heart-outline"}
-                    size={20}/>
+            name={liked ? "heart" : "heart-outline"}
+            size={20}/>
             } 
             style={styles.heart}>
             <LinearGradient
                 start={{x:0.5, y:0}}
                 end={{x:0.5, y:1}}
-                colors={["#FF7854", "#FD267D"]}>
+                colors={liked ? ["#FF7854", "#FD267D"] : ["#FF7854", "#FD267D"]}>
                 <MaterialCommunityIcons
                     style={{opacity:0}}
                     name={liked ? "heart" : "heart-outline"}
                     size={20}
-            />
+                />
             </LinearGradient>
         </MaskedView>
-        <Text style={[styles.suggested, styles.suggestedTypo]}>
-            {liked ? SimplifyNumber(like_count+1) : SimplifyNumber(like_count)}
-        </Text>
+        <MaskedView maskElement={
+            <Text style={[styles.suggested, styles.suggestedTypo]}>
+                {liked ? SimplifyNumber(like_count+1) : SimplifyNumber(like_count)}
+            </Text>
+            } 
+            style={styles.heart}>
+            <LinearGradient
+                start={{x:0.5, y:0}}
+                end={{x:0.5, y:1}}
+                colors={liked ? ["#FF7854", "#FD267D"] : ["#FF7854", "#FD267D"]}>
+                <Text style={[styles.suggested, styles.suggestedTypo, {opacity:0}]}>
+                    {liked ? SimplifyNumber(like_count+1) : SimplifyNumber(like_count)}
+                </Text>
+            </LinearGradient>
+        </MaskedView>
     </Pressable>
   );
 };
