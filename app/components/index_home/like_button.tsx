@@ -7,6 +7,8 @@ import {
     Gap,
   } from "../../(tabs)/GlobalStyles";
 import SimplifyNumber from "../simplify_num";
+import { LinearGradient } from "expo-linear-gradient";
+import MaskedView from '@react-native-masked-view/masked-view';
 
 interface num_likes {
     like_count?: number
@@ -20,13 +22,22 @@ const LikeButton = ({
   return (
     <Pressable style={[styles.heartButton, styles.buttonFlexBox]} 
     onPress={() => setLiked((isLiked) => !isLiked)}>
-        <View style={styles.heart}>
-            <MaterialCommunityIcons
-                name={liked ? "heart" : "heart-outline"}
-                size={20}
-                color={liked ? "red" : "black"}
+        <MaskedView maskElement={<MaterialCommunityIcons
+                    name={liked ? "heart" : "heart-outline"}
+                    size={20}/>
+            } 
+            style={styles.heart}>
+            <LinearGradient
+                start={{x:0.5, y:0}}
+                end={{x:0.5, y:1}}
+                colors={["#FF7854", "#FD267D"]}>
+                <MaterialCommunityIcons
+                    style={{opacity:0}}
+                    name={liked ? "heart" : "heart-outline"}
+                    size={20}
             />
-        </View>
+            </LinearGradient>
+        </MaskedView>
         <Text style={[styles.suggested, styles.suggestedTypo]}>
             {liked ? SimplifyNumber(like_count+1) : SimplifyNumber(like_count)}
         </Text>
