@@ -25,9 +25,9 @@ interface PostElements {
     num_likes?: number,
     num_comments?: number,
     post_pic?: string,
-    posts?: number,
-    followers?: number,
-    following?:number
+    post_description?: string,
+    elapsed_post_time?: string,
+    challenge?:string
 }
 
 const Post: React.FC<PostElements> = ({
@@ -36,6 +36,9 @@ const Post: React.FC<PostElements> = ({
     num_comments = 0,
     profile_pic = "",
     post_pic = "",
+    post_description = "",
+    elapsed_post_time = "",
+    challenge = ""
 }) => {
 
     const images = {
@@ -87,7 +90,7 @@ const Post: React.FC<PostElements> = ({
               // contentFit="cover"
               source={require("../../../assets/wimi-logo.png")}
             />
-            <Text style={[styles.task, styles.taskTypo]}>Run a 5K</Text>
+            <Text style={[styles.task, styles.taskTypo]}>{challenge}</Text>
           </View>
           <Image
             style={[styles.iceBucketPhoto1, styles.iconLayout]}
@@ -98,7 +101,7 @@ const Post: React.FC<PostElements> = ({
             <Text style={[styles.description, styles.taskTypo]}>
               <Text
                 style={styles.taskClr}
-              >{`Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt... `}</Text>
+              >{post_description}</Text>
               <Text style={styles.seeMoreTypo}>See more</Text>
             </Text>
           </View>
