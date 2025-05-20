@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from "react-native"
-import GolfChallengeCard from "../components/challenge/challengecard"
+import ChallengeCard from "../components/challenge/challengecard"
 import { ImageSourcePropType } from 'react-native';
 import CustomPathCarousel from "../components/animations/scroll";
 export default function ChallengeScreen() {
@@ -15,13 +15,29 @@ export default function ChallengeScreen() {
     { id: '3', image: require('../../assets/test/profile.png') },
     { id: '4', image: require('../../assets/test/profile.png') },
   ];
-  const testdata = [<GolfChallengeCard   title = "Challenge 1"
+
+  const testdata = [
+  <ChallengeCard   title = "Challenge 1"
     description = "Test your focus and see how many strokes it takes to sink the ball!"
     backgroundImage = "https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?q=80&w=2070"
-    playerAvatars = {avatars} playerCount = {15} onPress = {()=>{}} />, <GolfChallengeCard   title = "Challenge 2"
+    playerAvatars = {avatars} playerCount = {15} onPress = {()=>{}} />, 
+
+    <ChallengeCard   title = "Challenge 2"
     description = "Test your focus and see how many strokes it takes to sink the ball!"
     backgroundImage = "https://t4.ftcdn.net/jpg/04/39/89/01/360_F_439890152_sYbPxa1ANTSKcZuUsKzRAf9O7bJ1Tx5B.jpg"
-    playerAvatars = {avatars} playerCount = {13} onPress = {()=>{}} />,<GolfChallengeCard   title = "Challenge 3"
+    playerAvatars = {avatars} playerCount = {13} onPress = {()=>{}} />,
+
+    <ChallengeCard   title = "Challenge 3"
+    description = "Test your focus and see how many strokes it takes to sink the ball!"
+    backgroundImage = "https://img.freepik.com/free-photo/misurina-sunset_181624-34793.jpg?semt=ais_hybrid&w=740"
+    playerAvatars = {avatars} playerCount = {12} onPress = {()=>{}} />,
+  
+      <ChallengeCard   title = "Challenge 4"
+    description = "Test your focus and see how many strokes it takes to sink the ball!"
+    backgroundImage = "https://img.freepik.com/free-photo/misurina-sunset_181624-34793.jpg?semt=ais_hybrid&w=740"
+    playerAvatars = {avatars} playerCount = {12} onPress = {()=>{}} />,
+  
+      <ChallengeCard   title = "Challenge 5"
     description = "Test your focus and see how many strokes it takes to sink the ball!"
     backgroundImage = "https://img.freepik.com/free-photo/misurina-sunset_181624-34793.jpg?semt=ais_hybrid&w=740"
     playerAvatars = {avatars} playerCount = {12} onPress = {()=>{}} />,]
