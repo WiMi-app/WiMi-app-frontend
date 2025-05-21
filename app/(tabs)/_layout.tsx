@@ -25,6 +25,10 @@ export default function TabsLayout() {
           tabBarIcon: ({ focused }) => <Ionicons name="home" size={24} color={focused ? "#6C5CE7" : "#CCCCCC"} />,
         }}
       />
+<<<<<<< HEAD
+
+=======
+>>>>>>> Warren/ChallengeScreen
 <Tabs.Screen
   name="challenges"
   options={{
@@ -41,6 +45,12 @@ export default function TabsLayout() {
     )
   }}
 />
+            <Tabs.Screen
+        name="explore"
+        options={{
+          tabBarIcon: ({ focused }) => <Ionicons name="search" size={24} color={focused ? "#6C5CE7" : "#CCCCCC"} />,
+        }}
+      />
 
       <Tabs.Screen
         name="messages"
