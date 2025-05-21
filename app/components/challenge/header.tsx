@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
-import { Bell } from 'react-native-feather';
+import { Camera } from 'react-native-feather';
 
 interface HeaderProps {
     title? : String,
@@ -18,7 +18,7 @@ const Header: React.FC<HeaderProps> = ({title, onNotificationPress }) => {
         onPress={onNotificationPress}
         activeOpacity={0.7}
       >
-        <Bell width={20} height={20} color="#f2f2f2" />
+        <Camera width={20} height={20} color="#f2f2f2" />
       </TouchableOpacity>
     </View>
   );

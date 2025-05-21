@@ -94,7 +94,7 @@ const HorizontalCarousel = forwardRef<HorizontalCarouselRef, HorizontalCarouselP
 
     // Transition between items
     const handleTransition = (newIndex: number) => {
-      setIsTransitioning(true); // Lock interaction
+      setIsTransitioning(false); // Lock interaction
 
       // Determine direction of animation
       const direction = newIndex > currentIndex || newIndex != items.length-1 ? -1 : 1;
