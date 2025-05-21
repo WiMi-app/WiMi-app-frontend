@@ -1,171 +1,225 @@
+// Import necessary hooks and components from React and React Native
 import React, { useRef, useState, useEffect, ReactNode } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   Animated,
   PanResponder,
   PanResponderInstance,
   Dimensions,
   ViewStyle,
-  TextStyle,
+  TouchableWithoutFeedback,
 } from 'react-native';
 
+// Get screen dimensions to calculate positions and distances
 const { width, height } = Dimensions.get('window');
 
-// Define props interface
+// Define the props interface for the carousel component
 interface HorizontalCarouselProps {
-  items: ReactNode[];
+  items: ReactNode[]; // An array of React nodes (any valid JSX)
 }
 
-// Define styles interface
+// Define a styles interface to strongly type the StyleSheet
 interface StylesProps {
   container: ViewStyle;
   carousel: ViewStyle;
-  instructions: TextStyle;
+  cardWrapper: ViewStyle;
 }
 
-// HorizontalCarousel component that takes an array of components as props
+// HorizontalCarousel component
 export default function HorizontalCarousel({ items }: HorizontalCarouselProps): JSX.Element {
+
+  // Animated value to track horizontal scroll position
   const scrollPosition = useRef(new Animated.Value(0)).current;
+
+  // Track the index of the currently displayed item
   const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const currentIndexRef = useRef(0);
+  
+  // Prevent user from interacting mid-transition
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
 
-  // Create pan responder to handle swipe gestures
-  const panResponder = useRef<PanResponderInstance>(
-    PanResponder.create({
+  // Create a PanResponder to handle horizontal swipe gestures
+  const createCardPanResponder = (): PanResponderInstance => {
+    return PanResponder.create({
+      // Only respond to gestures if not transitioning
       onStartShouldSetPanResponder: () => !isTransitioning,
-      onPanResponderMove: (_, { dx }) => {
-        scrollPosition.setValue(dx);
+      onMoveShouldSetPanResponder: (_, {dx, dy}) => {
+        // Only respond to horizontal gestures
+        return !isTransitioning && Math.abs(dx) > Math.abs(dy);
       },
-      onPanResponderRelease: (_, { dx }) => {
-        // Determine if the user intended to swipe left or right
-        if (dx < -50 && currentIndex < items.length - 1) {
-          // Swipe left to next card
-          handleTransition(currentIndex + 1);
-        } else if (dx > 50 && currentIndex > 0) {
-          // Swipe right to previous card
-          handleTransition(currentIndex - 1);
-        } else {
-          // Return to center if not swiping to a new card
+
+      // As user drags, update the animated scroll position
+      onPanResponderMove: (_, { dx }) => {
+        // Limit drag distance for better feel
+        const limitedDx = Math.min(Math.max(dx, -width * 0.5), width * 0.5);
+        scrollPosition.setValue(limitedDx);
+      },
+
+      // When user releases the swipe
+      onPanResponderRelease: (_, { dx, vx }) => {
+        // Determine swipe threshold
+        const threshold = width * 0.15; // 15% of screen width
+        const velocityThreshold = 0.3; // Velocity threshold
+
+        // Swipe left: go to next item
+        if ((dx < -threshold || vx < -velocityThreshold) && currentIndexRef.current < items.length - 1) {
+          handleTransition(currentIndexRef.current + 1, 'left');
+        }
+        // Swipe left: Loops to the Start
+        else if ((dx < -threshold || vx < -velocityThreshold) && currentIndexRef.current >= items.length - 1) {
+          handleTransition(0, 'left');
+        }
+        // Swipe right: go to previous item
+        else if ((dx > threshold || vx > velocityThreshold) && currentIndexRef.current > 0) {
+          handleTransition(currentIndexRef.current - 1, 'right');
+        }
+        // Swipe right: loops to the end
+        else if ((dx > threshold || vx > velocityThreshold) && currentIndexRef.current <= 0) {
+          handleTransition(items.length - 1, 'right');
+        }
+        // Not enough swipe — spring back to current item
+        else {
           Animated.spring(scrollPosition, {
             toValue: 0,
             useNativeDriver: true,
+            friction: 8,
+            tension: 40
           }).start();
         }
       },
-    })
-  ).current;
+    });
+  };
 
-  // Handle transition to new card with animation
-  const handleTransition = (newIndex: number) => {
-    setIsTransitioning(true);
-    
-    // First animate the current card out
-    const direction = newIndex > currentIndex ? -1 : 1;
+  // Transition between items
+  const handleTransition = (newIndex: number, direction: 'left' | 'right') => {
+    setIsTransitioning(true); // Lock interaction
+
+    // Direction of animation based on swipe direction
+    const directionMultiplier = direction === 'left' ? -1 : 1;
+
+    // Animate current item out
     Animated.timing(scrollPosition, {
-      toValue: direction * width * 0.5,
-      duration: 250,
+      toValue: directionMultiplier * width * 0.5, // Move halfway off-screen
+      duration: 300,
       useNativeDriver: true,
     }).start(() => {
-      // Then update the index
+      // Update index after current animation
       setCurrentIndex(newIndex);
-      
-      // Reset position for the new card
-      scrollPosition.setValue(-direction * width * 0.5);
-      
-      // Animate the new card in
+      // Immediately reset scroll position off-screen in opposite direction
+      scrollPosition.setValue(-directionMultiplier * width * 0.5);
+
+      // Animate new item into center
       Animated.spring(scrollPosition, {
         toValue: 0,
         friction: 8,
         tension: 40,
         useNativeDriver: true,
       }).start(() => {
-        setIsTransitioning(false);
+        setIsTransitioning(false); // Unlock interaction
       });
     });
   };
 
-  // Reset position when component mounts
+  // Reset scroll position when component first mounts
   useEffect(() => {
     scrollPosition.setValue(0);
   }, []);
 
-  const renderItem = (item: ReactNode, index: number): JSX.Element | null => {
-    // Calculate the position in the carousel (-1 = left, 0 = center, 1 = right)
+  useEffect(() => {
+    currentIndexRef.current = currentIndex;
+  }, [currentIndex]);
+
+  // Render a single item if it's within view (left, center, or right)
+  const renderItem = (item: ReactNode, index: number, length: number): JSX.Element | null => {
     const position = index - currentIndex;
-
-    // Only render items that are visible (left, center, right)
-    if (position < -1 || position > 1) return null;
-
-    // Define the horizontal position
+    
+    // Handle wraparound for visual positioning
+    let visualPosition = position;
+    
+    // Make the last item appear to the left of the first
+    if (currentIndex === 0 && index === items.length - 1) {
+      visualPosition = -1;
+    }
+    // Make the first item appear to the right of the last
+    else if (currentIndex === items.length - 1 && index === 0) {
+      visualPosition = 1;
+    }
+    
+    // Only render items that are immediately around the current one
+    if (Math.abs(visualPosition) > 1) return null;
+    
+    // TranslateX is interpolated to give a sliding effect based on current position
     const translateX = scrollPosition.interpolate({
-      inputRange: [-width, 0, width],
+      inputRange: [-width * 0.5, 0, width * 0.5],
       outputRange: [
-        position === -1 ? -width * 0.9 : position === 0 ? -width : width * 0.5,
-        position === -1 ? -width * 0.7 : position === 0 ? 0 : width * 0.7,
-        position === -1 ? -width * 0.5 : position === 0 ? width : width * 0.9,
+        visualPosition === -1 ? -width * 0.9 : visualPosition === 0 ? -width * 0.5 : width * 0.3,
+        visualPosition === -1 ? -width * 0.7 : visualPosition === 0 ? 0 : width * 0.7,
+        visualPosition === -1 ? -width * 0.3 : visualPosition === 0 ? width * 0.5 : width * 0.9,
       ],
       extrapolate: 'clamp',
     });
 
-    // Scale gets smaller for items on the sides
+    // Scale items slightly when off-center
     const scale = scrollPosition.interpolate({
-      inputRange: [-width, 0, width],
+      inputRange: [-width * 0.5, 0, width * 0.5],
       outputRange: [
-        position === 0 ? 0.9 : 0.7,
-        position === 0 ? 1 : 0.8,
-        position === 0 ? 0.9 : 0.7,
+        visualPosition === 0 ? 0.9 : 0.75,
+        visualPosition === 0 ? 1 : 0.85,
+        visualPosition === 0 ? 0.9 : 0.75,
       ],
       extrapolate: 'clamp',
     });
 
-    // Opacity fades for items on the sides
+    // Reduce opacity for non-centered items
     const opacity = scrollPosition.interpolate({
-      inputRange: [-width, 0, width],
+      inputRange: [-width * 0.5, 0, width * 0.5],
       outputRange: [
-        position === 0 ? 0.9 : 0.5,
-        position === 0 ? 1 : 0.6,
-        position === 0 ? 0.9 : 0.5,
+        visualPosition === 0 ? 0.9 : 0.5,
+        visualPosition === 0 ? 1 : 0.7,
+        visualPosition === 0 ? 0.9 : 0.5,
       ],
       extrapolate: 'clamp',
     });
 
-    // Directly wrap the item in an Animated.View without the card styling
+    // Create pan responder for the current card
+    const panHandlers = visualPosition === 0 ? createCardPanResponder().panHandlers : {};
+
+    // Wrap item in an Animated.View with transformations
     return (
       <Animated.View
         key={index}
         style={{
-          position: 'absolute',
-          transform: [
-            { translateX },
-            { scale },
-          ],
+          position: 'absolute', // stack items
+          transform: [{ translateX }, { scale }],
           opacity,
-          zIndex: position === 0 ? 2 : 1,
+          zIndex: visualPosition === 0 ? 2 : 1, // center item appears on top
         }}
+        {...panHandlers}
       >
-        {item}
+        <View style={styles.cardWrapper}>
+          {item}
+        </View>
       </Animated.View>
     );
   };
 
+  // Render carousel container and all visible items
   return (
-    <View style={styles.container} {...panResponder.panHandlers}>
+    <View style={styles.container}>
       <View style={styles.carousel}>
-        {items.map((item, index) => renderItem(item, index))}
+        {items.map((item, index) => renderItem(item, index, items.length-1))}
       </View>
-      <Text style={styles.instructions}>Swipe left or right</Text>
     </View>
   );
 }
 
+// Define styles for the component using StyleSheet.create
 const styles = StyleSheet.create<StylesProps>({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5F5F5',
   },
   carousel: {
     height: height * 0.6,
@@ -173,9 +227,8 @@ const styles = StyleSheet.create<StylesProps>({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  instructions: {
-    marginTop: 30,
-    color: '#333',
-    fontSize: 16,
-  },
+  cardWrapper: {
+    width: '100%',
+    height: '100%',
+  }
 });

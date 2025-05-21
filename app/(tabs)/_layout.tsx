@@ -51,7 +51,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="messages"
         options={{
-          tabBarIcon: ({ focused }) => <Ionicons name="mail" size={30} color={focused ? "#6C5CE7" : "#CCCCCC"} />,
+          tabBarIcon: ({ focused }) => <Ionicons name="notifications-circle-outline" size={30} color={focused ? "#6C5CE7" : "#CCCCCC"} />,
         }}
       />
       <Tabs.Screen

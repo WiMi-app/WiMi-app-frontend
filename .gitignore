@@ -61,6 +61,7 @@ fastlane/test_output
 .expo/
 web-build/
 dist/
+.cursor
 
 # Environment variables
 .env
