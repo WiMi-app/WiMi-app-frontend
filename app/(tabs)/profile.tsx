@@ -11,8 +11,10 @@ import {
   Border,
   Padding,
 } from "./GlobalStyles";
+import { useNavigation } from "expo-router";
 
 const ProfileScreen = () => {
+  const navigation = useNavigation();
   return (
     <SafeAreaView style={styles.profileScreen}>
       <View style={styles.content}>
@@ -31,7 +33,7 @@ const ProfileScreen = () => {
           <ProfileStats posts = {0} followers={1_000_000} following={1_000}/>
 
           <View style={styles.profileButtons}>
-            <Pressable style={styles.editProfileButton}>
+            <Pressable style={styles.editProfileButton} onPress={() => navigation.navigate('(settings)')}>
               <Text style={styles.editProfile}>Edit Profile</Text>
             </Pressable>
             <Pressable style={styles.shareProfileButton}>
