@@ -4,7 +4,7 @@ import { ImageSourcePropType } from 'react-native';
 import { useRef, useState, useEffect } from 'react'
 import HorizontalCarousel, {HorizontalCarouselRef} from "../components/animations/carousel";
 import Header from "../components/challenge/header";
-import DetailsScreen from "../components/challenge/details";
+import ChallengeView from "../components/challenge/challenge_view";
 
 
 const { width, height } = Dimensions.get('window');
@@ -101,7 +101,7 @@ const testComp = testData.map((item, index) => (
       <View style={styles.Carousel}>
         <HorizontalCarousel ref={carouselRef} items={testComp}/>
       </View>
-      <DetailsScreen/>
+      <ChallengeView/>
     </ScrollView>
   )
 }

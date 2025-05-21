@@ -5,9 +5,9 @@ const LeaderboardScreen = () => {
   const [timeFilter, setTimeFilter] = useState('weekly'); // 'weekly' or 'allTime'
   
   const leaderboardData = [
-    { id: 1, name: 'Madelyn D', points: 590, avatar: require('../../../assets/test/profile.png'), xp: 2569 },
-    { id: 2, name: 'ZV', points: 448, avatar: require('../../../assets/test/profile.png'), xp: 1449 },
-    { id: 3, name: 'Sarah', points: 448, avatar: require('../../../assets/test/profile.png'), xp: 1053 },
+    { id: 1, name: 'Madelyn D', points: 590, avatar: require('../../../assets/test/profile.png'), flag: '🇳🇴' },
+    { id: 2, name: 'ZV', points: 448, avatar: require('../../../assets/test/profile.png') ,flag: '🇳🇴'},
+    { id: 3, name: 'Sarah', points: 448, avatar: require('../../../assets/test/profile.png'), flag: '🇳🇴'},
     { id: 4, name: 'Daniel', points: 448, avatar: require('../../../assets/test/profile.png'), flag: '🇳🇴' },
   ];
 
@@ -36,20 +36,11 @@ const LeaderboardScreen = () => {
         <Text style={styles.notificationText}>You are doing better than 60% of other players!</Text>
       </View>
       
-      <View style={styles.timeContainer}>
-        <View style={styles.crownContainer}>
-          <Image source={require('../../../assets/test/profile.png')} style={styles.crownAvatar} />
-          <View style={styles.timeChip}>
-            <Text style={styles.timeText}>00d 23h 00m</Text>
-          </View>
-        </View>
-      </View>
-      
       <View style={styles.podiumContainer}>
         {/* Second Place */}
         <View style={styles.podiumItemContainer}>
           <View style={styles.xpChip}>
-            <Text style={styles.xpText}>{podiumUsers[1]?.xp} XP</Text>
+            <Text style={styles.xpText}>{podiumUsers[1]?.points} Points</Text>
           </View>
           <Image source={podiumUsers[1]?.avatar } style={styles.podiumAvatar} />
           <View style={[styles.podiumPillar, styles.secondPlace]}>
@@ -60,7 +51,7 @@ const LeaderboardScreen = () => {
         {/* First Place */}
         <View style={styles.podiumItemContainer}>
           <View style={styles.xpChip}>
-            <Text style={styles.xpText}>{podiumUsers[0]?.xp} XP</Text>
+            <Text style={styles.xpText}>{podiumUsers[0]?.points} Points</Text>
           </View>
           <Image source={podiumUsers[0]?.avatar} style={styles.podiumAvatar} />
           <View style={[styles.podiumPillar, styles.firstPlace]}>
@@ -71,7 +62,7 @@ const LeaderboardScreen = () => {
         {/* Third Place */}
         <View style={styles.podiumItemContainer}>
           <View style={styles.xpChip}>
-            <Text style={styles.xpText}>{podiumUsers[2]?.xp} XP</Text>
+            <Text style={styles.xpText}>{podiumUsers[2]?.points} Points</Text>
           </View>
           <Image source={podiumUsers[2]?.avatar} style={styles.podiumAvatar} />
           <View style={[styles.podiumPillar, styles.thirdPlace]}>
@@ -92,11 +83,6 @@ const LeaderboardScreen = () => {
               <Text style={styles.userPoints}>{user.points} points</Text>
             </View>
             {user.flag && <Text style={styles.flagIcon}>{user.flag}</Text>}
-            {user.id === 1 && (
-              <TouchableOpacity style={styles.challengeButton}>
-                <Text style={styles.challengeButtonText}>Chat Challenge</Text>
-              </TouchableOpacity>
-            )}
           </View>
         ))}
       </ScrollView>
@@ -204,15 +190,15 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 5,
   },
   firstPlace: {
-    backgroundColor: '#a29bfe',
+    backgroundColor: '#f9ad0e',
     height: 80,
   },
   secondPlace: {
-    backgroundColor: '#a29bfe',
+    backgroundColor: '#d1d7da',
     height: 60,
   },
   thirdPlace: {
-    backgroundColor: '#a29bfe',
+    backgroundColor: '#df7e08',
     height: 40,
   },
   podiumNumber: {
