@@ -59,7 +59,8 @@ const LoginScreen = () => {
         password: password,
       });
       console.log(response.data);
-      await saveToken('jwt', response.data.refresh_token);
+      await saveToken('refreshToken', response.data.refresh_token);
+      await saveToken('accessToken', response.data.access_token);
       setLoading(false);
       navigation.navigate('(tabs)');
     } 

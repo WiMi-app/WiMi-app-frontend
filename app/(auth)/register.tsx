@@ -16,7 +16,6 @@ import { useNavigation } from "@react-navigation/native"
 import { Ionicons } from "@expo/vector-icons"
 import Input from "../components/input"
 import Button from "../components/button_"
-import { supabase } from "../lib/supabase"
 import axios from "../api/axios"
 
 const RegisterScreen = () => {
@@ -85,6 +84,7 @@ const RegisterScreen = () => {
           email: email,
           password: password,
         })
+
         setLoading(false);
         navigation.navigate('success');
       } catch(error){
