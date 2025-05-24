@@ -9,13 +9,14 @@ import {
   ImageSourcePropType,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import LeaderboardScreen from './leaderboard';
 
 export interface PlayerAvatar {
   id: string;
   image: ImageSourcePropType;
 }
 
-export interface ChallengeCardProps {
+export interface GolfChallengeCardProps {
   title?: string;
   description?: string;
   backgroundImage?: string | ImageSourcePropType;
@@ -24,7 +25,7 @@ export interface ChallengeCardProps {
   onPress?: () => void;
 }
 
-const ChallengeCard: React.FC<ChallengeCardProps> = ({
+const GolfChallengeCard: React.FC<GolfChallengeCardProps> = ({
   title = 'Challenge',
   description = 'Test your focus and see how many strokes it takes to sink the ball!',
   backgroundImage = 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?q=80&w=2070',
@@ -185,4 +186,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ChallengeCard;
+export default GolfChallengeCard;

@@ -7,22 +7,12 @@ import {
   TouchableOpacity, 
   TextInput, 
   FlatList, 
-  Image 
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
-// Message item type definition
-type MessageItem = {
-  id: string;
-  name: string;
-  username: string;
-  time: string;
-  notificationCount: number;
-  avatar: string;
-};
+import renderMessageItem from '../components/notifications/notifcard';
 
 // Sample data
-const messages: MessageItem[] = [
+const messages = [
   {
     id: '1',
     name: 'Darrell Steward',
@@ -92,38 +82,10 @@ const messages: MessageItem[] = [
 const InboxScreen = () => {
   const [activeTab, setActiveTab] = React.useState('Notifications');
 
-  const renderMessageItem = ({ item }: { item: MessageItem }) => (
-    <TouchableOpacity style={styles.messageItem}>
-      <Image source={{ uri: item.avatar }} style={styles.avatar} />
-      <View style={styles.messageContent}>
-        <View style={styles.messageHeader}>
-          <Text style={styles.name}>{item.name}</Text>
-          <Text style={styles.time}>{item.time}</Text>
-        </View>
-        <Text style={styles.username}>{item.username}</Text>
-      </View>
-      {item.notificationCount > 0 && (
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>
-            {item.notificationCount > 9 ? '9+' : item.notificationCount}
-          </Text>
-        </View>
-      )}
-    </TouchableOpacity>
-  );
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton}>
-          <Ionicons name="chevron-back" size={24} color="#333" />
-        </TouchableOpacity>
         <Text style={styles.headerTitle}>Inbox</Text>
-        <TouchableOpacity style={styles.messageIcon}>
-          <View style={styles.purpleBox}>
-            <Ionicons name="chatbubble-outline" size={20} color="white" />
-          </View>
-        </TouchableOpacity>
       </View>
 
       <View style={styles.tabs}>
@@ -187,8 +149,8 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
-    justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
@@ -199,6 +161,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: '#333',
+    borderBottomWidth: 2,
+    borderBottomColor: '#333'
   },
   messageIcon: {
     padding: 4,
@@ -213,6 +177,8 @@ const styles = StyleSheet.create({
   },
   tabs: {
     flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: 16,
     marginBottom: 16,
   },

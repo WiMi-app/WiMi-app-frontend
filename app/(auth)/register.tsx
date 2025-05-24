@@ -17,6 +17,7 @@ import { Ionicons } from "@expo/vector-icons"
 import Input from "../components/input"
 import Button from "../components/button_"
 import { supabase } from "../lib/supabase"
+import axios from "../api/axios"
 
 const RegisterScreen = () => {
   const navigation = useNavigation()
@@ -79,29 +80,23 @@ const RegisterScreen = () => {
   async function handleRegister() {
     if (validateForm()) {
       setLoading(true)
-      const {
-        data: { session, user },
-        error,
-      } = await supabase.auth.signUp({
-        email: email,
-        password: password,
-      })
-  
-      setLoading(false)
-  
-      if (error) {
-        Alert.alert(error.message)
-        return
+      try{
+        const response = await axios.post("/api/v0/auth/signup",{
+          email: email,
+          password: password,
+        })
+        setLoading(false);
+        navigation.navigate('success');
+      } catch(error){
+        if (error.response.status === 422) {
+          Alert.alert("Validation Error");
+        } else{
+          Alert.alert("Network Error");
+        }
       }
-  
-      if (!session) {
-        Alert.alert('Please check your inbox for email verification!')
-      } else {
-        // Navigate if registration was successful
-        navigation.navigate('success') // or whatever route you want
-      }
-    }
+      setLoading(false);
   }
+}
   
   return (
     <SafeAreaView style={styles.container}>

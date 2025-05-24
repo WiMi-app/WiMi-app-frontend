@@ -18,7 +18,6 @@ const LikeButton = ({
     like_count = 0,
 }) => {
     const [liked, setLiked] = useState(false);
-
   return (
     <Pressable style={[styles.heartButton, styles.buttonFlexBox]} 
     onPress={() => setLiked((isLiked) => !isLiked)}>

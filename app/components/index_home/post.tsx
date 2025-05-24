@@ -18,14 +18,13 @@ import LikeButton from "./like_button";
 import SimplifyNumber from '../simplify_num';
 import CommentButton from './comment_button';
 import ShareButton from './share_button';
-import { useNavigation } from "@react-navigation/native"
 
 interface PostElements {
     profile_name?: string,
     profile_pic?: string,
     num_likes?: number,
     num_comments?: number,
-    post_pic?: string,
+    post_pic?: string, 
     post_description?: string,
     elapsed_post_time?: string,
     challenge?:string
@@ -47,18 +46,15 @@ const Post: React.FC<PostElements> = ({
       'default_post_pic': require('../../../assets/ice-bucket-photo.png'),
     };
 
-    const navigation = useNavigation();
   return (
         <View style={[styles.post, styles.postFlexBox]}>
           <View style={[styles.postInfo, styles.infoSpaceBlock]}>
-            <Pressable onPress={() => navigation.navigate("(otherProfile)")}>
-              <Image 
-                style={styles.iconLayout1} 
-                width={48} 
-                height={48} 
-                source={require("../../../assets/profile img.png")}
-              />
-            </Pressable>
+            <Image 
+              style={styles.iconLayout1} 
+              width={48} 
+              height={48} 
+              source={require("../../../assets/profile img.png")}
+            />
            {/* if (profile_pic) {
                 <Image 
                     style={styles.iconLayout1} 
@@ -75,7 +71,7 @@ const Post: React.FC<PostElements> = ({
                 source={images["default_post_pic"]}
                 />
             } */}
-            <Pressable style={styles.userPostInfo} onPress={() => navigation.navigate("(otherProfile)")}>
+            <Pressable style={styles.userPostInfo}>
               <Text style={[styles.username, styles.usernameFlexBox]}>
                 {profile_name}
               </Text>

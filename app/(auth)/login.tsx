@@ -16,7 +16,8 @@ import { useNavigation } from "@react-navigation/native"
 import { Ionicons } from "@expo/vector-icons"
 import Input from "../components/input"
 import Button from "../components/button_"
-import { supabase } from "../lib/supabase"
+import axios from "../api/axios"
+import {saveToken, getToken} from "../store/token";
 
 const LoginScreen = () => {
   const navigation = useNavigation()
@@ -52,19 +53,25 @@ const LoginScreen = () => {
 
   async function handleLogin() {
     setLoading(true)
-    const { error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    })
-  
-    setLoading(false)
-  
-    if (error) {
-      Alert.alert(error.message)
-    } else {
-      // Navigate if login is successful
-      navigation.navigate('(tabs)') // or your desired route
-    }
+    try{
+      const response= await axios.post("/api/v0/auth/token",{
+        email: email,
+        password: password,
+      });
+      console.log(response.data);
+      await saveToken('jwt', response.data.refresh_token);
+      setLoading(false);
+      navigation.navigate('(tabs)');
+    } 
+    catch (error) {
+      console.log(error.response.status);
+      if(error.response.status===422){
+        Alert.alert("Email not Found or Wrong Password ");
+      }else{
+        Alert.alert("Network Error");
+      }
+      setLoading(false);
+    } 
   }
 
 

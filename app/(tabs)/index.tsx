@@ -1,9 +1,10 @@
 import * as React from "react";
 import { useRouter } from 'expo-router';
-import { StyleSheet, Pressable, Text, View, Image, ScrollView, FlatList } from "react-native";
+import { StyleSheet, Text, View, Image, Alert, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Post from "../components/index_home/post"
 import { Color, Gap, FontSize, Padding, FontFamily } from "./GlobalStyles";
+import {getToken} from "../store/token";
 
 type UserPostData = {
   id: string;
@@ -106,6 +107,15 @@ const PostItem = ({postItem}: UserPostProps) => (
 export default function HomeScreen() {
   const router = useRouter();
 
+  async function token(){ 
+  const token = await getToken('jwt');
+    if (token) {
+      Alert.alert('Stored Token', token);
+    } else {
+      Alert.alert('No token found');
+    }
+  }
+  token();
   return (
     <SafeAreaView style={styles.homeScreen}>
       {/* <View style={styles.postList}> */}
@@ -141,7 +151,6 @@ export default function HomeScreen() {
           style={[{width:"100%"}]}
           showsVerticalScrollIndicator={false}
         />
-
       {/* </View> */}
     </SafeAreaView>
   );

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
+import BoardCard from './usercard';
 
 const LeaderboardScreen = () => {
   const [timeFilter, setTimeFilter] = useState('weekly'); // 'weekly' or 'allTime'
@@ -36,6 +37,7 @@ const LeaderboardScreen = () => {
         <Text style={styles.notificationText}>You are doing better than 60% of other players!</Text>
       </View>
       
+
       <View style={styles.podiumContainer}>
         {/* Second Place */}
         <View style={styles.podiumItemContainer}>
@@ -47,7 +49,6 @@ const LeaderboardScreen = () => {
             <Text style={styles.podiumNumber}>2</Text>
           </View>
         </View>
-        
         {/* First Place */}
         <View style={styles.podiumItemContainer}>
           <View style={styles.xpChip}>
@@ -58,7 +59,6 @@ const LeaderboardScreen = () => {
             <Text style={styles.podiumNumber}>1</Text>
           </View>
         </View>
-        
         {/* Third Place */}
         <View style={styles.podiumItemContainer}>
           <View style={styles.xpChip}>
@@ -72,18 +72,8 @@ const LeaderboardScreen = () => {
       </View>
       
       <ScrollView style={styles.leaderboardList}>
-        {leaderboardData.map((user) => (
-          <View key={user.id} style={styles.leaderboardItem}>
-            <View style={styles.rankContainer}>
-              <Text style={styles.rankText}>{user.id}</Text>
-            </View>
-            <Image source={user.avatar } style={styles.userAvatar} />
-            <View style={styles.userInfo}>
-              <Text style={styles.userName}>{user.name}</Text>
-              <Text style={styles.userPoints}>{user.points} points</Text>
-            </View>
-            {user.flag && <Text style={styles.flagIcon}>{user.flag}</Text>}
-          </View>
+        {leaderboardData.map((user_) => (
+            <BoardCard user={user_} />
         ))}
       </ScrollView>
     </SafeAreaView>
