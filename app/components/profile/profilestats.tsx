@@ -12,7 +12,7 @@ import {
     Border,
     Padding,
   } from "../../(tabs)/GlobalStyles";
-import SimplifyNumber from '../simplify_num';
+import SimplifyNumber from '../../utils/simplify_num';
 
 interface StatsPage {
     posts?: number,

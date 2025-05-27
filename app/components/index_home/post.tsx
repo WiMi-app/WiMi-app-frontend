@@ -15,7 +15,7 @@ import {
     Padding,
   } from "../../(tabs)/GlobalStyles";
 import LikeButton from "./like_button";
-import SimplifyNumber from '../simplify_num';
+import SimplifyNumber from '../../utils/simplify_num';
 import CommentButton from './comment_button';
 import ShareButton from './share_button';
 

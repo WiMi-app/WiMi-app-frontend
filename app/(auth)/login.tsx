@@ -54,7 +54,7 @@ const LoginScreen = () => {
   async function handleLogin() {
     setLoading(true)
     try{
-      const response= await axios.post("/api/v0/auth/token",{
+      const response= await axios.post("/auth/token",{
         email: email,
         password: password,
       });

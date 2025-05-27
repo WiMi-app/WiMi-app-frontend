@@ -6,7 +6,7 @@ import {
     FontSize,
     Gap,
   } from "../../(tabs)/GlobalStyles";
-import SimplifyNumber from "../simplify_num";
+import SimplifyNumber from "../../utils/simplify_num";
 import { LinearGradient } from "expo-linear-gradient";
 import MaskedView from '@react-native-masked-view/masked-view';
 

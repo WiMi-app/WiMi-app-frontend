@@ -4,8 +4,6 @@ import { StyleSheet, Text, View, Image, Alert, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Post from "../components/index_home/post"
 import { Color, Gap, FontSize, Padding, FontFamily } from "./GlobalStyles";
-import {getToken} from "../store/token";
-import apiClient from "../api/refresh";
 
 type UserPostData = {
   id: string;
@@ -107,24 +105,6 @@ const PostItem = ({postItem}: UserPostProps) => (
 
 export default function HomeScreen() {
   const router = useRouter();
-
-  async function token(){
-  
-  try{
-  const access_token = await getToken('accessToken');
-  const refresh_token = await getToken('refreshToken');
-  console.log(access_token);
-  console.log(refresh_token);
-  const response = await apiClient.get('/api/v0/users/me',{
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
-  console.log(response.data);
-  }catch(error){
-    console.log(error);
-  }
-  }
-
-  token();
 
   return (
     <SafeAreaView style={styles.homeScreen}>

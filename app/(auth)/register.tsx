@@ -80,7 +80,7 @@ const RegisterScreen = () => {
     if (validateForm()) {
       setLoading(true)
       try{
-        const response = await axios.post("/api/v0/auth/signup",{
+        const response = await axios.post("auth/signup",{
           email: email,
           password: password,
         })

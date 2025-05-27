@@ -1,4 +1,4 @@
-import * as React from "react";
+import {useEffect,useState } from "react";
 import ProfileStats from "../components/profile/profilestats";
 import { StyleSheet, Text, View, Pressable, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -12,9 +12,30 @@ import {
   Padding,
 } from "./GlobalStyles";
 import { useNavigation } from "expo-router";
+import { getMyData } from "../fetch/user";
+
+interface UserData {
+  avatar_url: string | null;
+  bio: string | null;
+  email: string;
+  full_name: string;
+  id: string;
+  updated_at: string;
+  username: string;
+}
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const[error, setError] = useState<Boolean>(false);
+
+  useEffect(() => {
+    (async () => { 
+      const data = await getMyData(); 
+      data?setUserData(data):setError(true);
+    })();
+  }, []);
+
   return (
     <SafeAreaView style={styles.profileScreen}>
       <View style={styles.content}>
@@ -24,8 +45,8 @@ const ProfileScreen = () => {
             <ProfilePhoto photo={require('../../assets/test/profile.png')} Status={1} size={60}/>
 
             <View style={styles.profileName}>
-              <Text style={styles.name}>John Doe</Text>
-              <Text style={styles.username}>@john_doe</Text>
+              <Text style={styles.name}>{userData?.full_name} </Text>
+              <Text style={styles.username}>@{userData?.username}</Text>
             </View>
 
           </View>
@@ -40,87 +61,13 @@ const ProfileScreen = () => {
               <Text style={styles.shareProfile}>Share Profile</Text>
             </Pressable>
           </View>
-          <TextInput
-            style={styles.bio}
-            placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-            placeholderTextColor="#94a3b8"
-          />
+          <Text style={styles.bio} > {userData?.bio} </Text>
         </View>
         <View style={styles.photos}>
           <View style={styles.title}>
             <Text style={styles.tittle}>Posts</Text>
             <Text style={styles.tittle1}>See All</Text>
           </View>
-          {/* <View style={styles.gallery}>
-            <View style={styles.rowPosts}>
-              <Image
-                style={styles.imageIcon}
-                contentFit="cover"
-                source={require("../assets/image.png")}
-              />
-              <Image
-                style={styles.imageIcon}
-                contentFit="cover"
-                source={require("../assets/image.png")}
-              />
-              <Image
-                style={styles.imageIcon}
-                contentFit="cover"
-                source={require("../assets/image.png")}
-              />
-            </View>
-            <View style={styles.rowPosts}>
-              <Image
-                style={styles.imageIcon}
-                contentFit="cover"
-                source={require("../assets/image.png")}
-              />
-              <Image
-                style={styles.imageIcon}
-                contentFit="cover"
-                source={require("../assets/image.png")}
-              />
-              <Image
-                style={styles.imageIcon}
-                contentFit="cover"
-                source={require("../assets/image.png")}
-              />
-            </View>
-            <View style={styles.rowPosts}>
-              <Image
-                style={styles.imageIcon}
-                contentFit="cover"
-                source={require("../assets/image.png")}
-              />
-              <Image
-                style={styles.imageIcon}
-                contentFit="cover"
-                source={require("../assets/image.png")}
-              />
-              <Image
-                style={styles.imageIcon}
-                contentFit="cover"
-                source={require("../assets/image.png")}
-              />
-            </View>
-            <View style={styles.rowPosts}>
-              <Image
-                style={styles.imageIcon}
-                contentFit="cover"
-                source={require("../assets/image.png")}
-              />
-              <Image
-                style={styles.imageIcon}
-                contentFit="cover"
-                source={require("../assets/image.png")}
-              />
-              <Image
-                style={styles.imageIcon}
-                contentFit="cover"
-                source={require("../assets/image.png")}
-              />
-            </View>
-          </View> */}
         </View>
       </View>
     </SafeAreaView>
