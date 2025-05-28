@@ -6,11 +6,12 @@ export default function RootLayout() {
     <>
       <StatusBar style="auto" />
       <Stack initialRouteName="(auth)">
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)" options={{ headerShown: false, gestureEnabled: false }} />
+        <Stack.Screen name="(newprofile)" options={{ headerShown: false, gestureEnabled: false  }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false, gestureEnabled: false }} />
-        <Stack.Screen name="(settings)" options={{ headerShown: false }} />
-        <Stack.Screen name="(otherProfile)" options={{ headerShown: false }} />
-        <Stack.Screen name="(camera)" options={{ headerShown: false }} />
+        <Stack.Screen name="(settings)" options={{ headerShown: false, gestureEnabled: false  }} />
+        <Stack.Screen name="(otherProfile)" options={{ headerShown: false, gestureEnabled: false  }} />
+        <Stack.Screen name="(camera)" options={{ headerShown: false, gestureEnabled: false  }} />
       </Stack>
     </>
   )
