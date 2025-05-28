@@ -79,25 +79,25 @@ const RegisterScreen = () => {
   async function handleRegister() {
     if (validateForm()) {
       setLoading(true)
-      try{
-        const response = await axios.post("auth/signup",{
+      try {
+        const response = await axios.post("auth/signup", {
           email: email,
           password: password,
         })
 
         setLoading(false);
         navigation.navigate('success');
-      } catch(error){
+      } catch (error) {
         if (error.response.status === 422) {
           Alert.alert("Validation Error");
-        } else{
+        } else {
           Alert.alert("Network Error");
         }
       }
       setLoading(false);
+    }
   }
-}
-  
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.keyboardAvoidingView}>
@@ -158,7 +158,7 @@ const RegisterScreen = () => {
 
             <Button title="Create Account" onPress={handleRegister} loading={loading} style={styles.registerButton}
               variant="gradient"
-              gradientColors={['#5858E8', '#9B5EFC']}  />
+              gradientColors={['#5858E8', '#9B5EFC']} />
           </View>
 
           <View style={styles.footer}>

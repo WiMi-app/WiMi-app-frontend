@@ -31,10 +31,10 @@ export async function getMyData(): Promise<UserData | null> {
     }
 }
 
-export async function editMyData(data : String) : Promise<any> {
+export async function editMyData(data : JSON) : Promise<any> {
     try {
         const access_token = await getToken('accessToken');
-        const response = await apiClient.put<any>('/users/me', {data}, {
+        const response = await apiClient.put<any>('/users/me', data, {
             headers: { Authorization: `Bearer ${access_token}` },
         });
         return response.data;
