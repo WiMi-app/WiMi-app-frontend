@@ -11,6 +11,7 @@ type UserData = {
   username: string;
 }
 
+
 /**
  * GET USER
  * @returns Promise<JSON>
