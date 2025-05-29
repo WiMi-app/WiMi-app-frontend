@@ -19,8 +19,7 @@ export async function Follow(UserID : String): Promise<any> {
 export async function unFollow(followID : string): Promise<any> {
     try {
         const access_token = await getToken('accessToken');
-        const response = await apiClient.delete<any>('/follows', {
-            params : { follow_id : followID},
+        const response = await apiClient.delete<any>(`/follows/${followID}`, {
             headers: { Authorization: `Bearer ${access_token}` },
         });
         console.log('User data:', response.data);

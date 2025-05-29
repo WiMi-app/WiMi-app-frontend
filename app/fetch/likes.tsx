@@ -19,8 +19,7 @@ export async function Like(postID : String): Promise<any> {
 export async function unLike(likeID : string): Promise<any> {
     try {
         const access_token = await getToken('accessToken');
-        const response = await apiClient.delete<any>('/likes', {
-            params : { like_id : likeID},
+        const response = await apiClient.delete<any>(`/likes/${likeID}`, {
             headers: { Authorization: `Bearer ${access_token}` },
         });
         console.log('User data:', response.data);

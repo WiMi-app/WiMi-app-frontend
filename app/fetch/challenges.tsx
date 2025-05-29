@@ -32,7 +32,8 @@ export async function getChallengeList(): Promise<any> {
 export async function getChallenge(challengeID : string): Promise<any> {
     try {
         const access_token = await getToken('accessToken');
-        const response = await apiClient.get<any>(`/challenges/${challengeID}`, {
+        const response = await apiClient.get<any>('/challenges', {
+            params : { challenge_id : challengeID},
             headers: { Authorization: `Bearer ${access_token}` },
         });
         console.log('User data:', response.data);
@@ -46,7 +47,8 @@ export async function getChallenge(challengeID : string): Promise<any> {
 export async function updateChallenge(challengeID : string, content : JSON): Promise<any> {
     try {
         const access_token = await getToken('accessToken');
-        const response = await apiClient.put<any>(`/challenges/${challengeID}`, content,  {
+        const response = await apiClient.put<any>('/challenges', content,  {
+            params : { challenge_id : challengeID},
             headers: { Authorization: `Bearer ${access_token}` },
         });
         console.log('User data:', response.data);
@@ -74,8 +76,7 @@ export async function deleteChallenge(challengeID : string): Promise<any> {
 export async function joinChallenge(followID : string): Promise<any> {
     try {
         const access_token = await getToken('accessToken');
-        const response = await apiClient.delete<any>('/challenges/', {
-            params : { follow_id : followID},
+        const response = await apiClient.delete<any>(`/challenges/${followID}`, {
             headers: { Authorization: `Bearer ${access_token}` },
         });
         console.log('User data:', response.data);
@@ -89,8 +90,7 @@ export async function joinChallenge(followID : string): Promise<any> {
 export async function leaveChallenge(followID : string): Promise<any> {
     try {
         const access_token = await getToken('accessToken');
-        const response = await apiClient.delete<any>('/challenges/', {
-            params : { follow_id : followID},
+        const response = await apiClient.delete<any>(`/challenges/${followID}`, {
             headers: { Authorization: `Bearer ${access_token}` },
         });
         console.log('User data:', response.data);
@@ -104,8 +104,7 @@ export async function leaveChallenge(followID : string): Promise<any> {
 export async function getChallengeParticipants(followID : string): Promise<any> {
     try {
         const access_token = await getToken('accessToken');
-        const response = await apiClient.delete<any>('/challenges/', {
-            params : { follow_id : followID},
+        const response = await apiClient.delete<any>(`/challenges/${followID}`, {
             headers: { Authorization: `Bearer ${access_token}` },
         });
         console.log('User data:', response.data);
@@ -119,8 +118,7 @@ export async function getChallengeParticipants(followID : string): Promise<any> 
 export async function updateChallengeParticipants(followID : string): Promise<any> {
     try {
         const access_token = await getToken('accessToken');
-        const response = await apiClient.delete<any>('/challenges/', {
-            params : { follow_id : followID},
+        const response = await apiClient.delete<any>(`/challenges/${followID}`, {
             headers: { Authorization: `Bearer ${access_token}` },
         });
         console.log('User data:', response.data);
@@ -134,8 +132,7 @@ export async function updateChallengeParticipants(followID : string): Promise<an
 export async function getMyChallenges(followID : string): Promise<any> {
     try {
         const access_token = await getToken('accessToken');
-        const response = await apiClient.delete<any>('/challenges/', {
-            params : { follow_id : followID},
+        const response = await apiClient.delete<any>(`/challenges/${followID}`, {
             headers: { Authorization: `Bearer ${access_token}` },
         });
         console.log('User data:', response.data);
