@@ -6,16 +6,7 @@ import {
   TouchableOpacity, 
   Image 
 } from 'react-native';
-
-
-type MessageItem = {
-  id: string;
-  name: string;
-  username: string;
-  time: string;
-  notificationCount: number;
-  avatar: string;
-};
+import { MessageItem } from '../../interfaces/notifications';
 
 const renderMessageItem = ({ item }: { item: MessageItem }) => (
     <TouchableOpacity style={styles.messageItem}>

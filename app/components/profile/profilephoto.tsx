@@ -5,13 +5,7 @@ import {
   StyleSheet,
   ImageSourcePropType,
 } from 'react-native';
-
-interface Photo {
-  photo?: ImageSourcePropType | string;
-  Status?: number;
-  width?: number;
-  height?: number;
-}
+import { Photo } from '../../interfaces/profile';
 
 const ProfilePhoto: React.FC<Photo> = ({
   photo = "https://via.placeholder.com/150",

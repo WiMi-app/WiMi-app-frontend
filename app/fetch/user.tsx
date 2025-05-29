@@ -1,16 +1,6 @@
 import { getToken } from "../store/token";
 import apiClient from "../api/refresh";
-
-type UserData = {
-  avatar_url: string | null;
-  bio: string | null;
-  email: string;
-  full_name: string;
-  id: string;
-  updated_at: string;
-  username: string;
-}
-
+import { UserData } from "../interfaces/user";
 
 /**
  * GET USER
@@ -47,8 +37,7 @@ export async function editMyData(data : JSON) : Promise<any> {
 export async function deleteMyData(userID : String) : Promise<any> {
     try {
         const access_token = await getToken('accessToken');
-        const response = await apiClient.delete<any>('/users/',{
-            params : { user_id : userID },
+        const response = await apiClient.delete<any>(`/users/${userID}`,{
             headers: { Authorization: `Bearer ${access_token}` },
         });
         return response.data;

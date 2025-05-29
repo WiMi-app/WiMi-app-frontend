@@ -18,17 +18,7 @@ import LikeButton from "./like_button";
 import SimplifyNumber from '../../utils/simplify_num';
 import CommentButton from './comment_button';
 import ShareButton from './share_button';
-
-interface PostElements {
-    profile_name?: string,
-    profile_pic?: string,
-    num_likes?: number,
-    num_comments?: number,
-    post_pic?: string, 
-    post_description?: string,
-    elapsed_post_time?: string,
-    challenge?:string
-}
+import { PostElements } from '../../interfaces/components';
 
 const Post: React.FC<PostElements> = ({
     profile_name = "",

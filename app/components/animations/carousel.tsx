@@ -1,4 +1,3 @@
-
 // Import necessary hooks and components from React and React Native
 import React, { useRef, useState, useEffect, ReactNode, forwardRef, useImperativeHandle } from 'react';
 import {
@@ -10,19 +9,10 @@ import {
   Dimensions,
   ViewStyle,
 } from 'react-native';
+import { HorizontalCarouselProps, HorizontalCarouselRef, StylesProps } from '../../interfaces/animations';
 
 // Get screen dimensions to calculate positions and distances
 const { width, height } = Dimensions.get('window');
-
-// Define the props interface for the carousel component
-interface HorizontalCarouselProps {
-  items: ReactNode[]; // An array of React nodes (any valid JSX)
-}
-
-// Define what will be exposed through the ref
-export interface HorizontalCarouselRef {
-  currentIndex: number;
-}
 
 // Define a styles interface to strongly type the StyleSheet
 interface StylesProps {

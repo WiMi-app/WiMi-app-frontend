@@ -1,15 +1,6 @@
 import { getToken } from "../store/token";
 import apiClient from "../api/refresh";
-
-type PostData = {
-  avatar_url: string | null;
-  bio: string | null;
-  email: string;
-  full_name: string;
-  id: string;
-  updated_at: string;
-  username: string;
-}
+import { PostData } from "../interfaces/post";
 
 /**
  * GET USER
@@ -65,8 +56,7 @@ export async function createPost(data : JSON) : Promise<any> {
 export async function deletePost(postID : String): Promise<any> {
     try {
         const access_token = await getToken('accessToken');
-        const response = await apiClient.delete<PostData>('/post/', {
-            params : {post_id: postID},
+        const response = await apiClient.delete<PostData>(`/post/${postID}`, {
             headers: { Authorization: `Bearer ${access_token}` },
         });
         console.log('User data:', response.data);
