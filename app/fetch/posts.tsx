@@ -44,10 +44,10 @@ export async function getPost(postID : String) : Promise<PostData | null> {
     }
 }
 //should probably not be used.
-export async function createPost(data : String) : Promise<any> {
+export async function createPost(data : JSON) : Promise<any> {
     try {
         const access_token = await getToken('accessToken');
-        const response = await apiClient.post<any>('/post/', {data} , {
+        const response = await apiClient.post<any>('/post/', data , {
             headers: { Authorization: `Bearer ${access_token}` },
         });
         return response.data;
@@ -77,11 +77,11 @@ export async function deletePost(postID : String): Promise<any> {
     }
 }
 
-export async function updatePosts(data : String, postID : String): Promise<any> {
+export async function updatePosts(data : JSON, postID : String): Promise<any> {
     try {
         const access_token = await getToken('accessToken');
 
-        const response = await apiClient.put<PostData>('/users/',{data} , {
+        const response = await apiClient.put<PostData>('/users/', data , {
             params : {post_id : postID},
             headers: { Authorization: `Bearer ${access_token}` },
         });

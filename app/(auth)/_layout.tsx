@@ -9,6 +9,7 @@ export default function AuthLayout() {
         screenOptions={{
           headerShown: false, // Hide headers if you want a custom layout
           animation: 'slide_from_right',
+          gestureEnabled: false 
         }}
       />
     </SafeAreaView>
