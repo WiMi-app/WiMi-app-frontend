@@ -33,8 +33,7 @@ export async function getListPosts(): Promise<PostData | null> {
 export async function getPost(postID : String) : Promise<PostData | null> {
     try {
         const access_token = await getToken('accessToken');
-        const response = await apiClient.get<any>('/posts', {
-            params : { user_id : postID },
+        const response = await apiClient.get<any>(`/posts/${postID}`, {
             headers: { Authorization: `Bearer ${access_token}` },
         });
         return response.data;
@@ -65,8 +64,7 @@ export async function createPost(data : String) : Promise<any> {
 export async function deletePost(postID : String): Promise<any> {
     try {
         const access_token = await getToken('accessToken');
-        const response = await apiClient.delete<PostData>('/post/', {
-            params : {post_id: postID},
+        const response = await apiClient.delete<PostData>(`/post/${postID}`, {
             headers: { Authorization: `Bearer ${access_token}` },
         });
         console.log('User data:', response.data);
@@ -81,8 +79,7 @@ export async function updatePosts(data : String, postID : String): Promise<any> 
     try {
         const access_token = await getToken('accessToken');
 
-        const response = await apiClient.put<PostData>('/users/',{data} , {
-            params : {post_id : postID},
+        const response = await apiClient.put<PostData>(`/posts/${postID}`,{data} , {
             headers: { Authorization: `Bearer ${access_token}` },
         });
         console.log('User data:', response.data);

@@ -47,8 +47,7 @@ export async function editMyData(data : JSON) : Promise<any> {
 export async function deleteMyData(userID : String) : Promise<any> {
     try {
         const access_token = await getToken('accessToken');
-        const response = await apiClient.delete<any>('/users/',{
-            params : { user_id : userID },
+        const response = await apiClient.delete<any>(`/users/${userID}`,{
             headers: { Authorization: `Bearer ${access_token}` },
         });
         return response.data;
@@ -66,10 +65,9 @@ export async function deleteMyData(userID : String) : Promise<any> {
 export async function getUserData(userID : String, type : Number): Promise<UserData | null> {
     try {
         const access_token = await getToken('accessToken');
-        const parameters =  type==1 ? { username : userID } : { user_id : userID } ;
+        const path = type === 1 ? `/users/username/${userID}` : `/users/${userID}`;
 
-        const response = await apiClient.get<UserData>('/users/', {
-            params : parameters,
+        const response = await apiClient.get<UserData>(path, {
             headers: { Authorization: `Bearer ${access_token}` },
         });
         console.log('User data:', response.data);
