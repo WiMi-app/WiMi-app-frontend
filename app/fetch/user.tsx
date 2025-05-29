@@ -1,16 +1,6 @@
 import { getToken } from "../store/token";
 import apiClient from "../api/refresh";
-
-type UserData = {
-  avatar_url: string | null;
-  bio: string | null;
-  email: string;
-  full_name: string;
-  id: string;
-  updated_at: string;
-  username: string;
-}
-
+import { UserData } from "../interfaces/user";
 
 /**
  * GET USER

@@ -7,12 +7,7 @@ import {
   TextInputProps,
   ViewStyle
 } from 'react-native';
-
-interface InputProps extends TextInputProps {
-  label?: string;
-  error?: string;
-  containerStyle?: ViewStyle;
-}
+import { InputProps } from '../interfaces/components';
 
 const Input = ({ 
   label, 

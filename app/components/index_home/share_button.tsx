@@ -1,11 +1,7 @@
 import React from 'react';
 import { View, Button, Share as reactShare, Alert, StyleSheet, Pressable } from 'react-native';
 import ShareIcon from '../icons/share_icon';
-
-interface Share {
-    message?: string,
-    title?: string
-}
+import { Share } from '../../interfaces/components';
 
 const ShareButton = ({ 
     message = "", 

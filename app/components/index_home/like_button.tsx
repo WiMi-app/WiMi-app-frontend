@@ -9,10 +9,7 @@ import {
 import SimplifyNumber from "../../utils/simplify_num";
 import { LinearGradient } from "expo-linear-gradient";
 import MaskedView from '@react-native-masked-view/masked-view';
-
-interface num_likes {
-    like_count?: number
-}
+import { num_likes } from "../../interfaces/components";
 
 const LikeButton = ({
     like_count = 0,

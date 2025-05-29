@@ -8,20 +8,7 @@ import {
   TextStyle,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-
-interface ButtonProps {
-  title: string;
-  onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'outline' | 'gradient';
-  loading?: boolean;
-  disabled?: boolean;
-  style?: ViewStyle;
-  textStyle?: TextStyle;
-  gradientColors?: string[];
-  borderColor?: string;
-  customTextColor?: string;
-  backgroundColor?: string;
-}
+import { ButtonProps } from '../interfaces/components';
 
 const Button = ({
   title,

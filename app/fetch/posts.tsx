@@ -1,15 +1,6 @@
 import { getToken } from "../store/token";
 import apiClient from "../api/refresh";
-
-type PostData = {
-  avatar_url: string | null;
-  bio: string | null;
-  email: string;
-  full_name: string;
-  id: string;
-  updated_at: string;
-  username: string;
-}
+import { PostData } from "../interfaces/post";
 
 /**
  * GET USER

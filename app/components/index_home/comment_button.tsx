@@ -10,10 +10,7 @@ import SimplifyNumber from "../../utils/simplify_num";
 import { LinearGradient } from "expo-linear-gradient";
 import MaskedView from '@react-native-masked-view/masked-view';
 import CommentIcon from "../icons/comment_icon";
-
-interface comment {
-    comment_count?: number
-}
+import { comment } from "../../interfaces/components";
 
 const CommentButton = ({
     comment_count = 0,
