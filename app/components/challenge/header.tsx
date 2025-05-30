@@ -24,7 +24,7 @@ const Header: React.FC<HeaderProps> = ({title, onNotificationPress }) => {
 
           <TouchableOpacity 
             style={styles.iconContainer} 
-            onPress={onNotificationPress}
+            onPress={()=>{navigation.navigate('(createchallenge)' as never)}}
             activeOpacity={0.7}
           >
             <Plus width={20} height={20} color="#f2f2f2" />
