@@ -11,6 +11,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import MaskedView from '@react-native-masked-view/masked-view';
 import CommentIcon from "../icons/comment_icon";
 import { comment } from "../../interfaces/components";
+import { getCommentList } from "@/app/fetch/comments";
 
 const CommentButton = ({
     comment_count = 0,
@@ -19,7 +20,10 @@ const CommentButton = ({
 
   return (
     <Pressable style={[styles.commentButton, styles.buttonFlexBox]} 
-        onPress={() => setCommented((isCommented) => !isCommented)}>
+        onPress={() => {setCommented((isCommented) => !isCommented);
+            // let test = getCommentList();
+            // console.log("This is Test: ", test);
+        }}>
         <CommentIcon/>
         <MaskedView maskElement={
             <Text style={[styles.suggested, styles.suggestedTypo]}>

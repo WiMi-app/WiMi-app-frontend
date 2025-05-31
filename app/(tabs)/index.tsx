@@ -1,9 +1,11 @@
-import * as React from "react";
+import { useEffect, useState} from "react";
 import { useRouter } from 'expo-router';
 import { StyleSheet, Text, View, Image, Alert, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Post from "../components/index_home/post"
 import { Color, Gap, FontSize, Padding, FontFamily } from "./GlobalStyles";
+import { getListPosts } from "../fetch/posts";
+import { getCommentList } from "../fetch/comments";
 
 type UserPostData = {
   id: string;
@@ -84,20 +86,43 @@ const POSTDATA = [
   },  
 ];
 
+
+interface PostData {
+  "id": "string",
+  "user_id": "string",
+  "content": "string",
+  "media_urls": [
+    "string"
+  ],
+  "location": "string",
+  "is_private": true,
+  "created_at": "string",
+  "updated_at": "string",
+  "edited": true,
+  "challenge_id": "string",
+  "is_endorsed": false,
+  "endorsement_info": {
+    "is_endorsed": false,
+    "endorsement_count": 0,
+    "pending_endorsement_count": 0,
+    "endorser_ids": []
+  }
+}
+
 type UserPostProps = {
-  postItem: UserPostData;
+  postItem: PostData;
 };
 
 const PostItem = ({postItem}: UserPostProps) => (
   <View style={[{paddingVertical:5}]}>
     <Post 
-      profile_name={postItem.username} 
-      num_likes={postItem.likes.length} 
-      num_comments={postItem.comments}
-      profile_pic={postItem.profile_pic}
-      post_pic={postItem.post_photo}
-      challenge={postItem.challenge}
-      post_description={postItem.description}/>
+      profile_name={postItem.user_id} 
+      num_likes={777} 
+      num_comments={316}
+      profile_pic={"../../../assets/profile img.png"}
+      post_pic={"../../../assets/ice-bucket-photo.png"}
+      challenge={"Lorem ipsum dolor sit amet"}
+      post_description={postItem.content}/>
     <View style={styles.divider} />    
   </View>
 
@@ -105,7 +130,18 @@ const PostItem = ({postItem}: UserPostProps) => (
 
 export default function HomeScreen() {
   const router = useRouter();
+  const [postData, setPostData] = useState<PostData | null>(null);
+  const[error, setError] = useState<Boolean>(false);
 
+  useEffect(() => {
+    (async () => { 
+      const data = await getListPosts(); 
+      data?setPostData(data):setError(true);
+    })();
+  }, [])
+  
+
+  console.log("THIS IS TEST2: ", JSON.stringify(postData));
   return (
     <SafeAreaView style={styles.homeScreen}>
       {/* <View style={styles.postList}> */}
@@ -135,7 +171,8 @@ export default function HomeScreen() {
           </View>
         </View>
         <FlatList
-          data={POSTDATA}
+          // data={POSTDATA}
+          data={JSON.parse(JSON.stringify(postData))}
           renderItem={({item}) => <PostItem postItem={item}/>}
           keyExtractor={item => item.id}
           style={[{width:"100%"}]}
