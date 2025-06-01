@@ -7,10 +7,10 @@ import { PostData } from "../interfaces/post";
  * @returns Promise<JSON>
  * @async 
  */
-export async function getListPosts(): Promise<PostData | null> {
+export async function getListPosts(): Promise<PostData[] | null> {
     try {
         const access_token = await getToken('accessToken');
-        const response = await apiClient.get<PostData>('/posts', {
+        const response = await apiClient.get<PostData[]>('/posts', {
             headers: { Authorization: `Bearer ${access_token}` },
         });
         console.log('User data:', response.data);

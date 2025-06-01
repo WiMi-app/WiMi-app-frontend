@@ -52,13 +52,11 @@ export async function deleteMyData(userID : String) : Promise<any> {
  * @param type activate this bit if you want to find by username
  * @returns 
  */
-export async function getUserData(userID : String, type : Number): Promise<UserData | null> {
+export async function getUserData(userID : String): Promise<UserData | null> {
     try {
         const access_token = await getToken('accessToken');
-        const parameters =  type==1 ? { username : userID } : { user_id : userID } ;
-
-        const response = await apiClient.get<UserData>('/users/', {
-            params : parameters,
+        
+        const response = await apiClient.get<UserData>(`/users/${userID}`, {
             headers: { Authorization: `Bearer ${access_token}` },
         });
         console.log('User data:', response.data);

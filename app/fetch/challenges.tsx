@@ -76,7 +76,7 @@ export async function deleteChallenge(challengeID : string): Promise<any> {
 export async function joinChallenge(challengeID : string): Promise<any> {
     try {
         const access_token = await getToken('accessToken');
-        const response = await apiClient.delete<any>(`/challenges/${followID}`, {
+        const response = await apiClient.delete<any>(`/challenges/${challengeID}`, {
             headers: { Authorization: `Bearer ${access_token}` },
         });
         console.log('User data:', response.data);
@@ -90,7 +90,7 @@ export async function joinChallenge(challengeID : string): Promise<any> {
 export async function leaveChallenge(challengeID : string): Promise<any> {
     try {
         const access_token = await getToken('accessToken');
-        const response = await apiClient.delete<any>(`/challenges/${followID}`, {
+        const response = await apiClient.delete<any>(`/challenges/${challengeID}`, {
             headers: { Authorization: `Bearer ${access_token}` },
         });
         console.log('User data:', response.data);
@@ -104,7 +104,7 @@ export async function leaveChallenge(challengeID : string): Promise<any> {
 export async function getChallengeParticipants(  challengeID : string): Promise<any> {
     try {
         const access_token = await getToken('accessToken');
-        const response = await apiClient.delete<any>(`/challenges/${followID}`, {
+        const response = await apiClient.delete<any>(`/challenges/${challengeID}`, {
             headers: { Authorization: `Bearer ${access_token}` },
         });
         console.log('User data:', response.data);
@@ -118,7 +118,7 @@ export async function getChallengeParticipants(  challengeID : string): Promise<
 export async function updateChallengeParticipants( challengeID : string, content : JSON ): Promise<any> {
     try {
         const access_token = await getToken('accessToken');
-        const response = await apiClient.delete<any>(`/challenges/${followID}`, {
+        const response = await apiClient.delete<any>(`/challenges/${challengeID}`, {
             headers: { Authorization: `Bearer ${access_token}` },
         });
         console.log('User data:', response.data);
