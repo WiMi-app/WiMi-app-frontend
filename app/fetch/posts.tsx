@@ -13,7 +13,6 @@ export async function getListPosts(): Promise<PostData[] | null> {
         const response = await apiClient.get<PostData[]>('/posts', {
             headers: { Authorization: `Bearer ${access_token}` },
         });
-        console.log('User data:', response.data);
         return response.data;
     } catch (error: any) {
         console.error('Failed to fetch user data:', error.response?.status || error.message);

@@ -59,7 +59,6 @@ export async function getUserData(userID : String): Promise<UserData | null> {
         const response = await apiClient.get<UserData>(`/users/${userID}`, {
             headers: { Authorization: `Bearer ${access_token}` },
         });
-        console.log('User data:', response.data);
         return response.data;
     } catch (error: any) {
         console.error('Failed to fetch user data:', error.response?.status || error.message);
