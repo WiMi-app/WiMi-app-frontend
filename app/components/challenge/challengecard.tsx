@@ -10,11 +10,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import LeaderboardScreen from './leaderboard';
-
-export interface PlayerAvatar {
-  id: string;
-  image: ImageSourcePropType;
-}
+import { PlayerAvatar } from '../../interfaces/challenge';
 
 export interface GolfChallengeCardProps {
   title?: string;

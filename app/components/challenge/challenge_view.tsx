@@ -13,6 +13,7 @@ import Post from "../index_home/post"
 import LeaderboardScreen from './leaderboard';
 import DetailsScreen from './details';
 //import MapView, { Marker } from 'react-native-maps';
+import { UserPostData } from '../../interfaces/post';
 
 const TABS = ['Detail', 'Post', 'Ranking'];
 const { width, height } = Dimensions.get('window');
@@ -84,17 +85,17 @@ const POSTDATA = [
   },  
 ];
 
-type UserPostData = {
-  id: string;
-  username: string;
-  profile_pic: string;
-  elapsed_post_time: string;
-  challenge: string;
-  post_photo: string;
-  description: string;
-  likes: string[];
-  comments: number;
-}
+// type UserPostData = {
+//   id: string;
+//   username: string;
+//   profile_pic: string;
+//   elapsed_post_time: string;
+//   challenge: string;
+//   post_photo: string;
+//   description: string;
+//   likes: string[];
+//   comments: number;
+// }
 
 type UserPostProps = {
   postItem: UserPostData;

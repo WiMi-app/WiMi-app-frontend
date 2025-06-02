@@ -1,3 +1,5 @@
+import { ImageSourcePropType } from 'react-native';
+
 export interface HeaderProps {
     title? : String,
     onNotificationPress?: () => void;
@@ -18,3 +20,8 @@ export type UserPostData = {
 export type UserPostProps = {
   postItem: UserPostData;
 }; 
+
+export interface PlayerAvatar {
+  id: string;
+  image: ImageSourcePropType;
+}

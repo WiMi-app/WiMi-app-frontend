@@ -13,16 +13,7 @@ import {
 } from "./GlobalStyles";
 import { useNavigation } from "expo-router";
 import { getMyData } from "../fetch/user";
-
-interface UserData {
-  avatar_url: string | null;
-  bio: string | null;
-  email: string;
-  full_name: string;
-  id: string;
-  updated_at: string;
-  username: string;
-}
+import { UserData } from "../interfaces/user";
 
 const ProfileScreen = () => {
   const navigation = useNavigation();

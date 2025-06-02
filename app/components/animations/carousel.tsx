@@ -14,12 +14,6 @@ import { HorizontalCarouselProps, HorizontalCarouselRef, StylesProps } from '../
 // Get screen dimensions to calculate positions and distances
 const { width, height } = Dimensions.get('window');
 
-// Define a styles interface to strongly type the StyleSheet
-interface StylesProps {
-  carousel: ViewStyle;
-  cardContainer: ViewStyle;
-}
-
 // HorizontalCarousel component with forwardRef
 const HorizontalCarousel = forwardRef<HorizontalCarouselRef, HorizontalCarouselProps>(
   ({ items }, ref): JSX.Element => {

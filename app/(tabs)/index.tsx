@@ -6,18 +6,19 @@ import Post from "../components/index_home/post"
 import { Color, Gap, FontSize, Padding, FontFamily } from "./GlobalStyles";
 import { getListPosts } from "../fetch/posts";
 import { getUserData } from '../fetch/user';
+import { UserPostData } from "../interfaces/post";
 
-type UserPostData = {
-  id: string;
-  username: string;
-  profile_pic: string;
-  elapsed_post_time: string;
-  challenge: string;
-  post_photo: string;
-  description: string;
-  likes: string[];
-  comments: number;
-}
+// type UserPostData = {
+//   id: string;
+//   username: string;
+//   profile_pic: string;
+//   elapsed_post_time: string;
+//   challenge: string;
+//   post_photo: string;
+//   description: string;
+//   likes: string[];
+//   comments: number;
+// }
 
 type UserPostProps = {
   postItem: UserPostData;

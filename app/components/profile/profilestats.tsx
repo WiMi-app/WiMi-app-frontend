@@ -13,14 +13,9 @@ import {
     Padding,
   } from "../../(tabs)/GlobalStyles";
 import SimplifyNumber from '../../utils/simplify_num';
+import { UserStats } from '../../interfaces/user';
 
-interface StatsPage {
-    posts?: number,
-    followers?: number,
-    following?:number
-}
-
-const ProfileStats: React.FC<StatsPage> = ({
+const ProfileStats: React.FC<UserStats> = ({
   posts = 0,
   followers = 0,
   following = 0

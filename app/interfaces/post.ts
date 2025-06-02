@@ -19,3 +19,15 @@ export type PostData = {
     "endorser_ids": []
   }
 }; 
+
+export type UserPostData = {
+  id: string;
+  username: string;
+  profile_pic: string;
+  elapsed_post_time: string;
+  challenge: string;
+  post_photo: string;
+  description: string;
+  likes: string[];
+  comments: number;
+};
