@@ -80,13 +80,13 @@ export default function ChallengeScreen() {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <Header title={"Challenges"}/>
+    <View style={styles.container}>
+      <Header title={String(testData[activeIndex].title)}/>
       <View style={styles.Carousel}>
         <HorizontalCarousel items={challengeItems}/>
       </View>
       <ChallengeView/>
-    </ScrollView>
+    </View>
   )
 }
 
