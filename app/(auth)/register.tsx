@@ -16,7 +16,8 @@ import { useRouter } from "expo-router"
 import { Ionicons } from "@expo/vector-icons"
 import Input from "../components/input"
 import Button from "../components/button_"
-import axios from "../api/axios"
+import axiosInstance from "../api/axios"
+import axiosStatic, { AxiosError } from 'axios';
 
 const RegisterScreen = () => {
   const router = useRouter()
@@ -80,7 +81,7 @@ const RegisterScreen = () => {
     if (validateForm()) {
       setLoading(true)
       try {
-        const response = await axios.post("auth/signup", {
+        const response = await axiosInstance.post("auth/signup", {
           email: email,
           password: password,
         })
@@ -88,13 +89,19 @@ const RegisterScreen = () => {
         setLoading(false);
         router.push('success' as any);
       } catch (error) {
-        if (error.response.status === 422) {
-          Alert.alert("Validation Error");
+        setLoading(false);
+        if (axiosStatic.isAxiosError(error)) {
+          const status = error.response?.status;
+          if (status === 422) {
+            Alert.alert("Validation Error", error.response?.data?.message || "An error occurred with your input.");
+          } else {
+            Alert.alert("Network Error", "Registration failed due to a network or server issue. Please try again later.");
+          }
         } else {
-          Alert.alert("Network Error");
+          console.error('An unexpected error occurred:', error);
+          Alert.alert("Error", "An unexpected error occurred. Please try again.");
         }
       }
-      setLoading(false);
     }
   }
 
@@ -164,7 +171,7 @@ const RegisterScreen = () => {
           <View style={styles.footer}>
             <Text style={styles.footerText}>
               Already have an account?{" "}
-              <Text style={styles.link} onPress={() => router.push("login" as any)}>
+              <Text style={styles.link} onPress={() => router.back()}>
                 Sign In
               </Text>
             </Text>
