@@ -2,7 +2,8 @@ import { View, StyleSheet, ScrollView, Dimensions} from "react-native"
 import ChallengeCard from "../components/challenge/challengecard"
 import { ImageSourcePropType } from 'react-native';
 import { useRef, useState, useEffect } from 'react'
-import HorizontalCarousel, {HorizontalCarouselRef} from "../components/animations/carousel";
+import HorizontalCarousel from "../components/animations/carousel";
+import type { HorizontalCarouselRef } from "../interfaces/animations";
 import Header from "../components/challenge/header";
 import ChallengeView from "../components/challenge/challenge_view";
 
@@ -25,8 +26,7 @@ export default function ChallengeScreen() {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const carouselRef = useRef<HorizontalCarouselRef>(null);
-  
-  // Update the active index whenever it changes
+
   useEffect(() => {
     const checkIndex = setInterval(() => {
       if (carouselRef.current) {
@@ -86,6 +86,7 @@ export default function ChallengeScreen() {
 
 const testComp = testData.map((item, index) => (
   <ChallengeCard 
+    key={index}
     title={item.title}
     description={item.description}
     backgroundImage={item.backgroundImage}
@@ -97,7 +98,7 @@ const testComp = testData.map((item, index) => (
 
   return (
     <ScrollView style={styles.container}>
-      <Header title={String(testData[activeIndex].title)}/>
+      <Header title={testData.length > 0 ? String(testData[activeIndex].title) : "Challenges"}/>
       <View style={styles.Carousel}>
         <HorizontalCarousel ref={carouselRef} items={testComp}/>
       </View>
@@ -114,5 +115,6 @@ const styles = StyleSheet.create({
   Carousel: {
     alignItems: "center",
     justifyContent: "center",
+    paddingTop: 80,
   }
 })

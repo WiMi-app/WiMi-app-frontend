@@ -87,9 +87,9 @@ const GolfChallengeCard: React.FC<GolfChallengeCardProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    width: 300,
-    height: 400,
-    borderRadius: 30,
+    width: 250,
+    height: 350,
+    borderRadius: 25,
     overflow: 'hidden',
     position: 'relative',
     shadowColor: '#000',
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     position: 'absolute',
-    bottom: 80,
+    top: 20,
     left: 20,
     right: 20,
   },
