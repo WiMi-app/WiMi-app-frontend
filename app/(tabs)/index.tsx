@@ -6,6 +6,7 @@ import Post from "../components/index_home/post"
 import { Color, Gap, FontSize, Padding, FontFamily } from "./GlobalStyles";
 import { getListPosts } from "../fetch/posts";
 import { getUserData } from '../fetch/user';
+import { getChallenge } from "../fetch/challenges";
 import { UserPostData } from "../interfaces/post";
 import { Plus } from 'react-native-feather';
 import { useNavigation } from "@react-navigation/native"
@@ -18,7 +19,7 @@ import { useNavigation } from "@react-navigation/native"
 //   challenge: string;
 //   post_photo: string;
 //   description: string;
-//   likes: string[];
+//   likes: number[];
 //   comments: number;
 // }
 
@@ -42,24 +43,38 @@ const PostItem = ({postItem}: UserPostProps) => (
 );
 
 export default function HomeScreen() {
-  const [postData, getPostData ] = useState<UserPostProps>();
+  const [postData, setPostData ] = useState<UserPostData[]>([]);
   const router = useRouter();
   const navigation = useNavigation();
 
   useEffect(() => {
     (async () => { 
       await getListPosts().then((postData)=>{
-        const users = [];
+        const posts : UserPostData[] = [];
         postData?.forEach(async (post)=>{
           console.log(post.user_id);
-          const temp = await getUserData(post.user_id);
-          console.log(temp);
-          users.push(temp);
+          const user = await getUserData(post.user_id);
+          const challenge = await getChallenge(post.challenge_id);
+          if(user&&post){
+            const userPost: UserPostData = {
+              id: post.id,
+              username: user.username,
+              profile_pic: user.avatar_url,
+              elapsed_post_time: post.created_at,
+              challenge: challenge.title,
+              post_photo: post.media_urls[0],
+              description: post.content,
+              likes: [1,2,3,4],
+              comments: 4,
+            };
+            posts.push(userPost);
+          }
         })
+        setPostData(posts);
       })
     })();
   }, []);
-
+  console.log(postData);
   return (
     <SafeAreaView style={styles.homeScreen}>
       {/* <View style={styles.postList}> */}

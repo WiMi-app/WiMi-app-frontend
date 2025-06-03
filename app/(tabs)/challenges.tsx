@@ -96,13 +96,13 @@ const testComp = testData.map((item, index) => (
 ));
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <Header title={String(testData[activeIndex].title)}/>
       <View style={styles.Carousel}>
         <HorizontalCarousel ref={carouselRef} items={testComp}/>
       </View>
       <ChallengeView/>
-    </ScrollView>
+    </View>
   )
 }
 
