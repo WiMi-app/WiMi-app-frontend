@@ -15,7 +15,7 @@ export async function getListPosts(): Promise<PostData[] | null> {
         });
         return response.data;
     } catch (error: any) {
-        console.error('Failed to fetch user data:', error.response?.status || error.message);
+        console.error('Failed to fetch post data:', error.response?.status || error.message);
         return null;
     }
 }
@@ -29,7 +29,7 @@ export async function getPost(postID : String) : Promise<PostData | null> {
         });
         return response.data;
     } catch (error: any) {
-        console.error('Failed to fetch user data:', error.response?.status || error.message);
+        console.error('Failed to fetch post data:', error.response?.status || error.message);
         return null;
     }
 }
@@ -42,7 +42,7 @@ export async function createPost(data : JSON) : Promise<any> {
         });
         return response.data;
     } catch (error: any) {
-        console.error('Failed to fetch user data:', error.response?.status || error.message);
+        console.error('Failed to fetch post data:', error.response?.status || error.message);
         return null;
     }
 }
@@ -58,10 +58,9 @@ export async function deletePost(postID : String): Promise<any> {
         const response = await apiClient.delete<PostData>(`/post/${postID}`, {
             headers: { Authorization: `Bearer ${access_token}` },
         });
-        console.log('User data:', response.data);
         return response.data;
     } catch (error: any) {
-        console.error('Failed to fetch user data:', error.response?.status || error.message);
+        console.error('Failed to fetch post data:', error.response?.status || error.message);
         return null;
     }
 }
@@ -74,10 +73,9 @@ export async function updatePosts(data : JSON, postID : String): Promise<any> {
             params : {post_id : postID},
             headers: { Authorization: `Bearer ${access_token}` },
         });
-        console.log('User data:', response.data);
         return response.data;
     } catch (error: any) {
-        console.error('Failed to fetch user data:', error.response?.status || error.message);
+        console.error('Failed to fetch post data:', error.response?.status || error.message);
         return null;
     }
 }

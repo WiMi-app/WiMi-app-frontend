@@ -7,6 +7,7 @@ import { Color, Gap, FontSize, Padding, FontFamily } from "./GlobalStyles";
 import { getListPosts } from "../fetch/posts";
 import { getUserData } from '../fetch/user';
 import { getChallenge } from "../fetch/challenges";
+import { getLike } from "../fetch/likes";
 
 type UserPostData = {
   id: string;
@@ -45,12 +46,14 @@ export default function HomeScreen() {
 
   useEffect(() => {
     (async () => { 
+      
       await getListPosts().then((postData)=>{
         const posts : UserPostData[] = [];
         postData?.forEach(async (post)=>{
-          console.log(post.user_id);
+
           const user = await getUserData(post.user_id);
           const challenge = await getChallenge(post.challenge_id);
+          const likes_ = await getLike(post.id);
           if(user&&post){
             const userPost: UserPostData = {
               id: post.id,
@@ -60,12 +63,13 @@ export default function HomeScreen() {
               challenge: challenge.title,
               post_photo: post.media_urls[0],
               description: post.content,
-              likes: [1,2,3,4],
+              likes: likes_ ? likes_.length : 0,
               comments: 4,
             };
             posts.push(userPost);
           }
         })
+
         setPostData(posts);
       })
     })();
