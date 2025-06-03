@@ -44,8 +44,8 @@ const GolfChallengeCard: React.FC<GolfChallengeCardProps> = ({
       />
 
       <LinearGradient
-        colors={['transparent', 'rgba(0,0,0,0.3)', 'rgba(0,0,0,0.7)']}
-        locations={[0.5, 0.75, 1]}
+        colors={['transparent', 'rgba(0,0,0,0.4)', 'rgba(51, 51, 51, 0.8)']}
+        locations={[0.3, 0.6, 1]}
         style={styles.gradient}
       />
 
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     position: 'absolute',
-    top: 20,
+    bottom: 75,
     left: 20,
     right: 20,
   },
