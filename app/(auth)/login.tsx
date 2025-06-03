@@ -12,15 +12,16 @@ import {
   SafeAreaView,
   Alert
 } from "react-native"
-import { useNavigation } from "@react-navigation/native"
+import { useRouter } from "expo-router"
 import { Ionicons } from "@expo/vector-icons"
 import Input from "../components/input"
 import Button from "../components/button_"
-import axios from "../api/axios"
-import {saveToken, getToken} from "../store/token";
+import axiosInstance from "../api/axios"
+import {saveToken} from "../store/token";
+import axios from 'axios';
 
 const LoginScreen = () => {
-  const navigation = useNavigation()
+  const router = useRouter();
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -52,26 +53,43 @@ const LoginScreen = () => {
   }
 
   async function handleLogin() {
+    if (!validateForm()) return;
     setLoading(true)
     try{
-      const response= await axios.post("/auth/token",{
+      const response= await axiosInstance.post("/auth/token",{
         email: email,
         password: password,
       });
       console.log(response.data);
-      await saveToken('refreshToken', response.data.refresh_token);
-      await saveToken('accessToken', response.data.access_token);
+      const refreshTokenSaved = await saveToken('refreshToken', response.data.refresh_token);
+      const accessTokenSaved = await saveToken('accessToken', response.data.access_token);
+
       setLoading(false);
-      navigation.navigate('(tabs)');
-    } 
-    catch (error) {
-      console.log(error.response.status);
-      if(error.response.status===422){
-        Alert.alert("Email not Found or Wrong Password ");
-      }else{
-        Alert.alert("Network Error");
+
+      if (refreshTokenSaved && accessTokenSaved) {
+        router.push('/(tabs)' as any);
+      } else {
+        // If token saving failed, an alert is already shown by saveToken.
+        // User remains on the login page.
       }
+    } 
+    catch (e) {
       setLoading(false);
+      if (axios.isAxiosError(e)) {
+        console.log(e.response?.status);
+        const status = e.response?.status;
+        if (status === 401) {
+          Alert.alert("Login Failed", "Incorrect password. Please try again.");
+        } else if (status === 422) {
+          Alert.alert("Login Failed", "Email not found or invalid. Please check your email or sign up.");
+        } else {
+          Alert.alert("Network Error", "Login failed due to a network or server issue. Please try again later.");
+        }
+      } else {
+        console.error('An unexpected error occurred:', e);
+        Alert.alert("Error", "An unexpected error occurred. Please try again.");
+      }
+      // User remains on the login page if any error occurs in the try block.
     } 
   }
 
@@ -81,7 +99,7 @@ const LoginScreen = () => {
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.keyboardAvoidingView}>
         <ScrollView contentContainerStyle={styles.scrollView}>
           <View style={styles.header}>
-            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+            <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
               <Ionicons name="arrow-back" size={24} color="#1F2937" />
             </TouchableOpacity>
             <Text style={styles.title}>Log In</Text>
@@ -124,7 +142,7 @@ const LoginScreen = () => {
           <View style={styles.footer}>
             <Text style={styles.footerText}>
               Don't have an account?{" "}
-              <Text style={styles.link} onPress={() => navigation.navigate("register")}>
+              <Text style={styles.link} onPress={() => router.push('register' as any)}>
                 Sign Up
               </Text>
             </Text>

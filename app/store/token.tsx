@@ -1,12 +1,18 @@
 import * as SecureStore from 'expo-secure-store';
+import { Alert } from 'react-native';
 
-// Define key type (you can expand this as needed)
-
-export async function saveToken(key: string, value: string): Promise<void> {
+export async function saveToken(key: string, value: string): Promise<boolean> {
   try {
     await SecureStore.setItemAsync(key, value);
+    return true;
   } catch (error) {
     console.error('Failed to save token:', error);
+    Alert.alert(
+      "Error",
+      "Failed to save login information. Please try logging in again.",
+      [{ text: "OK" }]
+    );
+    return false;
   }
 }
 

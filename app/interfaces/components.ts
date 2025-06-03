@@ -4,6 +4,7 @@ export interface InputProps extends TextInputProps {
   label?: string;
   error?: string;
   containerStyle?: ViewStyle;
+  rightIcon?: React.ReactNode;
 }
 
 export interface PostElements {
