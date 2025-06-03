@@ -12,14 +12,14 @@ import {
   SafeAreaView,
   Alert
 } from "react-native"
-import { useNavigation } from "@react-navigation/native"
+import { useRouter } from "expo-router"
 import { Ionicons } from "@expo/vector-icons"
 import Input from "../components/input"
 import Button from "../components/button_"
 import axios from "../api/axios"
 
 const RegisterScreen = () => {
-  const navigation = useNavigation()
+  const router = useRouter()
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -86,7 +86,7 @@ const RegisterScreen = () => {
         })
 
         setLoading(false);
-        navigation.navigate('success');
+        router.push('success' as any);
       } catch (error) {
         if (error.response.status === 422) {
           Alert.alert("Validation Error");
@@ -103,7 +103,7 @@ const RegisterScreen = () => {
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.keyboardAvoidingView}>
         <ScrollView contentContainerStyle={styles.scrollView}>
           <View style={styles.header}>
-            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+            <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
               <Ionicons name="arrow-back" size={24} color="#1F2937" />
             </TouchableOpacity>
             <Text style={styles.title}>Create Account</Text>
@@ -164,7 +164,7 @@ const RegisterScreen = () => {
           <View style={styles.footer}>
             <Text style={styles.footerText}>
               Already have an account?{" "}
-              <Text style={styles.link} onPress={() => navigation.navigate("login")}>
+              <Text style={styles.link} onPress={() => router.push("login" as any)}>
                 Sign In
               </Text>
             </Text>
