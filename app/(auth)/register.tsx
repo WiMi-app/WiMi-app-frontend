@@ -18,6 +18,8 @@ import Input from "../components/input"
 import Button from "../components/button_"
 import axiosInstance from "../api/axios"
 import axiosStatic, { AxiosError } from 'axios';
+import { handleException } from "../utils/exceptionHandler"
+
 
 const RegisterScreen = () => {
   const router = useRouter()
@@ -90,17 +92,7 @@ const RegisterScreen = () => {
         router.push('success' as any);
       } catch (error) {
         setLoading(false);
-        if (axiosStatic.isAxiosError(error)) {
-          const status = error.response?.status;
-          if (status === 422) {
-            Alert.alert("Validation Error", error.response?.data?.message || "An error occurred with your input.");
-          } else {
-            Alert.alert("Network Error", "Registration failed due to a network or server issue. Please try again later.");
-          }
-        } else {
-          console.error('An unexpected error occurred:', error);
-          Alert.alert("Error", "An unexpected error occurred. Please try again.");
-        }
+        handleException(error);
       }
     }
   }

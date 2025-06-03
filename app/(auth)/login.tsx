@@ -19,6 +19,8 @@ import Button from "../components/button_"
 import axiosInstance from "../api/axios"
 import {saveToken} from "../store/token";
 import axios from 'axios';
+import { handleException } from "../utils/exceptionHandler"
+
 
 const LoginScreen = () => {
   const router = useRouter();
@@ -61,6 +63,8 @@ const LoginScreen = () => {
         password: password,
       });
       console.log(response.data);
+      // If token saving failed, an alert is already shown by saveToken.
+      // User remains on the login page.
       const refreshTokenSaved = await saveToken('refreshToken', response.data.refresh_token);
       const accessTokenSaved = await saveToken('accessToken', response.data.access_token);
 
@@ -69,28 +73,12 @@ const LoginScreen = () => {
       if (refreshTokenSaved && accessTokenSaved) {
         router.push('/(tabs)' as any);
       } else {
-        // If token saving failed, an alert is already shown by saveToken.
-        // User remains on the login page.
+
       }
     } 
     catch (e) {
       setLoading(false);
-      if (axios.isAxiosError(e)) {
-        console.log(e.response?.status);
-        const status = e.response?.status;
-        if (status === 401) {
-          Alert.alert("Login Failed", "Incorrect password. Please try again.");
-        } else if (status === 422) {
-          Alert.alert("Login Failed", "Email not found or invalid. Please check your email or sign up.");
-        } else {
-          Alert.alert("Network Error", "Login failed due to a network or server issue. Please try again later.");
-        }
-      } else {
-        console.error('An unexpected error occurred:', e);
-        Alert.alert("Error", "An unexpected error occurred. Please try again.");
-      }
-      // User remains on the login page if any error occurs in the try block.
-    } 
+      handleException(e);
   }
 
 

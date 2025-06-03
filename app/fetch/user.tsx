@@ -1,7 +1,6 @@
 import { getToken } from "../store/token";
 import apiClient from "../api/refresh";
 import { UserData } from "../interfaces/user";
-
 /**
  * GET USER
  * @returns Promise<JSON>
@@ -16,6 +15,7 @@ export async function getMyData(): Promise<UserData | null> {
         console.log('User data:', response.data);
         return response.data;
     } catch (error: any) {
+
         console.error('Failed to fetch user data:', error.response?.status || error.message);
         return null;
     }
