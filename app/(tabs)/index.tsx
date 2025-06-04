@@ -63,7 +63,7 @@ useEffect(() => {
             challenge: challenge.title,
             post_photo: post.media_urls[0],
             description: post.content,
-            likes: likes_ ? likes_.lenght : [],
+            likes: likes_ ? likes_.length : [],
             comments: 4,
           };
           return userPost;

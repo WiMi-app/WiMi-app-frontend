@@ -12,7 +12,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import LeaderboardScreen from './leaderboard';
 import { PlayerAvatar } from '../../interfaces/challenge';
 
-export interface GolfChallengeCardProps {
+export interface ChallengeCardProps {
   title?: string;
   description?: string;
   backgroundImage?: string | ImageSourcePropType;
@@ -21,7 +21,7 @@ export interface GolfChallengeCardProps {
   onPress?: () => void;
 }
 
-const GolfChallengeCard: React.FC<GolfChallengeCardProps> = ({
+const GolfChallengeCard: React.FC<ChallengeCardProps> = ({
   title = 'Challenge',
   description = 'Test your focus and see how many strokes it takes to sink the ball!',
   backgroundImage = 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?q=80&w=2070',
