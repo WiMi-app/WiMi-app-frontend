@@ -62,12 +62,12 @@ const LoginScreen = () => {
         email: email,
         password: password,
       });
+      
       console.log(response.data);
       // If token saving failed, an alert is already shown by saveToken.
       // User remains on the login page.
       const refreshTokenSaved = await saveToken('refreshToken', response.data.refresh_token);
       const accessTokenSaved = await saveToken('accessToken', response.data.access_token);
-
       setLoading(false);
 
       if (refreshTokenSaved && accessTokenSaved) {
