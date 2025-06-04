@@ -1,12 +1,16 @@
 import {useState, useEffect} from "react";
 import { useRouter } from 'expo-router';
-import { StyleSheet, Text, View, Image, Alert, FlatList } from "react-native";
+import { StyleSheet, Text, View, Image, Alert, FlatList, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Post from "../components/index_home/post"
 import { Color, Gap, FontSize, Padding, FontFamily } from "./GlobalStyles";
 import { getListPosts } from "../fetch/posts";
 import { getUserData } from '../fetch/user';
+import { getChallenge } from "../fetch/challenges";
+import { getLike } from "../fetch/likes";
 import { UserPostData } from "../interfaces/post";
+import { Plus } from 'react-native-feather';
+import { useNavigation } from "@react-navigation/native"
 
 // type UserPostData = {
 //   id: string;
@@ -16,7 +20,7 @@ import { UserPostData } from "../interfaces/post";
 //   challenge: string;
 //   post_photo: string;
 //   description: string;
-//   likes: string[];
+//   likes: number[];
 //   comments: number;
 // }
 
@@ -40,23 +44,44 @@ const PostItem = ({postItem}: UserPostProps) => (
 );
 
 export default function HomeScreen() {
-  const [postData, getPostData ] = useState<UserPostProps>();
+  const [postData, setPostData ] = useState<UserPostData[]>([]);
   const router = useRouter();
+  const navigation = useNavigation();
 
-  useEffect(() => {
-    (async () => { 
-      await getListPosts().then((postData)=>{
-        const users = [];
-        postData?.forEach(async (post)=>{
-          console.log(post.user_id);
-          const temp = await getUserData(post.user_id);
-          console.log(temp);
-          users.push(temp);
-        })
+useEffect(() => {
+  (async () => {
+    const postData = await getListPosts();
+    if (!postData) return;
+
+    const posts = await Promise.all(
+      postData.map(async (post) => {
+        const user = await getUserData(post.user_id);
+        const challenge = await getChallenge(post.challenge_id);
+        const likes_ = await getLike(post.id);
+        if (user && post && challenge) {
+          const userPost: UserPostData = {
+            id: post.id,
+            username: user.username,
+            profile_pic: user.avatar_url,
+            elapsed_post_time: post.created_at,
+            challenge: challenge.title,
+            post_photo: post.media_urls[0],
+            description: post.content,
+            likes: likes_ ? likes_.lenght : [],
+            comments: 4,
+          };
+          return userPost;
+        }
+        return null;
       })
-    })();
-  }, []);
+    );
 
+    // Filter out any null results
+    setPostData(posts.filter((p): p is UserPostData => p !== null));
+  })();
+}, []);
+
+  console.log(postData);
   return (
     <SafeAreaView style={styles.homeScreen}>
       {/* <View style={styles.postList}> */}
@@ -77,12 +102,13 @@ export default function HomeScreen() {
                 Following
               </Text>
             </View>
-            <Image
-              style={[styles.editIcon, styles.iconLayout1]}
-              width={48}
-              height={48}
-              source={require("../../assets/edit button.png")}
-            />
+            <TouchableOpacity 
+              style={styles.iconContainer} 
+              onPress={()=>{navigation.navigate('(createpost)' as never)}}
+              activeOpacity={0.7}
+            >
+              <Plus width={20} height={20} color="#f2f2f2" />
+            </TouchableOpacity>
           </View>
         </View>
         <FlatList
@@ -276,4 +302,12 @@ const styles = StyleSheet.create({
     // flex: 1,
     backgroundColor: Color.primaryWhite,
   },
+  iconContainer: {
+  width: 40,
+  height: 40,
+  borderRadius: 10,
+  backgroundColor: 'black',
+  justifyContent: 'center',
+  alignItems: 'center',
+},
 });

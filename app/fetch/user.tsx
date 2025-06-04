@@ -12,7 +12,6 @@ export async function getMyData(): Promise<UserData | null> {
         const response = await apiClient.get<UserData>('/users/me', {
             headers: { Authorization: `Bearer ${access_token}` },
         });
-        console.log('User data:', response.data);
         return response.data;
     } catch (error: any) {
 

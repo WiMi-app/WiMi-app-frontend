@@ -13,6 +13,7 @@ export interface HorizontalCarouselRef {
 
 // Define a styles interface to strongly type the StyleSheet
 export interface StylesProps {
-  carousel: ViewStyle;
+  scrollView: ViewStyle;
+  scrollViewContent: ViewStyle;
   cardContainer: ViewStyle;
 } 

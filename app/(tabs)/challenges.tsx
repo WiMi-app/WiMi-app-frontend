@@ -1,20 +1,42 @@
 import { View, StyleSheet, ScrollView, Dimensions} from "react-native"
 import ChallengeCard from "../components/challenge/challengecard"
 import { ImageSourcePropType } from 'react-native';
-import { useRef, useState, useEffect } from 'react'
-import HorizontalCarousel, {HorizontalCarouselRef} from "../components/animations/carousel";
+import HorizontalCarousel from "../components/animations/carousel";
 import Header from "../components/challenge/header";
 import ChallengeView from "../components/challenge/challenge_view";
+import { useEffect, useState } from "react";
 
 
 const { width, height } = Dimensions.get('window');
 const paddingTopValue = height * 0.1;
 
+interface PlayerAvatar {
+  id: string;
+  image: ImageSourcePropType;
+}
+
+interface Challenge {
+  id: string;
+  title: string;
+  description: string;
+  due_date: string;
+  location: string;
+  restriction: string;
+  repetition: string;
+  repetition_frequency: number | null;
+  repetition_days: string[] | null;
+  check_in_time: string | null;
+  is_private: boolean;
+  time_window: number | null;
+  background_photo: string;
+  creator_id: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export default function ChallengeScreen() {
-  interface PlayerAvatar {
-    id: string;
-    image: ImageSourcePropType;
-  }
+  const [challenges, setChallenges] = useState<Challenge[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const avatars : PlayerAvatar[] = [
     { id: '1', image: require('../../assets/test/profile.png') },
@@ -23,86 +45,48 @@ export default function ChallengeScreen() {
     { id: '4', image: require('../../assets/test/profile.png') },
   ];
 
-  const [activeIndex, setActiveIndex] = useState(0);
-  const carouselRef = useRef<HorizontalCarouselRef>(null);
-  
-  // Update the active index whenever it changes
   useEffect(() => {
-    const checkIndex = setInterval(() => {
-      if (carouselRef.current) {
-        const currentIdx = carouselRef.current.currentIndex;
-        if (currentIdx !== activeIndex) {
-          setActiveIndex(currentIdx);
-        }
+    const fetchChallenges = async () => {
+      try {
+        const response = await fetch('https://wimi-app-backend-999646107030.us-east5.run.app/api/v0/challenges/');
+        const data = await response.json();
+        setChallenges(data);
+      } catch (error) {
+        console.error("Failed to fetch challenges:", error);
+      } finally {
+        setLoading(false);
       }
-    }, 100);
-    
-    return () => clearInterval(checkIndex);
-  }, [activeIndex]);
+    };
+
+    fetchChallenges();
+  }, []);
 
 
-  const testData = [
-    {
-    title : "Challenge 1",
-    description : "Test your focus and see how many strokes it takes to sink the ball!",
-    backgroundImage : "https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?q=80&w=2070",
-    playerAvatars : avatars,
-    playerCount : 15,
-    onPress : ()=>{}
-    },
-  {
-    title: "Challenge 2",
-    description: "Test your focus and see how many strokes it takes to sink the ball!",
-    backgroundImage: "https://t4.ftcdn.net/jpg/04/39/89/01/360_F_439890152_sYbPxa1ANTSKcZuUsKzRAf9O7bJ1Tx5B.jpg",
-    playerAvatars: avatars,
-    playerCount: 13,
-    onPress: () => {},
-  },
-  {
-    title: "Challenge 3",
-    description: "Test your focus and see how many strokes it takes to sink the ball!",
-    backgroundImage: "https://img.freepik.com/free-photo/misurina-sunset_181624-34793.jpg?semt=ais_hybrid&w=740",
-    playerAvatars: avatars,
-    playerCount: 12,
-    onPress: () => {},
-  },
-  {
-    title: "Challenge 4",
-    description: "Test your focus and see how many strokes it takes to sink the ball!",
-    backgroundImage: "https://img.freepik.com/free-photo/misurina-sunset_181624-34793.jpg?semt=ais_hybrid&w=740",
-    playerAvatars: avatars,
-    playerCount: 12,
-    onPress: () => {},
-  },
-  {
-    title: "Challenge 5",
-    description: "Test your focus and see how many strokes it takes to sink the ball!",
-    backgroundImage: "https://img.freepik.com/free-photo/misurina-sunset_181624-34793.jpg?semt=ais_hybrid&w=740",
-    playerAvatars: avatars,
-    playerCount: 12,
-    onPress: () => {},
-  },
-];
-
-const testComp = testData.map((item, index) => (
-  <ChallengeCard 
-    title={item.title}
-    description={item.description}
-    backgroundImage={item.backgroundImage}
-    playerAvatars={item.playerAvatars}
-    playerCount={item.playerCount}
-    onPress={item.onPress}
+  const challengeItems = challenges.map((item) => (
+    <ChallengeCard
+      key={item.id}
+      title={item.title}
+      description={item.description}
+      backgroundImage={item.background_photo}
+      playerAvatars={avatars} // Using static avatars for now
+      playerCount={10} // Using a static player count for now
+      onPress={() => {}} // Placeholder onPress
     />
-));
+  ));
+
+  if (loading) {
+    // You can return a loading indicator here
+    return <View style={styles.container}><Header title={"Challenges"}/></View>;
+  }
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <Header title={String(testData[activeIndex].title)}/>
       <View style={styles.Carousel}>
-        <HorizontalCarousel ref={carouselRef} items={testComp}/>
+        <HorizontalCarousel items={challengeItems}/>
       </View>
       <ChallengeView/>
-    </ScrollView>
+    </View>
   )
 }
 
@@ -114,5 +98,7 @@ const styles = StyleSheet.create({
   Carousel: {
     alignItems: "center",
     justifyContent: "center",
+    paddingTop: 100,
+    paddingBottom: 20
   }
 })
