@@ -5,5 +5,5 @@ export default axios.create({
     baseURL: BASE_URL,
     timeout: 5000, //5 second timeout
     headers: { 'Content-Type': 'application/json' },
-    withCredentials: 
+    withCredentials: true
 });
