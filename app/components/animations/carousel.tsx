@@ -1,201 +1,234 @@
 // Import necessary hooks and components from React and React Native
-import React, { useRef, useState, useEffect, ReactNode, forwardRef, useImperativeHandle } from 'react';
+import React, { ReactNode, useRef, useState, useEffect, useCallback } from 'react';
 import {
   View,
   StyleSheet,
-  Animated,
-  PanResponder,
-  PanResponderInstance,
+  ScrollView,
   Dimensions,
+  Platform,
   ViewStyle,
 } from 'react-native';
-import { HorizontalCarouselProps, HorizontalCarouselRef, StylesProps } from '../../interfaces/animations';
+import * as Haptics from 'expo-haptics'; // For haptic feedback
+import { LinearGradient } from 'expo-linear-gradient'; // Added LinearGradient
+import { HorizontalCarouselProps as OriginalCarouselProps, StylesProps } from '../../interfaces/animations';
 
-// Get screen dimensions to calculate positions and distances
-const { width, height } = Dimensions.get('window');
+// Extend original props
+export interface HorizontalCarouselProps extends OriginalCarouselProps {
+  initialLogicalIndex?: number;
+  onCurrentIndexChange?: (index: number) => void;
+}
 
-// HorizontalCarousel component with forwardRef
-const HorizontalCarousel = forwardRef<HorizontalCarouselRef, HorizontalCarouselProps>(
-  ({ items }, ref): JSX.Element => {
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const ITEM_WIDTH = 250; // From GolfChallengeCard styles.container
+const ITEM_MARGIN_HORIZONTAL = 5; // From HorizontalCarousel styles.cardContainer
+const FULL_ITEM_WIDTH = ITEM_WIDTH + ITEM_MARGIN_HORIZONTAL * 2;
+const GRADIENT_WIDTH = 50; // Width of the gradient overlay on each side
 
-    // Animated value to track horizontal scroll position
-    const scrollPosition = useRef(new Animated.Value(0)).current;
+const HorizontalCarousel = ({ 
+  items, 
+  initialLogicalIndex = 0, 
+  onCurrentIndexChange 
+}: HorizontalCarouselProps): JSX.Element => {
+  const scrollViewRef = useRef<ScrollView>(null);
+  const [augmentedItems, setAugmentedItems] = useState<ReactNode[]>([]);
+  // Stores the logical index of the item considered "current" or centered
+  const [currentLogicalIdx, setCurrentLogicalIdx] = useState(initialLogicalIndex);
 
-    // Track the index of the currently displayed item
-    const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const itemsRef = useRef(items); // Ref to keep items fresh in closures
+  const onCurrentIndexChangeRef = useRef(onCurrentIndexChange); // Ref for callback
 
-    const currentIndexRef = useRef(0);
-    
-    // Prevent user from interacting mid-transition
-    const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
+  useEffect(() => {
+    itemsRef.current = items;
+  }, [items]);
 
-    // Expose the currentIndexRef to parent components
-    useImperativeHandle(ref, () => ({
-      get currentIndex() {
-        return currentIndexRef.current;
-      }
-    }));
+    useEffect(() => {
+    onCurrentIndexChangeRef.current = onCurrentIndexChange;
+  }, [onCurrentIndexChange]);
+  
+  // Calculate padding needed to center a single item in the ScrollView
+  const paddingHorizontal = (screenWidth - FULL_ITEM_WIDTH) / 2;
 
-    // Create a PanResponder to handle horizontal swipe gestures
-    const panResponder = useRef<PanResponderInstance>(
-      PanResponder.create({
-        // Only respond to gestures if not transitioning
-        onStartShouldSetPanResponder: () => !isTransitioning,
-        onMoveShouldSetPanResponder: () => !isTransitioning,
+  // Debounce or throttle scroll end handling if it becomes too sensitive
+  const isProcessingScrollEnd = useRef(false); 
 
-        // As user drags, update the animated scroll position
-        onPanResponderMove: (_, { dx }) => {
-          scrollPosition.setValue(dx);
-        },
+    useEffect(() => {
+    if (itemsRef.current && itemsRef.current.length > 0) {
+      const numActualItems = itemsRef.current.length;
+      const validInitialLogicalIndex = Math.max(0, Math.min(initialLogicalIndex, numActualItems - 1));
 
-        // When user releases the swipe
-        onPanResponderRelease: (_, { dx }) => {
-          // Swipe left: go to next item
-          if (dx < -50 && currentIndexRef.current < items.length - 1) {
-            handleTransition(currentIndexRef.current + 1);
-          }
-          // Swipe left: Loops to the Start
-          else if (dx < -50 && currentIndexRef.current >= items.length - 1 ){
-            handleTransition(0);
-          }
-          // Swipe right: go to previous item
-          else if (dx > 50 && currentIndexRef.current > 0) {
-            handleTransition(currentIndexRef.current - 1);
-          }
-          // Swipe right: loops to the Next
-          else if (dx > 50 && currentIndexRef.current <= 0 ){
-            handleTransition(items.length - 1);
-          }
-          // Not enough swipe — spring back to current item
-          else {
-            Animated.spring(scrollPosition, {
-              toValue: 0,
-              useNativeDriver: true,
-            }).start();
-          }
-        },
-      })
-    ).current;
+      const newAugmentedItems = [
+        itemsRef.current[numActualItems - 1],
+        ...itemsRef.current,
+        itemsRef.current[0],
+      ];
+      setAugmentedItems(newAugmentedItems);
+      setCurrentLogicalIdx(validInitialLogicalIndex);
 
-    // Transition between items
-    const handleTransition = (newIndex: number) => {
-      setIsTransitioning(false); // Lock interaction
-
-      // Determine direction of animation
-      const direction = newIndex > currentIndex || newIndex != items.length-1 ? -1 : 1;
-
-      // Animate current item out
-      Animated.timing(scrollPosition, {
-        toValue: direction * width * 0.5, // Move halfway off-screen
-        duration: 350,
-        useNativeDriver: true,
-      }).start(() => {
-        // Update index after current animation
-        setCurrentIndex(newIndex);
-        // Immediately reset scroll position off-screen in opposite direction
-        scrollPosition.setValue(-direction * width * 0.5);
-
-        // Animate new item into center
-        Animated.spring(scrollPosition, {
-          toValue: 0,
-          friction: 8,
-          tension: 40,
-          useNativeDriver: true,
-        }).start(() => {
-          setIsTransitioning(false); // Unlock interaction
+      const initialAugmentedIndex = validInitialLogicalIndex + 1;
+      // Corrected initialScrollX calculation
+      const initialScrollX = initialAugmentedIndex * FULL_ITEM_WIDTH;
+      
+      setTimeout(() => {
+        scrollViewRef.current?.scrollTo({
+          x: initialScrollX,
+          animated: false,
         });
-      });
-    };
+      }, 0);
+    } else {
+      setAugmentedItems([]);
+      setCurrentLogicalIdx(0);
+    }
+  // Removed paddingHorizontal from dependency array
+  }, [itemsRef.current, initialLogicalIndex]); 
 
-    // Reset scroll position when component first mounts
-    useEffect(() => {
-      scrollPosition.setValue(0);
-    }, []);
+  const handleMomentumScrollEnd = useCallback((event: any) => {
+    if (isProcessingScrollEnd.current || !itemsRef.current || itemsRef.current.length === 0 || !scrollViewRef.current) {
+          return;
+      }
+    isProcessingScrollEnd.current = true;
 
-    useEffect(() => {
-      currentIndexRef.current = currentIndex;
-    }, [currentIndex]);
+    const numActualItems = itemsRef.current.length;
+    const currentOffset = event.nativeEvent.contentOffset.x;
 
-    // Render a single item if it's within view (left, center, or right)
-    const renderItem = (item: ReactNode, index: number, length: number): JSX.Element | null => {
-      const position = index - currentIndex;
-      
-      // Only render items that are immediately around the current one
-      if (position < -1 && position > -length || position > 1 && position < length) return null;
-      
-      // TranslateX is interpolated to give a sliding effect based on current position
-      const translateX = scrollPosition.interpolate({
-        inputRange: [-width, 0, width],
-        outputRange: [
-          position === -1 || position === length ? -width * 0.9 : position === 0 ? -width : width * 0.5,
-          position === -1 || position === length ? -width * 0.7 : position === 0 ? 0 : width * 0.7,
-          position === -1 || position === length ? -width * 0.5 : position === 0 ? width : width * 0.9,
-        ],
-        extrapolate: 'clamp',
-      });
+    // Corrected closestAugmentedItemIndex calculation
+    let closestAugmentedItemIndex = Math.round(currentOffset / FULL_ITEM_WIDTH);
+    // Clamp to valid range for augmentedItems
+    closestAugmentedItemIndex = Math.max(0, Math.min(closestAugmentedItemIndex, augmentedItems.length - 1));
 
-      // Scale items slightly when off-center
-      const scale = scrollPosition.interpolate({
-        inputRange: [-width, 0, width],
-        outputRange: [
-          position === 0 ? 0.9 : 0.7,
-          position === 0 ? 1 : 0.8,
-          position === 0 ? 0.9 : 0.7,
-        ],
-        extrapolate: 'clamp',
-      });
+    let finalLogicalIndex = closestAugmentedItemIndex - 1;
+    let scrollTargetAugmentedIndex = closestAugmentedItemIndex;
+    let performImmediateScroll = false;
+    let immediateScrollX = 0;
 
-      // Reduce opacity for non-centered items
-      const opacity = scrollPosition.interpolate({
-        inputRange: [-width, 0, width],
-        outputRange: [
-          position === 0 ? 0.9 : 0.5,
-          position === 0 ? 1 : 0.6,
-          position === 0 ? 0.9 : 0.5,
-        ],
-        extrapolate: 'clamp',
-      });
+    if (closestAugmentedItemIndex === 0 && numActualItems > 0) { // Landed on the prepended (cloned last) item
+      finalLogicalIndex = numActualItems - 1;
+      scrollTargetAugmentedIndex = numActualItems; // Target the actual last item's augmented index
+      performImmediateScroll = true;
+      immediateScrollX = scrollTargetAugmentedIndex * FULL_ITEM_WIDTH;
+    } else if (closestAugmentedItemIndex === augmentedItems.length - 1 && numActualItems > 0) { // Landed on the appended (cloned first) item
+      finalLogicalIndex = 0;
+      scrollTargetAugmentedIndex = 1; // Target the actual first item's augmented index
+      performImmediateScroll = true;
+      immediateScrollX = scrollTargetAugmentedIndex * FULL_ITEM_WIDTH;
+    }
+    // For single item list, finalLogicalIndex might become -1 or numActualItems if not careful with above logic.
+    // Ensure finalLogicalIndex is clamped if numActualItems is small.
+    if (numActualItems > 0) {
+        finalLogicalIndex = Math.max(0, Math.min(finalLogicalIndex, numActualItems - 1));
+    }
 
-      // Wrap item in an Animated.View with transformations
+    if (performImmediateScroll) {
+        scrollViewRef.current.scrollTo({ x: immediateScrollX, animated: false });
+    }
+    
+    // Perform the snap animation to the determined or jumped-to target
+    const snapToX = scrollTargetAugmentedIndex * FULL_ITEM_WIDTH;
+    scrollViewRef.current.scrollTo({ x: snapToX, animated: true });
+    
+    if (currentLogicalIdx !== finalLogicalIndex && numActualItems > 0) {
+      setCurrentLogicalIdx(finalLogicalIndex);
+      if (onCurrentIndexChangeRef.current) {
+        onCurrentIndexChangeRef.current(finalLogicalIndex);
+      }
+    }
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+    setTimeout(() => {
+      isProcessingScrollEnd.current = false;
+    }, 100); // Adjust delay as needed, 100ms is a common starting point
+
+  // Dependencies: if items change (augmentedItems.length) or currentLogicalIdx changes, recreate callback
+  }, [augmentedItems.length, currentLogicalIdx]);
+
+
+  if (items.length === 0) {
+    // Return a container with the same height as the carousel would have, for layout consistency
+    return <View style={[styles.container, styles.emptyContainer]} />;
+  }
+
       return (
-        <Animated.View
-          key={index}
-          style={{
-            position: 'absolute', // stack items
-            transform: [{ translateX }, { scale }],
-            opacity,
-            zIndex: position === 0 ? 2 : 1, // center item appears on top
-          }}
-          {...(position === 0 ? panResponder.panHandlers : {})} // Only apply pan handlers to the current card
-        >
-          <View style={styles.cardContainer}>
+    <View style={styles.container}>
+      <ScrollView
+        ref={scrollViewRef}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.scrollView}
+        contentContainerStyle={[
+          styles.scrollViewContent,
+          { 
+            // Removed explicit width, paddingHorizontal and item widths will determine it
+            paddingHorizontal: paddingHorizontal 
+          } 
+        ]}
+        onMomentumScrollEnd={handleMomentumScrollEnd}
+        decelerationRate={"fast"}
+      >
+        {augmentedItems.map((item, index) => (
+          <View 
+            key={`augmented-item-${index}`}
+            style={styles.cardContainer}
+          >
             {item}
           </View>
-        </Animated.View>
-      );
-    };
+        ))}
+      </ScrollView>
+      <LinearGradient
+        colors={['rgba(240,240,240,0.9)', 'transparent']}
+        style={[styles.gradientOverlay, styles.gradientLeft]}
+        start={{ x: 0, y: 0.5 }}
+        end={{ x: 1, y: 0.5 }}
+        pointerEvents="none"
+      />
+      <LinearGradient
+        colors={['transparent', 'rgba(240,240,240,0.9)']}
+        style={[styles.gradientOverlay, styles.gradientRight]}
+        start={{ x: 0, y: 0.5 }}
+        end={{ x: 1, y: 0.5 }}
+        pointerEvents="none"
+      />
+    </View>
+  );
+};
 
-    // Render carousel container and all visible items
-    return (
-      <View style={styles.carousel}>
-        {items.map((item, index) => renderItem(item, index, items.length-1))}
-      </View>
-    );
-  }
-);
+const CAROUSEL_HEIGHT = 350; // Assuming card height, adjust if dynamic
 
-// Define styles for the component using StyleSheet.create
-const styles = StyleSheet.create<StylesProps>({
-  carousel: {
-    height: height * 0.6,
-    width: width,
-    alignItems: 'center',
+const styles = StyleSheet.create<StylesProps & { container: ViewStyle, gradientOverlay: ViewStyle, gradientLeft: ViewStyle, gradientRight: ViewStyle, emptyContainer: ViewStyle }>({
+  container: {
+    height: CAROUSEL_HEIGHT, // Set a fixed height for the container
+    width: screenWidth,
     justifyContent: 'center',
   },
+  emptyContainer: {
+    // Styles for when the carousel is empty, if needed (e.g., background color)
+  },
+  scrollView: {
+    // ScrollView will naturally take the height of its container if not specified otherwise
+    // width: screenWidth, // This is handled by the container now
+    overflow: 'visible', // To ensure shadows from cards are not clipped by ScrollView itself if it had a fixed size smaller than items
+  },
+  scrollViewContent: {
+    alignItems: 'center',
+    // Height of content can be determined by items or explicitly set if needed
+  },
   cardContainer: {
-    width: '100%',
-    height: '100%'
-  }
+    width: ITEM_WIDTH,
+    height: CAROUSEL_HEIGHT, 
+    marginHorizontal: ITEM_MARGIN_HORIZONTAL,
+    alignItems: 'center', 
+  },
+  gradientOverlay: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    width: GRADIENT_WIDTH,
+    height: '100%', // Ensure gradient covers full height of container
+  },
+  gradientLeft: {
+    left: 0,
+  },
+  gradientRight: {
+    right: 0,
+  },
 });
 
 export default HorizontalCarousel;

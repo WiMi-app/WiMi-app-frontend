@@ -7,6 +7,7 @@ import { Color, Gap, FontSize, Padding, FontFamily } from "./GlobalStyles";
 import { getListPosts } from "../fetch/posts";
 import { getUserData } from '../fetch/user';
 import { getChallenge } from "../fetch/challenges";
+import { getLike } from "../fetch/likes";
 import { UserPostData } from "../interfaces/post";
 import { Plus } from 'react-native-feather';
 import { useNavigation } from "@react-navigation/native"
@@ -47,33 +48,39 @@ export default function HomeScreen() {
   const router = useRouter();
   const navigation = useNavigation();
 
-  useEffect(() => {
-    (async () => { 
-      await getListPosts().then((postData)=>{
-        const posts : UserPostData[] = [];
-        postData?.forEach(async (post)=>{
-          console.log(post.user_id);
-          const user = await getUserData(post.user_id);
-          const challenge = await getChallenge(post.challenge_id);
-          if(user&&post){
-            const userPost: UserPostData = {
-              id: post.id,
-              username: user.username,
-              profile_pic: user.avatar_url,
-              elapsed_post_time: post.created_at,
-              challenge: challenge.title,
-              post_photo: post.media_urls[0],
-              description: post.content,
-              likes: [1,2,3,4],
-              comments: 4,
-            };
-            posts.push(userPost);
-          }
-        })
-        setPostData(posts);
+useEffect(() => {
+  (async () => {
+    const postData = await getListPosts();
+    if (!postData) return;
+
+    const posts = await Promise.all(
+      postData.map(async (post) => {
+        const user = await getUserData(post.user_id);
+        const challenge = await getChallenge(post.challenge_id);
+        const likes_ = await getLike(post.id);
+        if (user && post && challenge) {
+          const userPost: UserPostData = {
+            id: post.id,
+            username: user.username,
+            profile_pic: user.avatar_url,
+            elapsed_post_time: post.created_at,
+            challenge: challenge.title,
+            post_photo: post.media_urls[0],
+            description: post.content,
+            likes: likes_ ? likes_.lenght : [],
+            comments: 4,
+          };
+          return userPost;
+        }
+        return null;
       })
-    })();
-  }, []);
+    );
+
+    // Filter out any null results
+    setPostData(posts.filter((p): p is UserPostData => p !== null));
+  })();
+}, []);
+
   console.log(postData);
   return (
     <SafeAreaView style={styles.homeScreen}>
