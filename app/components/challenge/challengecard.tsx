@@ -14,7 +14,6 @@ import LeaderboardScreen from './leaderboard';
 import { PlayerAvatar } from '../../interfaces/challenge';
 
 export interface ChallengeCardProps {
-export interface ChallengeCardProps {
   title?: string;
   description?: string;
   backgroundImage?: string | ImageSourcePropType;
