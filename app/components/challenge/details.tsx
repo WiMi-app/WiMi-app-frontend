@@ -1,225 +1,192 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
   Image,
-  TouchableOpacity,
-  StyleSheet
+  StyleSheet,
+  ScrollView,
+  Dimensions
 } from 'react-native';
 
+// Define the Challenge interface (should match the one in ChallengeView/ChallengeScreen)
+interface Challenge {
+  title: string;
+  description: string;
+  due_date: string;
+  location: string;
+  restriction: string;
+  repetition: string;
+  repetition_frequency: number | null;
+  repetition_days: string[] | null;
+  check_in_time: string | null;
+  is_private: boolean;
+  time_window: number | null;
+  background_photo: string;
+  id: string;
+  creator_id: string;
+  created_at: string;
+  updated_at: string;
+}
 
-const DetailsScreen = () => {
-        return (
-          <>
-            <View style={styles.eventHeader}>
-              <Text style={styles.eventTitle}>Golf Challenge</Text>
-              <View style={styles.locationContainer}>
-                <Text style={styles.locationIcon}>📍</Text>
-                <Text style={styles.locationText}>349 Lakefair Drive, San Francisco</Text>
-              </View>
-              <View style={styles.dateContainer}>
-                <Text style={styles.dateIcon}>📅</Text>
-                <Text style={styles.dateText}>May 2, 2025</Text>
-              </View>
-              
-              <View style={styles.participantsContainer}>
-                <View style={styles.avatarsContainer}>
-                  <Image 
-                    source={{ uri: 'https://randomuser.me/api/portraits/men/32.jpg' }} 
-                    style={[styles.avatar, { zIndex: 3 }]} 
-                  />
-                  <Image 
-                    source={{ uri: 'https://randomuser.me/api/portraits/women/44.jpg' }} 
-                    style={[styles.avatar, { marginLeft: -10, zIndex: 2 }]} 
-                  />
-                  <Image 
-                    source={{ uri: 'https://randomuser.me/api/portraits/men/68.jpg' }} 
-                    style={[styles.avatar, { marginLeft: -10, zIndex: 1 }]} 
-                  />
-                </View>
-                <Text style={styles.participantsText}>Mike, Sarah, and Josh joined</Text>
-              </View>
-            </View>
-            
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Description</Text>
-              <Text style={styles.descriptionText}>
-                Integer id augue iaculis, iaculis orci ut, blandit quam. Donec in elit auctor, finibus quam in, phar. Proin id ligula dictum, covalis enim ut, facilisis massa. Mauris a nisi ut sapien blandit imperdi. Interdum et malesuada fames ac ante ipsum primis in faucibus. Sed posuere egestas nunc ut tempus. Fu ipsum dolor sit amet.
-              </Text>
-              <TouchableOpacity>
-                <Text style={styles.readMoreText}>Read More..</Text>
-              </TouchableOpacity>
-            </View>
-            
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Location</Text>
-              <View style={styles.mapContainer}>
-                {/*
-                <MapView
-                  style={styles.map}
-                  initialRegion={{
-                    latitude: 37.7749,
-                    longitude: -122.4194,
-                    latitudeDelta: 0.0922,
-                    longitudeDelta: 0.0421,
-                  }}
-                >
-                  <Marker
-                    coordinate={{ latitude: 37.7749, longitude: -122.4194 }}
-                    title="Golf Challenge"
-                    description="349 Lakefair Drive, San Francisco"
-                  />
-                </MapView>
-                */}
-              </View>
-            </View>
-          </>
-        );
+interface DetailsScreenProps {
+  challenge: Challenge | null;
+}
+
+const { width } = Dimensions.get('window');
+
+const DetailsScreen: React.FC<DetailsScreenProps> = ({ challenge }) => {
+  if (!challenge) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.emptyText}>Select a challenge to see its details.</Text>
+      </View>
+    );
+  }
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return 'N/A';
+    try {
+      return new Date(dateString).toLocaleDateString(undefined, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    } catch (e) {
+      return dateString; 
     }
+  };
+
+  return (
+    <ScrollView style={styles.container}>
+      {/* Removed background_photo Image component */}
+      
+      <View style={styles.contentContainer}>
+        <Text style={styles.title}>{challenge.title}</Text>
+        
+        <Text style={styles.sectionTitle}>Description</Text>
+        <Text style={styles.descriptionText}>{challenge.description || 'No description provided.'}</Text>
+
+        <Text style={styles.sectionTitle}>Details</Text>
+        <View style={styles.detailItem}>
+          <Text style={styles.detailLabel}>Due Date:</Text>
+          <Text style={styles.detailValue}>{formatDate(challenge.due_date)}</Text>
+        </View>
+        <View style={styles.detailItem}>
+          <Text style={styles.detailLabel}>Location:</Text>
+          <Text style={styles.detailValue}>{challenge.location || 'Not specified'}</Text>
+        </View>
+        <View style={styles.detailItem}>
+          <Text style={styles.detailLabel}>Repetition:</Text>
+          <Text style={styles.detailValue}>
+            {challenge.repetition}
+            {challenge.repetition_frequency ? ` (Frequency: ${challenge.repetition_frequency})` : ''}
+            {challenge.repetition_days && challenge.repetition_days.length > 0 ? ` on ${challenge.repetition_days.join(', ')}` : ''}
+          </Text>
+        </View>
+        {challenge.check_in_time && (
+          <View style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Check-in Time:</Text>
+            <Text style={styles.detailValue}>{challenge.check_in_time}</Text>
+          </View>
+        )}
+        {challenge.time_window !== null && challenge.time_window !== undefined && (
+           <View style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Time Window:</Text>
+            <Text style={styles.detailValue}>{challenge.time_window / 60} minutes</Text>
+          </View>
+        )}
+        <View style={styles.detailItem}>
+          <Text style={styles.detailLabel}>Privacy:</Text>
+          <Text style={styles.detailValue}>{challenge.is_private ? 'Private' : 'Public'}</Text>
+        </View>
+        {/* Removed ID, Creator ID, Created At, Updated At for brevity, can be added back if needed
+        <View style={styles.detailItem}>
+          <Text style={styles.detailLabel}>Challenge ID:</Text>
+          <Text style={styles.detailValue}>{challenge.id}</Text>
+        </View>
+         <View style={styles.detailItem}>
+          <Text style={styles.detailLabel}>Creator ID:</Text>
+          <Text style={styles.detailValue}>{challenge.creator_id}</Text>
+        </View>
+        <View style={styles.detailItem}>
+          <Text style={styles.detailLabel}>Created At:</Text>
+          <Text style={styles.detailValue}>{formatDate(challenge.created_at)}</Text>
+        </View>
+        <View style={styles.detailItem}>
+          <Text style={styles.detailLabel}>Last Updated:</Text>
+          <Text style={styles.detailValue}>{formatDate(challenge.updated_at)}</Text>
+        </View>
+        */}
+        {challenge.restriction && (
+            <View style={styles.restrictionSection}>
+                <Text style={styles.sectionTitle}>Restrictions</Text>
+                <Text style={styles.descriptionText}>{challenge.restriction}</Text>
+            </View>
+        )}
+      </View>
+    </ScrollView>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'transparent',
   },
-  tabContainer: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-    backgroundColor: '#fff',
+  contentContainer: {
+    padding: 20,
   },
-  tab: {
-    flex: 1,
-    paddingVertical: 16,
-    alignItems: 'center',
-    position: 'relative',
-  },
-  activeTab: {
-    borderBottomColor: '#000',
-  },
-  tabText: {
-    fontSize: 16,
-    color: '#ccc',
-    fontWeight: '500',
-  },
-  activeTabText: {
-    color: '#000',
-    fontWeight: '600',
-  },
-  activeTabIndicator: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 2,
-    backgroundColor: '#000',
-  },
-  content: {
-    flex: 1,
-  },
-  eventHeader: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  eventTitle: {
+  title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 12,
-  },
-  locationContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  locationIcon: {
-    marginRight: 8,
-    fontSize: 16,
-  },
-  locationText: {
-    fontSize: 14,
-    color: '#666',
-  },
-  dateContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  dateIcon: {
-    marginRight: 8,
-    fontSize: 16,
-  },
-  dateText: {
-    fontSize: 14,
-    color: '#666',
-  },
-  participantsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  avatarsContainer: {
-    flexDirection: 'row',
-    marginRight: 8,
-  },
-  avatar: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    borderWidth: 2,
-    borderColor: '#fff',
-  },
-  participantsText: {
-    fontSize: 14,
+    marginBottom: 20,
     color: '#333',
-  },
-  section: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '600',
+    marginTop: 24,
     marginBottom: 12,
+    color: '#444',
+    paddingBottom: 5,
   },
   descriptionText: {
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 20,
-  },
-  readMoreText: {
-    color: '#3498db',
-    marginTop: 8,
-    fontSize: 14,
-  },
-  mapContainer: {
-    height: 250,
-    borderRadius: 8,
-    overflow: 'hidden',
-    marginTop: 8,
-  },
-  map: {
-    width: '100%',
-    height: '100%',
-  },
-  emptyTabContent: {
-    padding: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 300,
-  },
-  emptyTabText: {
     fontSize: 16,
-    color: '#999',
+    lineHeight: 24,
+    color: '#555',
+    marginBottom: 10,
   },
-  divider: {
-    borderStyle: "solid",
-    borderColor: "#e5e7eb",
-    borderTopWidth: 1,
-    height: 1,
-    alignSelf: "stretch",
+  detailItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f5f5f5',
   },
+  detailLabel: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '500',
+    marginRight: 10,
+  },
+  detailValue: {
+    fontSize: 16,
+    color: '#555',
+    textAlign: 'right',
+    flexShrink: 1,
+  },
+  emptyText: {
+    textAlign: 'center',
+    marginTop: 50,
+    fontSize: 18,
+    color: '#777',
+  },
+  restrictionSection: {
+    marginTop: 10,
+  }
 });
 
 export default DetailsScreen;

@@ -1,10 +1,11 @@
-import { View, StyleSheet, ScrollView, Dimensions} from "react-native"
+import { View, StyleSheet, ScrollView, Dimensions, Text } from "react-native"
 import ChallengeCard from "../components/challenge/challengecard"
 import { ImageSourcePropType } from 'react-native';
 import HorizontalCarousel from "../components/animations/carousel";
 import Header from "../components/challenge/header";
 import ChallengeView from "../components/challenge/challenge_view";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import { useNavigation } from '@react-navigation/native';
 
 
 const { width, height } = Dimensions.get('window');
@@ -37,6 +38,8 @@ interface Challenge {
 export default function ChallengeScreen() {
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentChallengeIndex, setCurrentChallengeIndex] = useState(0);
+  const navigation = useNavigation<any>();
 
   const avatars : PlayerAvatar[] = [
     { id: '1', image: require('../../assets/test/profile.png') },
@@ -47,8 +50,12 @@ export default function ChallengeScreen() {
 
   useEffect(() => {
     const fetchChallenges = async () => {
+      setLoading(true);
       try {
         const response = await fetch('https://wimi-app-backend-999646107030.us-east5.run.app/api/v0/challenges/');
+        if (!response.ok) {
+          throw new Error(`API request failed with status ${response.status}`);
+        }
         const data = await response.json();
         setChallenges(data);
       } catch (error) {
@@ -61,31 +68,64 @@ export default function ChallengeScreen() {
     fetchChallenges();
   }, []);
 
+  const handleCarouselSnap = useCallback((index: number) => {
+    setCurrentChallengeIndex(index);
+  }, []);
 
-  const challengeItems = challenges.map((item) => (
+  const handleOpenCameraPress = (challengeId: string) => {
+    console.log(`Camera icon pressed for challenge: ${challengeId}`);
+    navigation.navigate('(camera)', { challengeId });
+  };
+
+  const challengeItems = challenges.map((item, index) => (
     <ChallengeCard
       key={item.id}
       title={item.title}
       description={item.description}
-      backgroundImage={item.background_photo}
-      playerAvatars={avatars} // Using static avatars for now
-      playerCount={10} // Using a static player count for now
-      onPress={() => {}} // Placeholder onPress
+      backgroundImage={{ uri: item.background_photo }}
+      playerAvatars={avatars}
+      playerCount={challenges.length}
+      onPress={() => {
+        setCurrentChallengeIndex(index);
+      }}
+      onPressCamera={() => handleOpenCameraPress(item.id)}
     />
   ));
 
+  const headerTitle = "Challenges";
+
   if (loading) {
-    // You can return a loading indicator here
-    return <View style={styles.container}><Header title={"Challenges"}/></View>;
+    return (
+      <View style={styles.container}>
+        <Header title={"Loading Challenges..."}/>
+        <View style={styles.centeredMessage}><Text>Loading...</Text></View>
+      </View>
+    );
+  }
+  
+  if (challenges.length === 0 && !loading) {
+     return (
+      <View style={styles.container}>
+        <Header title={"Challenges"}/>
+        <View style={styles.centeredMessage}><Text>No challenges available.</Text></View>
+      </View>
+    );
   }
 
   return (
     <View style={styles.container}>
-      <Header title={String(testData[activeIndex].title)}/>
+      <Header title={headerTitle}/>
       <View style={styles.Carousel}>
-        <HorizontalCarousel items={challengeItems}/>
+        <HorizontalCarousel 
+          items={challengeItems} 
+          onCurrentIndexChange={handleCarouselSnap}
+          initialLogicalIndex={currentChallengeIndex}
+        />
       </View>
-      <ChallengeView/>
+      <ChallengeView 
+        allChallenges={challenges} 
+        selectedChallengeFromScreen={challenges[currentChallengeIndex] || null}
+      />
     </View>
   )
 }
@@ -93,12 +133,18 @@ export default function ChallengeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: paddingTopValue
+    paddingTop: paddingTopValue,
+    backgroundColor: '#f5f5f5',
   },
   Carousel: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingTop: 100,
-    paddingBottom: 20
+    height: height * 0.5,
+    marginTop: height * 0.1,
+    marginBottom: 20,
+  },
+  centeredMessage: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
   }
 })

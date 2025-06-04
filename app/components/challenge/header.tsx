@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
-import { Camera, Plus } from 'react-native-feather';
+import { Plus } from 'react-native-feather';
 import { useNavigation } from "@react-navigation/native"
 import { HeaderProps } from '../../interfaces/challenge';
 
@@ -14,14 +14,6 @@ const Header: React.FC<HeaderProps> = ({title, onNotificationPress }) => {
       <Text style={styles.title}> {title}</Text>
 
         <View style={styles.subcontainer}>
-          <TouchableOpacity 
-            style={styles.iconContainer} 
-            onPress={()=>{navigation.navigate('(camera)' as never)}}
-            activeOpacity={0.7}
-          >
-          <Camera width={20} height={20} color="#f2f2f2" />
-          </TouchableOpacity>
-
           <TouchableOpacity 
             style={styles.iconContainer} 
             onPress={()=>{navigation.navigate('(createchallenge)' as never)}}

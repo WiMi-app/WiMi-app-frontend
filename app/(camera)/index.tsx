@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -21,6 +22,7 @@ export default function CameraScreen() {
   const cameraRef = useRef<CameraView>(null);
   const [permission, requestPermission] = useCameraPermissions();
   const scaleAnim = useRef(new Animated.Value(1)).current;
+  const navigation = useNavigation();
 
   const takePicture = async () => {
     if (cameraRef.current) {
@@ -118,8 +120,8 @@ export default function CameraScreen() {
           <Text style={styles.flashText}>{flash.toUpperCase()}</Text>
         </View>
 
-        <TouchableOpacity style={styles.topButton}>
-          <Ionicons name="settings-outline" size={24} color="white" />
+        <TouchableOpacity style={styles.topButton} onPress={() => navigation.goBack()}>
+          <Ionicons name="close" size={28} color="white" />
         </TouchableOpacity>
       </View>
 
@@ -128,12 +130,7 @@ export default function CameraScreen() {
 
       {/* Bottom Controls */}
       <View style={styles.bottomControls}>
-        {/* Gallery Button */}
-        <TouchableOpacity style={styles.galleryButton}>
-          <View style={styles.galleryPreview}>
-            <Ionicons name="images-outline" size={20} color="white" />
-          </View>
-        </TouchableOpacity>
+        <View style={styles.controlButtonPlaceholder} />
 
         {/* Capture Button */}
         <Animated.View style={[styles.captureButtonContainer, { transform: [{ scale: scaleAnim }] }]}>
@@ -279,21 +276,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     zIndex: 1,
   },
-  galleryButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 10,
-    overflow: 'hidden',
-  },
-  galleryPreview: {
-    flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: 'white',
-    borderRadius: 10,
-  },
   captureButtonContainer: {
     alignItems: 'center',
   },
@@ -320,6 +302,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  controlButtonPlaceholder: {
+    width: 50,
+    height: 50,
   },
   sideControls: {
     position: 'absolute',
