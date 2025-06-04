@@ -44,36 +44,39 @@ export default function HomeScreen() {
   const [postData, setPostData ] = useState<UserPostData[]>([]);
   const router = useRouter();
 
-  useEffect(() => {
-    (async () => { 
-      
-      await getListPosts().then((postData)=>{
-        const posts : UserPostData[] = [];
-        postData?.forEach(async (post)=>{
+useEffect(() => {
+  (async () => {
+    const postData = await getListPosts();
+    if (!postData) return;
 
-          const user = await getUserData(post.user_id);
-          const challenge = await getChallenge(post.challenge_id);
-          const likes_ = await getLike(post.id);
-          if(user&&post){
-            const userPost: UserPostData = {
-              id: post.id,
-              username: user.username,
-              profile_pic: user.avatar_url,
-              elapsed_post_time: post.created_at,
-              challenge: challenge.title,
-              post_photo: post.media_urls[0],
-              description: post.content,
-              likes: likes_ ? likes_.length : 0,
-              comments: 4,
-            };
-            posts.push(userPost);
-          }
-        })
-
-        setPostData(posts);
+    const posts = await Promise.all(
+      postData.map(async (post) => {
+        const user = await getUserData(post.user_id);
+        const challenge = await getChallenge(post.challenge_id);
+        const likes_ = await getLike(post.id);
+        if (user && post && challenge) {
+          const userPost: UserPostData = {
+            id: post.id,
+            username: user.username,
+            profile_pic: user.avatar_url,
+            elapsed_post_time: post.created_at,
+            challenge: challenge.title,
+            post_photo: post.media_urls[0],
+            description: post.content,
+            likes: likes_ ? likes_.lenght : [],
+            comments: 4,
+          };
+          return userPost;
+        }
+        return null;
       })
-    })();
-  }, []);
+    );
+
+    // Filter out any null results
+    setPostData(posts.filter((p): p is UserPostData => p !== null));
+  })();
+}, []);
+
   console.log(postData);
   return (
     <SafeAreaView style={styles.homeScreen}>
