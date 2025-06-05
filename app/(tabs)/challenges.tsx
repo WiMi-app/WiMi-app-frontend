@@ -99,7 +99,7 @@ export default function ChallengeScreen() {
       key={item.id}
       title={item.title}
       description={item.description}
-      backgroundImage={item.background_photo ? { uri: item.background_photo[0] } : undefined}
+      backgroundImage={item.background_photo || undefined}
       challengeId={item.id}
       playerAvatars={avatars}
       playerCount={item.participants_count || 0}

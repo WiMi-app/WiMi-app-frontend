@@ -150,7 +150,7 @@ const ChallengeView = ({ selectedChallenge }: ChallengeViewProps) => {
         if (postsLoading) {
           return (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#007AFF" />
+              <ActivityIndicator size="large" color="#5858E8" />
             </View>
           );
         }
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
   },
   activeTab: {
     borderBottomWidth: 2,
-    borderBottomColor: '#007AFF',
+    borderBottomColor: '#5858E8',
   },
   tabText: {
     fontSize: 16,
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
   },
   activeTabText: {
     fontWeight: 'bold',
-    color: '#007AFF',
+    color: '#5858E8',
   },
   contentContainer: {
     flex: 1,

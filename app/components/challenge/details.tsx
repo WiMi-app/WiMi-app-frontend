@@ -5,8 +5,10 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator
+  ActivityIndicator,
+  ScrollView
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 interface Challenge {
   id: string;
@@ -83,7 +85,7 @@ const DetailsScreen = ({ challenge }: DetailsScreenProps) => {
       const participantsData: Participant[] = await participantsResponse.json();
 
       // Fetch user details for each participant
-      const userPromises = participantsData.slice(0, 3).map(async (participant) => {
+      const userPromises = participantsData.slice(0, 5).map(async (participant) => {
         const userResponse = await fetch(
           `https://wimi-app-backend-999646107030.us-east5.run.app/api/v0/users/${participant.user_id}`
         );
@@ -101,336 +103,241 @@ const DetailsScreen = ({ challenge }: DetailsScreenProps) => {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
     });
+  };
+
+  const formatTime = (timeString: string | null) => {
+    if (!timeString) return 'Anytime';
+    const [hour, minute] = timeString.split(':');
+    const h = parseInt(hour, 10);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const formattedHour = h % 12 || 12;
+    return `${formattedHour}:${minute} ${ampm}`;
   };
 
   if (!challenge) {
     return (
-      <View style={styles.emptyState}>
+      <View style={styles.container}>
         <Text style={styles.emptyText}>Select a challenge to view details</Text>
       </View>
     );
   }
 
   return (
-    <>
-      <View style={styles.eventHeader}>
-        <Text style={styles.eventTitle}>{challenge.title}</Text>
-        
-        {challenge.location && (
-          <View style={styles.locationContainer}>
-            <Text style={styles.locationIcon}>📍</Text>
-            <Text style={styles.locationText}>{challenge.location}</Text>
-          </View>
-        )}
-        
-        <View style={styles.dateContainer}>
-          <Text style={styles.dateIcon}>📅</Text>
-          <Text style={styles.dateText}>{formatDate(challenge.due_date)}</Text>
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+      <View style={styles.header}>
+        <Text style={styles.title}>{challenge.title}</Text>
+      </View>
+
+      <View style={styles.section}>
+        <View style={styles.detailItem}>
+          <Ionicons name="calendar-outline" size={20} color="#5858E8" style={styles.icon} />
+          <Text style={styles.detailText}>Due: {formatDate(challenge.due_date)}</Text>
         </View>
-        
-        {challenge.check_in_time && (
-          <View style={styles.dateContainer}>
-            <Text style={styles.dateIcon}>⏰</Text>
-            <Text style={styles.dateText}>Check-in at {challenge.check_in_time}</Text>
-          </View>
-        )}
-        
-        <View style={styles.participantsContainer}>
-          <View style={styles.avatarsContainer}>
-            {loading ? (
-              <ActivityIndicator size="small" color="#666" />
-            ) : (
-              participants.map((user, index) => (
-                <Image 
-                  key={user.id}
-                  source={{ 
-                    uri: formatImageUrl(user.avatar_url, 'avatar', user.username)
-                  }} 
-                  style={[styles.avatar, { zIndex: 3 - index, marginLeft: index > 0 ? -10 : 0 }]} 
-                />
-              ))
-            )}
-          </View>
-          <Text style={styles.participantsText}>
-            {participants.length > 0 
-              ? `${participants.map(p => p.username).join(', ')} ${participants.length > 1 ? 'have' : 'has'} joined`
-              : 'No participants yet'
-            }
-          </Text>
+        <View style={styles.detailItem}>
+          <Ionicons name="time-outline" size={20} color="#5858E8" style={styles.icon} />
+          <Text style={styles.detailText}>Check-in: {formatTime(challenge.check_in_time)}</Text>
+        </View>
+        <View style={styles.detailItem}>
+          <Ionicons name="location-outline" size={20} color="#5858E8" style={styles.icon} />
+          <Text style={styles.detailText}>{challenge.location || 'Any location'}</Text>
         </View>
       </View>
-      
+
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Description</Text>
         <Text style={styles.descriptionText}>
           {showFullDescription 
             ? challenge.description 
-            : challenge.description.length > 150 
-              ? `${challenge.description.substring(0, 150)}...`
-              : challenge.description
+            : `${challenge.description.substring(0, 100)}...`
           }
         </Text>
-        {challenge.description.length > 150 && (
+        {challenge.description.length > 100 && (
           <TouchableOpacity onPress={() => setShowFullDescription(!showFullDescription)}>
-            <Text style={styles.readMoreText}>
-              {showFullDescription ? 'Show Less' : 'Read More..'}
+            <Text style={styles.readMore}>
+              {showFullDescription ? 'Show Less' : 'Read More'}
             </Text>
           </TouchableOpacity>
+        )}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Participants</Text>
+        {loading ? (
+          <ActivityIndicator size="small" color="#5858E8" />
+        ) : (
+          <View style={styles.participantsContainer}>
+            {participants.slice(0, 5).map((user) => (
+              <Image
+                key={user.id}
+                source={{ uri: formatImageUrl(user.avatar_url, 'avatar', user.username) }}
+                style={styles.avatar}
+              />
+            ))}
+            {participants.length > 5 && (
+              <View style={styles.avatarMore}>
+                <Text style={styles.avatarMoreText}>+{participants.length - 5}</Text>
+              </View>
+            )}
+            {participants.length === 0 && <Text style={styles.detailText}>No one has joined yet.</Text>}
+          </View>
         )}
       </View>
 
       {challenge.restriction && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Rules & Restrictions</Text>
-          <Text style={styles.descriptionText}>{challenge.restriction}</Text>
+          <Text style={styles.detailText}>{challenge.restriction}</Text>
         </View>
       )}
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Challenge Details</Text>
-        <View style={styles.iconDetailsContainer}>
-          {/* Repetition Icon */}
-          <View style={styles.iconDetail}>
-            <Text style={styles.icon}>🔄</Text>
-            <Text style={styles.iconLabel}>
-              {challenge.repetition_frequency && challenge.repetition_frequency > 1 
-                ? `${challenge.repetition_frequency}x ${challenge.repetition}`
-                : challenge.repetition === 'daily' 
-                  ? 'Daily'
-                  : challenge.repetition === 'weekly'
-                    ? 'Weekly'
-                    : challenge.repetition === 'once'
-                      ? 'Once'
-                      : challenge.repetition
-              }
+        <View style={styles.grid}>
+          <View style={styles.gridItem}>
+            <Ionicons name="repeat-outline" size={24} color="#5858E8" />
+            <Text style={styles.gridLabel}>Repetition</Text>
+            <Text style={styles.gridValue}>
+              {challenge.repetition === 'once' ? 'Once' : `${challenge.repetition_frequency || 1}x ${challenge.repetition}`}
             </Text>
           </View>
-
-          {/* Timer Icon */}
-          <View style={styles.iconDetail}>
-            <Text style={styles.icon}>⏱️</Text>
-            <Text style={styles.iconLabel}>
-              {challenge.time_window 
-                ? `${Math.floor(challenge.time_window / 60)} min`
-                : 'No limit'
-              }
+          <View style={styles.gridItem}>
+            <Ionicons name="hourglass-outline" size={24} color="#5858E8" />
+            <Text style={styles.gridLabel}>Time Window</Text>
+            <Text style={styles.gridValue}>
+              {challenge.time_window ? `${Math.floor(challenge.time_window / 60)} min` : 'None'}
             </Text>
           </View>
-
-          {/* Lock Icon */}
-          <View style={styles.iconDetail}>
-            <Text style={styles.icon}>{challenge.is_private ? '🔒' : '🔓'}</Text>
-            <Text style={styles.iconLabel}>
-              {challenge.is_private ? 'Private' : 'Public'}
-            </Text>
+          <View style={styles.gridItem}>
+            <Ionicons name={challenge.is_private ? "lock-closed-outline" : "lock-open-outline"} size={24} color="#5858E8" />
+            <Text style={styles.gridLabel}>Visibility</Text>
+            <Text style={styles.gridValue}>{challenge.is_private ? 'Private' : 'Public'}</Text>
           </View>
         </View>
       </View>
-      
-      {challenge.location && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Location</Text>
-          {challenge.location.toLowerCase() === 'home' ? (
-            // Show simple text for "Home"
-            <Text style={styles.homeLocationText}>🏠 Home</Text>
-          ) : (
-            // Show map container for actual locations
-            <View style={styles.mapContainer}>
-              <View style={styles.mapPlaceholder}>
-                <Text style={styles.mapPlaceholderText}>📍 {challenge.location}</Text>
-              </View>
-            </View>
-          )}
-        </View>
-      )}
-    </>
+
+    </ScrollView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'transparent',
+    backgroundColor: '#F7F7F7',
   },
   contentContainer: {
     padding: 20,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  header: {
     marginBottom: 20,
-    color: '#333',
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#1A1A1A',
+    textAlign: 'center',
+  },
+  section: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    marginTop: 24,
+    color: '#333',
     marginBottom: 12,
-    color: '#444',
-    paddingBottom: 5,
-  },
-  descriptionText: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: '#555',
-    marginBottom: 10,
   },
   detailItem: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f5f5f5',
-  },
-  detailLabel: {
-    fontSize: 16,
-    color: '#333',
-    fontWeight: '500',
-    marginRight: 10,
-  },
-  detailValue: {
-    fontSize: 16,
-    color: '#555',
-    textAlign: 'right',
-    flexShrink: 1,
-  },
-  divider: {
-    borderStyle: "solid",
-    borderColor: "#e5e7eb",
-    borderTopWidth: 1,
-    height: 1,
-    alignSelf: "stretch",
-  },
-  emptyState: {
-    padding: 40,
     alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyText: {
-    fontSize: 16,
-    color: '#999',
-    textAlign: 'center',
-  },
-  iconDetailsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 16,
-  },
-  iconDetail: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    backgroundColor: '#f8f9fa',
-    borderRadius: 8,
-    padding: 12,
-    minWidth: 80,
-    borderWidth: 1,
-    borderColor: '#e9ecef',
+    marginBottom: 8,
   },
   icon: {
-    fontSize: 20,
-    marginBottom: 4,
+    marginRight: 12,
   },
-  iconLabel: {
-    fontSize: 14,
-    color: '#666',
-  },
-  mapPlaceholder: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-    borderRadius: 8,
-  },
-  mapPlaceholderText: {
-    fontSize: 16,
-    color: '#666',
-  },
-  homeLocationText: {
-    fontSize: 16,
-    color: '#666',
-  },
-  eventHeader: {
-    paddingTop: 20,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-    marginBottom: 16,
-    paddingHorizontal: 20,
-  },
-  eventTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 12,
-  },
-  locationContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  locationIcon: {
-    marginRight: 8,
-  },
-  locationText: {
+  detailText: {
     fontSize: 16,
     color: '#555',
   },
-  dateContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  dateIcon: {
-    marginRight: 8,
-  },
-  dateText: {
+  descriptionText: {
     fontSize: 16,
     color: '#555',
+    lineHeight: 24,
+  },
+  readMore: {
+    color: '#5858E8',
+    fontWeight: '600',
+    marginTop: 8,
   },
   participantsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 16,
-  },
-  avatarsContainer: {
-    flexDirection: 'row',
-    marginRight: 10,
+    flexWrap: 'wrap',
   },
   avatar: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: 'white',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: -10,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
   },
-  participantsText: {
-    fontSize: 14,
-    color: '#666',
-    flexShrink: 1,
+  avatarMore: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#E9E9E9',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
   },
-  section: {
-    marginTop: 16,
-    paddingHorizontal: 20
-  },
-  readMoreText: {
-    color: '#007AFF',
+  avatarMoreText: {
+    color: '#555',
     fontWeight: 'bold',
+    fontSize: 14,
+  },
+  grid: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
     marginTop: 8,
   },
-  mapContainer: {
-    height: 150,
-    borderRadius: 8,
-    overflow: 'hidden',
-    marginTop: 8,
-    backgroundColor: '#f5f5f5',
+  gridItem: {
+    alignItems: 'center',
+    width: '30%',
   },
+  gridLabel: {
+    fontSize: 14,
+    color: '#777',
+    marginTop: 6,
+    textAlign: 'center',
+  },
+  gridValue: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginTop: 2,
+  },
+  emptyText: {
+    textAlign: 'center',
+    marginTop: 50,
+    fontSize: 16,
+    color: '#777',
+  }
 });
 
 export default DetailsScreen;

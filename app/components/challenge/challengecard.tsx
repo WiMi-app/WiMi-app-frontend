@@ -33,7 +33,7 @@ interface User {
 export interface ChallengeCardProps {
   title?: string;
   description?: string;
-  backgroundImage?: string[] | ImageSourcePropType | null;
+  backgroundImage?: string[] | null;
   playerAvatars?: PlayerAvatar[]; // This will be deprecated in favor of real data
   playerCount?: number; // This will be deprecated in favor of real data
   challengeId?: string; // Add challenge ID to fetch participants
@@ -107,14 +107,9 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
   const currentPlayerCount = totalParticipants;
   const remainingPlayers = Math.max(0, currentPlayerCount - displayedParticipants.length);
 
-  let finalBackgroundImageSource: ImageSourcePropType;
-  if (typeof backgroundImage === 'object' && backgroundImage !== null && Array.isArray(backgroundImage)) {
-    finalBackgroundImageSource = { uri: formatImageUrl(backgroundImage as string[], 'background') };
-  } else if (typeof backgroundImage === 'string') {
-    finalBackgroundImageSource = { uri: backgroundImage };
-  } else {
-    finalBackgroundImageSource = backgroundImage || { uri: formatImageUrl(null, 'background') }; 
-  }
+  const finalBackgroundImageSource: ImageSourcePropType = {
+    uri: formatImageUrl(backgroundImage, 'background'),
+  };
 
   return (
     <TouchableOpacity style={styles.container} activeOpacity={0.9} onPress={onPress}>
