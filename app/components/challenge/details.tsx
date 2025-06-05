@@ -6,7 +6,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  ScrollView
+  ScrollView,
+  Modal
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -54,6 +55,8 @@ const DetailsScreen = ({ challenge }: DetailsScreenProps) => {
   const [participants, setParticipants] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalContent, setModalContent] = useState({ title: '', description: '' });
 
   useEffect(() => {
     if (challenge?.id) {
@@ -101,6 +104,27 @@ const DetailsScreen = ({ challenge }: DetailsScreenProps) => {
     }
   };
 
+  const handleIconPress = (icon: 'repetition' | 'time_window' | 'visibility') => {
+    let title = '';
+    let description = '';
+    switch (icon) {
+      case 'repetition':
+        title = 'Repetition';
+        description = 'This indicates how often the challenge activity should be performed.';
+        break;
+      case 'time_window':
+        title = 'Grace Period';
+        description = 'Even if you missed checking in on time, don\'t worry!. You still have a chance to check in!';
+        break;
+      case 'visibility':
+        title = 'Visibility';
+        description = 'This shows whether the challenge is public (visible to everyone) or private (visible only to invited participants).';
+        break;
+    }
+    setModalContent({ title, description });
+    setModalVisible(true);
+  };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -129,6 +153,32 @@ const DetailsScreen = ({ challenge }: DetailsScreenProps) => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPressOut={() => setModalVisible(false)}
+        >
+          <View style={styles.modalView}>
+            <Text style={styles.modalTitle}>{modalContent.title}</Text>
+            <Text style={styles.modalText}>{modalContent.description}</Text>
+            <TouchableOpacity
+              style={styles.buttonClose}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.buttonCloseText}>Got it!</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+
       <View style={styles.header}>
         <Text style={styles.title}>{challenge.title}</Text>
       </View>
@@ -198,25 +248,25 @@ const DetailsScreen = ({ challenge }: DetailsScreenProps) => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Challenge Details</Text>
         <View style={styles.grid}>
-          <View style={styles.gridItem}>
+          <TouchableOpacity style={styles.gridItem} onPress={() => handleIconPress('repetition')}>
             <Ionicons name="repeat-outline" size={24} color="#5858E8" />
             <Text style={styles.gridLabel}>Repetition</Text>
             <Text style={styles.gridValue}>
               {challenge.repetition === 'once' ? 'Once' : `${challenge.repetition_frequency || 1}x ${challenge.repetition}`}
             </Text>
-          </View>
-          <View style={styles.gridItem}>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.gridItem} onPress={() => handleIconPress('time_window')}>
             <Ionicons name="hourglass-outline" size={24} color="#5858E8" />
             <Text style={styles.gridLabel}>Time Window</Text>
             <Text style={styles.gridValue}>
               {challenge.time_window ? `${Math.floor(challenge.time_window / 60)} min` : 'None'}
             </Text>
-          </View>
-          <View style={styles.gridItem}>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.gridItem} onPress={() => handleIconPress('visibility')}>
             <Ionicons name={challenge.is_private ? "lock-closed-outline" : "lock-open-outline"} size={24} color="#5858E8" />
             <Text style={styles.gridLabel}>Visibility</Text>
             <Text style={styles.gridValue}>{challenge.is_private ? 'Private' : 'Public'}</Text>
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -337,7 +387,52 @@ const styles = StyleSheet.create({
     marginTop: 50,
     fontSize: 16,
     color: '#777',
-  }
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 20,
+    textAlign: 'center',
+    fontSize: 16,
+    lineHeight: 24,
+  },
+  buttonClose: {
+    backgroundColor: '#5858E8',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    elevation: 2,
+  },
+  buttonCloseText: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
 });
 
 export default DetailsScreen;
