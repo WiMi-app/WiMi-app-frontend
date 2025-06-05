@@ -11,10 +11,12 @@ import {
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 const { width, height } = Dimensions.get('window');
 
 export default function CameraScreen() {
+  const router = useRouter();
   const [type, setType] = useState<'front' | 'back'>('back');
   const [flash, setFlash] = useState<'off' | 'on' | 'auto'>('off');
   const [isRecording, setIsRecording] = useState(false);
@@ -45,12 +47,21 @@ export default function CameraScreen() {
           skipProcessing: false,
         });
         console.log('Photo taken:', photo.uri);
-        Alert.alert('Success', 'Photo taken successfully!');
+        
+        // Navigate to post creation page with photo URI
+        router.push({
+          pathname: '/(camera)/post' as any,
+          params: { photoUri: photo.uri }
+        });
       } catch (error) {
         console.error('Error taking picture:', error);
         Alert.alert('Error', 'Failed to take picture');
       }
     }
+  };
+
+  const handleCancel = () => {
+    router.push('/(tabs)/challenges' as any);
   };
 
   const toggleFlash = () => {
@@ -85,7 +96,7 @@ export default function CameraScreen() {
   if (!permission.granted) {
     return (
       <View style={styles.permissionContainer}>
-        <Ionicons name="camera-off-outline" size={80} color="#666" />
+        <Ionicons name="camera-outline" size={80} color="#666" />
         <Text style={styles.permissionTitle}>Camera Access Required</Text>
         <Text style={styles.permissionText}>
           Please enable camera permissions to take photos
@@ -118,8 +129,8 @@ export default function CameraScreen() {
           <Text style={styles.flashText}>{flash.toUpperCase()}</Text>
         </View>
 
-        <TouchableOpacity style={styles.topButton}>
-          <Ionicons name="settings-outline" size={24} color="white" />
+        <TouchableOpacity style={styles.topButton} onPress={handleCancel}>
+          <Ionicons name="close" size={24} color="white" />
         </TouchableOpacity>
       </View>
 
@@ -128,12 +139,8 @@ export default function CameraScreen() {
 
       {/* Bottom Controls */}
       <View style={styles.bottomControls}>
-        {/* Gallery Button */}
-        <TouchableOpacity style={styles.galleryButton}>
-          <View style={styles.galleryPreview}>
-            <Ionicons name="images-outline" size={20} color="white" />
-          </View>
-        </TouchableOpacity>
+        {/* Empty space where gallery button was */}
+        <View style={styles.emptySpace} />
 
         {/* Capture Button */}
         <Animated.View style={[styles.captureButtonContainer, { transform: [{ scale: scaleAnim }] }]}>
@@ -279,20 +286,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     zIndex: 1,
   },
-  galleryButton: {
+  emptySpace: {
     width: 50,
     height: 50,
-    borderRadius: 10,
-    overflow: 'hidden',
-  },
-  galleryPreview: {
-    flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: 'white',
-    borderRadius: 10,
   },
   captureButtonContainer: {
     alignItems: 'center',

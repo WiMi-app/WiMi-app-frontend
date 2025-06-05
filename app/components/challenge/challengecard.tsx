@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,39 +7,129 @@ import {
   TouchableOpacity,
   ScrollView,
   ImageSourcePropType,
+  ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Camera } from 'react-native-feather';
+import { useRouter } from 'expo-router';
 import LeaderboardScreen from './leaderboard';
 import { PlayerAvatar } from '../../interfaces/challenge';
 
-export interface GolfChallengeCardProps {
+interface Participant {
+  challenge_id: string;
+  user_id: string;
+  joined_at: string;
+  status: string;
+}
+
+interface User {
+  id: string;
+  email: string;
+  username: string;
+  full_name: string;
+  avatar_url: string[] | null;
+  bio: string | null;
+  updated_at: string;
+}
+
+export interface ChallengeCardProps {
   title?: string;
   description?: string;
-  backgroundImage?: string | ImageSourcePropType;
-  playerAvatars?: PlayerAvatar[];
-  playerCount?: number;
+  backgroundImage?: string[] | ImageSourcePropType | null;
+  playerAvatars?: PlayerAvatar[]; // This will be deprecated in favor of real data
+  playerCount?: number; // This will be deprecated in favor of real data
+  challengeId?: string; // Add challenge ID to fetch participants
   onPress?: () => void;
 }
 
-const GolfChallengeCard: React.FC<GolfChallengeCardProps> = ({
+const ChallengeCard: React.FC<ChallengeCardProps> = ({
   title = 'Challenge',
   description = 'Test your focus and see how many strokes it takes to sink the ball!',
-  backgroundImage = 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?q=80&w=2070',
-  playerAvatars = [],
-  playerCount = 0,
+  backgroundImage = ["challenges", "default_challenge_bg.jpg"],
+  playerAvatars = [], // Fallback for backward compatibility
+  playerCount = 0, // Fallback for backward compatibility
+  challengeId,
   onPress = () => {},
 }) => {
-  const displayedAvatars = playerAvatars.slice(0, 4);
-  const remainingPlayers = Math.max(0, playerCount - displayedAvatars.length);
+  const router = useRouter();
+  const [participants, setParticipants] = useState<User[]>([]);
+  const [totalParticipants, setTotalParticipants] = useState(0);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (challengeId) {
+      fetchParticipants();
+    }
+  }, [challengeId]);
+
+  const formatImageUrl = (urlParts: string[] | null, defaultType: 'avatar' | 'background' = 'background', username?: string) => {
+    if (urlParts && urlParts.length === 2) {
+      const [bucketName, fileName] = urlParts;
+      if (bucketName && fileName) {
+        return `https://vnxbcytjkzpmcdjkmkba.supabase.co/storage/v1/object/public/${bucketName}//${fileName}`;
+      }
+    }
+    if (defaultType === 'avatar' && username) {
+      return `https://ui-avatars.com/api/?name=${username}&background=random`;
+    }
+    // Default background for card, can be a generic one or a specific placeholder from your assets
+    return 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?q=80&w=2070'; // Generic placeholder
+  };
+
+  const fetchParticipants = async () => {
+    if (!challengeId) return;
+    
+    setLoading(true);
+    try {
+      const participantsResponse = await fetch(
+        `https://wimi-app-backend-999646107030.us-east5.run.app/api/v0/challenges/${challengeId}/participants`
+      );
+      const participantsData: Participant[] = await participantsResponse.json();
+      setTotalParticipants(participantsData.length);
+
+      const userPromises = participantsData.slice(0, 4).map(async (participant) => {
+        const userResponse = await fetch(
+          `https://wimi-app-backend-999646107030.us-east5.run.app/api/v0/users/${participant.user_id}`
+        );
+        return userResponse.json();
+      });
+
+      const usersData: User[] = await Promise.all(userPromises);
+      setParticipants(usersData);
+    } catch (error) {
+      console.error('Failed to fetch participants for card:', error);
+      setParticipants([]); // Clear participants on error to avoid showing stale/wrong avatars
+      setTotalParticipants(playerCount); // Fallback to prop if API fails
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const displayedParticipants = participants.slice(0, 4);
+  const currentPlayerCount = totalParticipants;
+  const remainingPlayers = Math.max(0, currentPlayerCount - displayedParticipants.length);
+
+  const handleCameraPress = () => {
+    router.push('/(camera)' as any);
+  };
+
+  // Determine the source for the background image
+  let finalBackgroundImageSource: ImageSourcePropType;
+  if (typeof backgroundImage === 'object' && backgroundImage !== null && Array.isArray(backgroundImage)) {
+    // It's our new format string[]
+    finalBackgroundImageSource = { uri: formatImageUrl(backgroundImage as string[], 'background') };
+  } else if (typeof backgroundImage === 'string') {
+    // It's an old direct URI or a placeholder
+    finalBackgroundImageSource = { uri: backgroundImage };
+  } else {
+    // It's an ImageSourcePropType (e.g., require('./local-image.png')) or null/undefined
+    finalBackgroundImageSource = backgroundImage || { uri: formatImageUrl(null, 'background') }; 
+  }
 
   return (
     <TouchableOpacity style={styles.container} activeOpacity={0.9} onPress={onPress}>
       <Image
-        source={
-          typeof backgroundImage === 'string'
-            ? { uri: backgroundImage }
-            : backgroundImage
-        }
+        source={finalBackgroundImageSource}
         style={styles.backgroundImage}
       />
 
@@ -57,28 +147,39 @@ const GolfChallengeCard: React.FC<GolfChallengeCardProps> = ({
       <View style={styles.bottomContainer}>
         <View style={styles.avatarsContainer}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {displayedAvatars.map((avatar, index) => (
-              <View
-                key={avatar.id}
-                style={[
-                  styles.avatarWrapper,
-                  { marginLeft: index > 0 ? -10 : 0 },
-                ]}
-              >
-                <Image source={avatar.image} style={styles.avatar} />
-              </View>
-            ))}
-            {remainingPlayers > 0 && (
-              <View style={[styles.avatarWrapper, styles.avatarCount]}>
-                <Text style={styles.avatarCountText}>+{remainingPlayers}</Text>
-              </View>
+            {loading ? (
+              <ActivityIndicator size="small" color="white" />
+            ) : (
+              <>
+                {displayedParticipants.map((user, index) => (
+                  <View
+                    key={user.id}
+                    style={[
+                      styles.avatarWrapper,
+                      { marginLeft: index > 0 ? -10 : 0 },
+                    ]}
+                  >
+                    <Image 
+                      source={{ uri: formatImageUrl(user.avatar_url, 'avatar', user.username) }} 
+                      style={styles.avatar} 
+                    />
+                  </View>
+                ))}
+                {remainingPlayers > 0 && (
+                  <View style={[styles.avatarWrapper, styles.avatarCount, { marginLeft: displayedParticipants.length > 0 ? -10 : 0 }]}>
+                    <Text style={styles.avatarCountText}>+{remainingPlayers}</Text>
+                  </View>
+                )}
+              </>
             )}
           </ScrollView>
-          <Text style={styles.playersText}>{playerCount} players Here</Text>
+          <Text style={styles.playersText}>
+            {currentPlayerCount} player{currentPlayerCount !== 1 ? 's' : ''} Here
+          </Text>
         </View>
 
-        <TouchableOpacity style={styles.arrowButton}>
-          <Text style={styles.arrowIcon}>→</Text>
+        <TouchableOpacity style={styles.arrowButton} onPress={handleCameraPress}>
+          <Camera width={18} height={18} color="white" />
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -175,11 +276,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  arrowIcon: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
 });
 
-export default GolfChallengeCard;
+export default ChallengeCard;

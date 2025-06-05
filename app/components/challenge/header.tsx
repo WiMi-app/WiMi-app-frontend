@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
-import { Camera, Plus } from 'react-native-feather';
+import { Plus } from 'react-native-feather';
 import { useNavigation } from "@react-navigation/native"
 import { HeaderProps } from '../../interfaces/challenge';
 
@@ -14,14 +14,6 @@ const Header: React.FC<HeaderProps> = ({title, onNotificationPress }) => {
       <Text style={styles.title}> {title}</Text>
 
         <View style={styles.subcontainer}>
-          <TouchableOpacity 
-            style={styles.iconContainer} 
-            onPress={()=>{navigation.navigate('(camera)' as never)}}
-            activeOpacity={0.7}
-          >
-          <Camera width={20} height={20} color="#f2f2f2" />
-          </TouchableOpacity>
-
           <TouchableOpacity 
             style={styles.iconContainer} 
             onPress={()=>{navigation.navigate('(createchallenge)' as never)}}
@@ -39,7 +31,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between', // <-- push items to edges
     alignItems: 'center',            // <-- vertically center them
-    paddingHorizontal: 50,
+    paddingLeft: width * 0.05, // Dynamic left padding (5% of screen width, much smaller)
+    paddingRight: width * 0.12, // Dynamic right padding (12% of screen width)
     paddingVertical: 12,    
     marginBottom: (-0.54*height)+width         // optional: add vertical padding
   },

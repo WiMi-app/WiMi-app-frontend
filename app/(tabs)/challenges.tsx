@@ -1,4 +1,4 @@
-import { View, StyleSheet, ScrollView, Dimensions} from "react-native"
+import { View, StyleSheet, ScrollView, Dimensions, Text} from "react-native"
 import ChallengeCard from "../components/challenge/challengecard"
 import { ImageSourcePropType } from 'react-native';
 import HorizontalCarousel from "../components/animations/carousel";
@@ -28,15 +28,18 @@ interface Challenge {
   check_in_time: string | null;
   is_private: boolean;
   time_window: number | null;
-  background_photo: string;
+  background_photo: string[] | null;
   creator_id: string;
   created_at: string;
   updated_at: string;
+  participants_count?: number;
 }
 
 export default function ChallengeScreen() {
   const [challenges, setChallenges] = useState<Challenge[]>([]);
+  const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null);
   const [loading, setLoading] = useState(true);
+  const [currentChallengeIndex, setCurrentChallengeIndex] = useState(0);
 
   const avatars : PlayerAvatar[] = [
     { id: '1', image: require('../../assets/test/profile.png') },
@@ -47,12 +50,23 @@ export default function ChallengeScreen() {
 
   useEffect(() => {
     const fetchChallenges = async () => {
+      setLoading(true);
       try {
         const response = await fetch('https://wimi-app-backend-999646107030.us-east5.run.app/api/v0/challenges/');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
         setChallenges(data);
+        if (data.length > 0) {
+          setSelectedChallenge(data[currentChallengeIndex] || data[0]);
+        } else {
+          setSelectedChallenge(null);
+        }
       } catch (error) {
         console.error("Failed to fetch challenges:", error);
+        setChallenges([]);
+        setSelectedChallenge(null);
       } finally {
         setLoading(false);
       }
@@ -61,31 +75,57 @@ export default function ChallengeScreen() {
     fetchChallenges();
   }, []);
 
+  const handleCarouselSnap = (index: number) => {
+    if (challenges && challenges.length > index && index >= 0) {
+      setSelectedChallenge(challenges[index]);
+      setCurrentChallengeIndex(index);
+    }
+  };
 
-  const challengeItems = challenges.map((item) => (
+  const handleChallengeCardPress = (challenge: Challenge, index: number) => {
+    setSelectedChallenge(challenge);
+    setCurrentChallengeIndex(index);
+  };
+
+  const challengeItems = challenges.map((item, index) => (
     <ChallengeCard
       key={item.id}
       title={item.title}
       description={item.description}
       backgroundImage={item.background_photo}
-      playerAvatars={avatars} // Using static avatars for now
-      playerCount={10} // Using a static player count for now
-      onPress={() => {}} // Placeholder onPress
+      challengeId={item.id}
+      playerAvatars={avatars}
+      playerCount={item.participants_count || 10}
+      onPress={() => handleChallengeCardPress(item, index)}
     />
   ));
 
-  if (loading) {
-    // You can return a loading indicator here
-    return <View style={styles.container}><Header title={"Challenges"}/></View>;
+  if (loading && challenges.length === 0) {
+    return (
+      <ScrollView style={styles.container}>
+        <Header title={"Challenges"}/>
+        <View style={styles.Carousel}>
+           {/* <ActivityIndicator size="large" /> */}
+        </View>
+      </ScrollView>
+    );
   }
 
   return (
     <ScrollView style={styles.container}>
       <Header title={"Challenges"}/>
       <View style={styles.Carousel}>
-        <HorizontalCarousel items={challengeItems}/>
+        {challenges.length > 0 ? (
+          <HorizontalCarousel 
+            items={challengeItems} 
+            initialLogicalIndex={currentChallengeIndex}
+            onCurrentIndexChange={handleCarouselSnap} 
+          />
+        ) : (
+          <Text style={styles.noChallengesText}>No challenges available at the moment.</Text>
+        )}
       </View>
-      <ChallengeView/>
+      <ChallengeView selectedChallenge={selectedChallenge} />
     </ScrollView>
   )
 }
@@ -93,12 +133,20 @@ export default function ChallengeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: paddingTopValue
+    paddingTop: paddingTopValue,
+    backgroundColor: '#f0f0f0',
   },
   Carousel: {
     alignItems: "center",
     justifyContent: "center",
     paddingTop: 100,
-    paddingBottom: 20
+    paddingBottom: 20,
+    minHeight: 370,
+  },
+  noChallengesText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginTop: 20,
   }
 })
