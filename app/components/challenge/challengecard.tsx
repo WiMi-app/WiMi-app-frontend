@@ -10,10 +10,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-<<<<<<< HEAD
-import { Camera } from 'react-native-feather';
-import { useRouter } from 'expo-router';
-import LeaderboardScreen from './leaderboard';
+import { Ionicons } from '@expo/vector-icons';
 import { PlayerAvatar } from '../../interfaces/challenge';
 
 interface Participant {
@@ -33,12 +30,6 @@ interface User {
   updated_at: string;
 }
 
-=======
-import { Ionicons } from '@expo/vector-icons';
-import LeaderboardScreen from './leaderboard';
-import { PlayerAvatar } from '../../interfaces/challenge';
-
->>>>>>> origin/main
 export interface ChallengeCardProps {
   title?: string;
   description?: string;
@@ -60,7 +51,6 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
   onPress = () => {},
   onPressCamera,
 }) => {
-  const router = useRouter();
   const [participants, setParticipants] = useState<User[]>([]);
   const [totalParticipants, setTotalParticipants] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -81,7 +71,6 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
     if (defaultType === 'avatar' && username) {
       return `https://ui-avatars.com/api/?name=${username}&background=random`;
     }
-    // Default background for card, can be a generic one or a specific placeholder from your assets
     return 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?q=80&w=2070'; // Generic placeholder
   };
 
@@ -107,8 +96,8 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
       setParticipants(usersData);
     } catch (error) {
       console.error('Failed to fetch participants for card:', error);
-      setParticipants([]); // Clear participants on error to avoid showing stale/wrong avatars
-      setTotalParticipants(playerCount); // Fallback to prop if API fails
+      setParticipants([]);
+      setTotalParticipants(playerCount);
     } finally {
       setLoading(false);
     }
@@ -118,20 +107,12 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
   const currentPlayerCount = totalParticipants;
   const remainingPlayers = Math.max(0, currentPlayerCount - displayedParticipants.length);
 
-  const handleCameraPress = () => {
-    router.push('/(camera)' as any);
-  };
-
-  // Determine the source for the background image
   let finalBackgroundImageSource: ImageSourcePropType;
   if (typeof backgroundImage === 'object' && backgroundImage !== null && Array.isArray(backgroundImage)) {
-    // It's our new format string[]
     finalBackgroundImageSource = { uri: formatImageUrl(backgroundImage as string[], 'background') };
   } else if (typeof backgroundImage === 'string') {
-    // It's an old direct URI or a placeholder
     finalBackgroundImageSource = { uri: backgroundImage };
   } else {
-    // It's an ImageSourcePropType (e.g., require('./local-image.png')) or null/undefined
     finalBackgroundImageSource = backgroundImage || { uri: formatImageUrl(null, 'background') }; 
   }
 
@@ -187,13 +168,8 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
           </Text>
         </View>
 
-<<<<<<< HEAD
-        <TouchableOpacity style={styles.arrowButton} onPress={handleCameraPress}>
-          <Camera width={18} height={18} color="white" />
-=======
         <TouchableOpacity style={styles.cameraButton} onPress={onPressCamera} activeOpacity={0.7}>
           <Ionicons name="camera-outline" size={24} color="white" />
->>>>>>> origin/main
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -290,11 +266,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 165, 0, 0.8)',
     justifyContent: 'center',
     alignItems: 'center',
-<<<<<<< HEAD
-=======
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.5)',
->>>>>>> origin/main
   },
 });
 

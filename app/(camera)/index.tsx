@@ -11,11 +11,8 @@ import {
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
-<<<<<<< HEAD
 import { useRouter } from 'expo-router';
-=======
 import { useNavigation } from '@react-navigation/native';
->>>>>>> origin/main
 
 const { width, height } = Dimensions.get('window');
 
@@ -134,13 +131,8 @@ export default function CameraScreen() {
           <Text style={styles.flashText}>{flash.toUpperCase()}</Text>
         </View>
 
-<<<<<<< HEAD
-        <TouchableOpacity style={styles.topButton} onPress={handleCancel}>
-          <Ionicons name="close" size={24} color="white" />
-=======
         <TouchableOpacity style={styles.topButton} onPress={() => navigation.goBack()}>
           <Ionicons name="close" size={28} color="white" />
->>>>>>> origin/main
         </TouchableOpacity>
       </View>
 
@@ -149,13 +141,6 @@ export default function CameraScreen() {
 
       {/* Bottom Controls */}
       <View style={styles.bottomControls}>
-<<<<<<< HEAD
-        {/* Empty space where gallery button was */}
-        <View style={styles.emptySpace} />
-=======
-        <View style={styles.controlButtonPlaceholder} />
->>>>>>> origin/main
-
         {/* Capture Button */}
         <Animated.View style={[styles.captureButtonContainer, { transform: [{ scale: scaleAnim }] }]}>
           <TouchableOpacity style={styles.captureButton} onPress={takePicture}>
@@ -291,24 +276,17 @@ const styles = StyleSheet.create({
   },
   bottomControls: {
     position: 'absolute',
-    bottom: 40,
+    bottom: 20,
     left: 0,
     right: 0,
+    height: 120,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 30,
-    zIndex: 1,
+    paddingHorizontal: 20,
   },
-<<<<<<< HEAD
-  emptySpace: {
-    width: 50,
-    height: 50,
-  },
-=======
->>>>>>> origin/main
   captureButtonContainer: {
-    alignItems: 'center',
+    // This container is now centered by the parent
   },
   captureButton: {
     width: 80,
@@ -327,12 +305,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   flipButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    position: 'absolute',
+    right: 20,
+    bottom: 45, // Adjust as needed
   },
   controlButtonPlaceholder: {
     width: 50,

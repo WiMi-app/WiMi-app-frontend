@@ -3,33 +3,20 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   Image,
   TouchableOpacity,
-<<<<<<< HEAD
-  Dimensions,
   SafeAreaView,
   ActivityIndicator,
   FlatList
-=======
-  SafeAreaView
->>>>>>> origin/main
 } from 'react-native';
-import Post from "../index_home/post"
 import LeaderboardScreen from './leaderboard';
 import DetailsScreen from './details';
-// import ChallengeCard from './challengecard'; // Not used
-import { UserPostData, PostData } from '../../interfaces/post'; // Import PostData
+import { UserPostData, PostData } from '../../interfaces/post';
 
 const TABS = ['Detail', 'Post', 'Ranking'];
 
-<<<<<<< HEAD
 interface Challenge {
   id: string;
-=======
-// Define the Challenge interface (should be consistent with API response and parent component)
-interface Challenge {
->>>>>>> origin/main
   title: string;
   description: string;
   due_date: string;
@@ -41,23 +28,17 @@ interface Challenge {
   check_in_time: string | null;
   is_private: boolean;
   time_window: number | null;
-<<<<<<< HEAD
   background_photo: string[] | null;
-=======
-  background_photo: string;
-  id: string;
->>>>>>> origin/main
   creator_id: string;
   created_at: string;
   updated_at: string;
 }
 
 interface ChallengeViewProps {
-<<<<<<< HEAD
   selectedChallenge?: Challenge | null;
 }
 
-// Helper to format Supabase URLs - assuming this might be needed for post media
+// Helper to format Supabase URLs
 const formatImageUrl = (urlParts: string[] | null, defaultType: 'avatar' | 'background' | 'post' = 'post', username?: string) => {
   if (urlParts && urlParts.length === 2) {
     const [bucketName, fileName] = urlParts;
@@ -68,26 +49,17 @@ const formatImageUrl = (urlParts: string[] | null, defaultType: 'avatar' | 'back
   if (defaultType === 'avatar' && username) {
     return `https://ui-avatars.com/api/?name=${username}&background=random`;
   }
-  // Return a generic placeholder for posts if no image or different handling
-  return 'https://via.placeholder.com/300'; // Generic placeholder for post images
+  return 'https://via.placeholder.com/300';
 };
 
-// Placeholder for fetching user details - this would typically involve an API call
-// and return an object like { username: string, profile_pic: string[] | null }
+// Placeholder for fetching user details
 async function fetchUserDetails(userId: string): Promise<{ username: string; profile_pic: string[] | null }> {
-  // In a real app, you'd fetch from your backend:
-  // const response = await fetch(`https://wimi-app-backend-999646107030.us-east5.run.app/api/v0/users/${userId}`);
-  // const userData = await response.json();
-  // return { username: userData.username, profile_pic: userData.avatar_url };
-  
-  // For now, returning mock data or a default
   console.warn(`fetchUserDetails for ${userId} is using mock data.`);
   return { username: `User_${userId.substring(0, 5)}`, profile_pic: null }; // Mocked
 }
 
 // Placeholder for calculating elapsed time
 function calculateElapsedTime(createdAt: string): string {
-  // Implement actual time calculation, e.g., "2h ago", "1 day ago"
   const date = new Date(createdAt);
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
@@ -101,7 +73,6 @@ function calculateElapsedTime(createdAt: string): string {
   return `${diffDays}d ago`;
 }
 
-// Gallery Item Component for the 3-column view
 interface GalleryItemProps {
   item: UserPostData;
   onPress: () => void;
@@ -134,26 +105,22 @@ const ChallengeView = ({ selectedChallenge }: ChallengeViewProps) => {
           setCurrentPosts([]);
         } else {
           const apiPosts: PostData[] = await response.json();
-          
-          // Transform API posts to UserPostData
           const transformedPosts = await Promise.all(apiPosts.map(async (apiPost) => {
             const userDetails = await fetchUserDetails(apiPost.user_id);
-            const postPhotoUrl = apiPost.media_urls && apiPost.media_urls.length > 0 
-              ? formatImageUrl(apiPost.media_urls as string[], 'post') // Assuming media_urls fits string[]
-              : formatImageUrl(null, 'post'); // Default/placeholder if no media
+            const postPhotoUrl = apiPost.media_urls && apiPost.media_urls.length > 0
+              ? formatImageUrl(apiPost.media_urls as string[], 'post')
+              : formatImageUrl(null, 'post');
 
             return {
               id: apiPost.id,
               username: userDetails.username,
               profile_pic: formatImageUrl(userDetails.profile_pic, 'avatar', userDetails.username),
               elapsed_post_time: calculateElapsedTime(apiPost.created_at),
-              challenge: apiPost.challenge_id, // Or fetch challenge title if needed
+              challenge: apiPost.challenge_id,
               post_photo: postPhotoUrl,
               description: apiPost.content,
-              // API response has endorsement_info.endorsement_count
-              // For simplicity, using endorsement_count as likes. Could be more complex.
-              likes: Array(apiPost.endorsement_info?.endorsement_count || 0).fill('like'), 
-              comments: 0, // Comments not in API response, defaulting to 0
+              likes: Array(apiPost.endorsement_info?.endorsement_count || 0).fill('like'),
+              comments: 0,
             };
           }));
           setCurrentPosts(transformedPosts);
@@ -169,63 +136,16 @@ const ChallengeView = ({ selectedChallenge }: ChallengeViewProps) => {
     if (activeTab === 'Post') {
       fetchAndTransformPosts();
     }
-  }, [selectedChallenge, activeTab]); 
-=======
-  allChallenges: Challenge[];
-  selectedChallengeFromScreen: Challenge | null;
-}
-
-const ChallengeView: React.FC<ChallengeViewProps> = ({ 
-  allChallenges, 
-  selectedChallengeFromScreen 
-}) => {
-  const [activeTab, setActiveTab] = useState('Detail');
-  const [currentChallengeDetail, setCurrentChallengeDetail] = useState<Challenge | null>(null);
-
-  useEffect(() => {
-    // When the selected challenge from the parent screen (carousel) changes
-    setCurrentChallengeDetail(selectedChallengeFromScreen);
-    // If a challenge is selected from parent, and we are not on Detail tab, switch to Detail tab
-    if (selectedChallengeFromScreen && activeTab !== 'Detail') {
-      setActiveTab('Detail');
-    }
-    // If no challenge is selected from parent (e.g., initial load before carousel interaction)
-    // and we have challenges, and current tab is Detail, set first challenge as default for Detail tab.
-    else if (!selectedChallengeFromScreen && activeTab === 'Detail' && allChallenges && allChallenges.length > 0) {
-      setCurrentChallengeDetail(allChallenges[0]);
-    }
-  }, [selectedChallengeFromScreen, allChallenges]); // Removed activeTab from deps to avoid loop on setActiveTab
-
-  useEffect(() => {
-    // When the active tab changes, ensure the Detail tab has the correct content.
-    if (activeTab === 'Detail') {
-      if (selectedChallengeFromScreen) {
-        setCurrentChallengeDetail(selectedChallengeFromScreen);
-      } else if (allChallenges && allChallenges.length > 0) {
-        setCurrentChallengeDetail(allChallenges[0]); // Default to first if no specific selection
-      } else {
-        setCurrentChallengeDetail(null); // No challenges to show
-      }
-    }
-  }, [activeTab, selectedChallengeFromScreen, allChallenges]);
+  }, [selectedChallenge, activeTab]);
 
   const handleTabPress = (tab: string) => {
     setActiveTab(tab);
   };
->>>>>>> origin/main
 
   const renderTabContent = () => {
     switch (activeTab) {
       case 'Detail':
-<<<<<<< HEAD
-        return (
-          <>
-            <DetailsScreen challenge={selectedChallenge || undefined} />
-          </>
-        );
-=======
-        return <DetailsScreen challenge={currentChallengeDetail} />;
->>>>>>> origin/main
+        return <DetailsScreen challenge={selectedChallenge || undefined} />;
       case 'Post':
         if (postsLoading) {
           return (
@@ -242,16 +162,14 @@ const ChallengeView: React.FC<ChallengeViewProps> = ({
           );
         }
         return (
-<<<<<<< HEAD
           <FlatList
             data={currentPosts}
             renderItem={({ item }) => (
-              <GalleryItem 
-                item={item} 
+              <GalleryItem
+                item={item}
                 onPress={() => {
-                  // TODO: Implement navigation to a detailed post view or modal
                   console.log("Gallery item pressed:", item.id);
-                }} 
+                }}
               />
             )}
             keyExtractor={(item) => item.id}
@@ -261,57 +179,30 @@ const ChallengeView: React.FC<ChallengeViewProps> = ({
           />
         );
       case 'Ranking':
-        return (
-          // LeaderboardScreen might need to be updated to accept challengeId if it needs to be specific
-          <LeaderboardScreen />
-        );
-=======
-          <SafeAreaView style={styles.emptyTabContent}>
-            <Text style={styles.emptyTabText}>
-              No posts available for this challenge yet.
-            </Text>
-          </SafeAreaView>
-        );
-      case 'Ranking':
         return <LeaderboardScreen />;
->>>>>>> origin/main
       default:
         return null;
     }
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.tabContainer}>
         {TABS.map((tab) => (
           <TouchableOpacity
             key={tab}
-            style={[
-              styles.tab,
-              activeTab === tab && styles.activeTab,
-            ]}
-            onPress={() => handleTabPress(tab)}
-          >
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === tab && styles.activeTabText,
-              ]}
-            >
+            style={[styles.tab, activeTab === tab && styles.activeTab]}
+            onPress={() => handleTabPress(tab)}>
+            <Text style={[styles.tabText, activeTab === tab && styles.activeTabText]}>
               {tab}
             </Text>
-            {activeTab === tab && <View style={styles.activeTabIndicator} />}
           </TouchableOpacity>
         ))}
       </View>
-
-      <ScrollView 
-        style={styles.content}
-        key={activeTab} 
-      >
+      <View style={styles.contentContainer}>
         {renderTabContent()}
-      </ScrollView>
-    </View>
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -322,95 +213,52 @@ const styles = StyleSheet.create({
   },
   tabContainer: {
     flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: '#FFF',
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: '#E0E0E0',
+    paddingVertical: 10,
   },
   tab: {
-    flex: 1,
-    paddingVertical: 16,
-    alignItems: 'center',
-    position: 'relative',
+    paddingBottom: 5,
   },
   activeTab: {
-<<<<<<< HEAD
-    // borderBottomColor: '#000', 
-=======
->>>>>>> origin/main
+    borderBottomWidth: 2,
+    borderBottomColor: '#007AFF',
   },
   tabText: {
     fontSize: 16,
-    color: '#999',
-    fontWeight: '500',
+    color: '#333',
   },
   activeTabText: {
-    color: '#333',
-    fontWeight: '600',
+    fontWeight: 'bold',
+    color: '#007AFF',
   },
-  activeTabIndicator: {
-    position: 'absolute',
-<<<<<<< HEAD
-    bottom: -1, 
-    left: '25%', 
-    right: '25%',
-    height: 3, 
-    backgroundColor: '#000',
-    borderRadius: 1.5, 
-=======
-    bottom: -1,
-    left: 0,
-    right: 0,
-    height: 2,
-    backgroundColor: '#333',
->>>>>>> origin/main
-  },
-  content: {
+  contentContainer: {
     flex: 1,
   },
-  loadingContainer: { 
+  loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
-    minHeight: 300, 
-  },
-  postsContainer: { 
-    flex: 1,
   },
   emptyTabContent: {
     flex: 1,
     justifyContent: 'center',
-<<<<<<< HEAD
-    height: 300, 
-=======
     alignItems: 'center',
-    padding: 20,
->>>>>>> origin/main
   },
   emptyTabText: {
     fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-  },
-  divider: {
-    borderStyle: "solid",
-    borderColor: "#e5e7eb",
-    borderTopWidth: 1,
-    height: 1,
-    alignSelf: "stretch",
-    marginTop: 10,
+    color: 'gray',
   },
   galleryContainer: {
     flex: 1,
-    paddingHorizontal: 2,
   },
-  galleryContentContainer: {
-    // alignItems: 'flex-start',
-  },
+  galleryContentContainer: {},
   galleryItemContainer: {
-    flex: 1/3,
+    flex: 1 / 3,
     aspectRatio: 1,
-    margin: 2,
-    backgroundColor: '#eee',
+    padding: 1,
   },
   galleryItemImage: {
     width: '100%',

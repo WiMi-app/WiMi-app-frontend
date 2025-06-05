@@ -356,6 +356,81 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
   },
+  eventHeader: {
+    paddingTop: 20,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+    marginBottom: 16,
+    paddingHorizontal: 20,
+  },
+  eventTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 12,
+  },
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  locationIcon: {
+    marginRight: 8,
+  },
+  locationText: {
+    fontSize: 16,
+    color: '#555',
+  },
+  dateContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  dateIcon: {
+    marginRight: 8,
+  },
+  dateText: {
+    fontSize: 16,
+    color: '#555',
+  },
+  participantsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  avatarsContainer: {
+    flexDirection: 'row',
+    marginRight: 10,
+  },
+  avatar: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: 'white',
+  },
+  participantsText: {
+    fontSize: 14,
+    color: '#666',
+    flexShrink: 1,
+  },
+  section: {
+    marginTop: 16,
+    paddingHorizontal: 20
+  },
+  readMoreText: {
+    color: '#007AFF',
+    fontWeight: 'bold',
+    marginTop: 8,
+  },
+  mapContainer: {
+    height: 150,
+    borderRadius: 8,
+    overflow: 'hidden',
+    marginTop: 8,
+    backgroundColor: '#f5f5f5',
+  },
 });
 
 export default DetailsScreen;

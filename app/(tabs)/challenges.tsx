@@ -1,14 +1,10 @@
-<<<<<<< HEAD
-import { View, StyleSheet, ScrollView, Dimensions, Text} from "react-native"
-=======
 import { View, StyleSheet, ScrollView, Dimensions, Text } from "react-native"
->>>>>>> origin/main
 import ChallengeCard from "../components/challenge/challengecard"
 import { ImageSourcePropType } from 'react-native';
 import HorizontalCarousel from "../components/animations/carousel";
 import Header from "../components/challenge/header";
 import ChallengeView from "../components/challenge/challenge_view";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigation } from '@react-navigation/native';
 
 
@@ -45,10 +41,7 @@ export default function ChallengeScreen() {
   const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentChallengeIndex, setCurrentChallengeIndex] = useState(0);
-<<<<<<< HEAD
-=======
   const navigation = useNavigation<any>();
->>>>>>> origin/main
 
   const avatars : PlayerAvatar[] = [
     { id: '1', image: require('../../assets/test/profile.png') },
@@ -63,16 +56,12 @@ export default function ChallengeScreen() {
       try {
         const response = await fetch('https://wimi-app-backend-999646107030.us-east5.run.app/api/v0/challenges/');
         if (!response.ok) {
-<<<<<<< HEAD
           throw new Error(`HTTP error! status: ${response.status}`);
-=======
-          throw new Error(`API request failed with status ${response.status}`);
->>>>>>> origin/main
         }
         const data = await response.json();
         setChallenges(data);
         if (data.length > 0) {
-          setSelectedChallenge(data[currentChallengeIndex] || data[0]);
+          setSelectedChallenge(data[0]);
         } else {
           setSelectedChallenge(null);
         }
@@ -88,7 +77,6 @@ export default function ChallengeScreen() {
     fetchChallenges();
   }, []);
 
-<<<<<<< HEAD
   const handleCarouselSnap = (index: number) => {
     if (challenges && challenges.length > index && index >= 0) {
       setSelectedChallenge(challenges[index]);
@@ -99,15 +87,11 @@ export default function ChallengeScreen() {
   const handleChallengeCardPress = (challenge: Challenge, index: number) => {
     setSelectedChallenge(challenge);
     setCurrentChallengeIndex(index);
-=======
-  const handleCarouselSnap = useCallback((index: number) => {
-    setCurrentChallengeIndex(index);
-  }, []);
+  };
 
   const handleOpenCameraPress = (challengeId: string) => {
     console.log(`Camera icon pressed for challenge: ${challengeId}`);
     navigation.navigate('(camera)', { challengeId });
->>>>>>> origin/main
   };
 
   const challengeItems = challenges.map((item, index) => (
@@ -115,30 +99,11 @@ export default function ChallengeScreen() {
       key={item.id}
       title={item.title}
       description={item.description}
-<<<<<<< HEAD
-      backgroundImage={item.background_photo}
+      backgroundImage={item.background_photo ? { uri: item.background_photo[0] } : undefined}
       challengeId={item.id}
       playerAvatars={avatars}
-      playerCount={item.participants_count || 10}
+      playerCount={item.participants_count || 0}
       onPress={() => handleChallengeCardPress(item, index)}
-    />
-  ));
-
-  if (loading && challenges.length === 0) {
-    return (
-      <ScrollView style={styles.container}>
-        <Header title={"Challenges"}/>
-        <View style={styles.Carousel}>
-           {/* <ActivityIndicator size="large" /> */}
-        </View>
-      </ScrollView>
-=======
-      backgroundImage={{ uri: item.background_photo }}
-      playerAvatars={avatars}
-      playerCount={challenges.length}
-      onPress={() => {
-        setCurrentChallengeIndex(index);
-      }}
       onPressCamera={() => handleOpenCameraPress(item.id)}
     />
   ));
@@ -160,15 +125,13 @@ export default function ChallengeScreen() {
         <Header title={"Challenges"}/>
         <View style={styles.centeredMessage}><Text>No challenges available.</Text></View>
       </View>
->>>>>>> origin/main
     );
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Header title={headerTitle}/>
       <View style={styles.Carousel}>
-<<<<<<< HEAD
         {challenges.length > 0 ? (
           <HorizontalCarousel 
             items={challengeItems} 
@@ -179,21 +142,10 @@ export default function ChallengeScreen() {
           <Text style={styles.noChallengesText}>No challenges available at the moment.</Text>
         )}
       </View>
-      <ChallengeView selectedChallenge={selectedChallenge} />
-    </ScrollView>
-=======
-        <HorizontalCarousel 
-          items={challengeItems} 
-          onCurrentIndexChange={handleCarouselSnap}
-          initialLogicalIndex={currentChallengeIndex}
-        />
-      </View>
       <ChallengeView 
-        allChallenges={challenges} 
-        selectedChallengeFromScreen={challenges[currentChallengeIndex] || null}
+        selectedChallenge={selectedChallenge}
       />
-    </View>
->>>>>>> origin/main
+    </ScrollView>
   )
 }
 
@@ -201,34 +153,26 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: paddingTopValue,
-<<<<<<< HEAD
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#f5f5f5',
   },
   Carousel: {
     alignItems: "center",
     justifyContent: "center",
-    paddingTop: 100,
+    paddingTop: 85,
     paddingBottom: 20,
     minHeight: 370,
+    marginBottom: 20,
   },
   noChallengesText: {
     fontSize: 16,
     color: '#666',
     textAlign: 'center',
     marginTop: 20,
-=======
-    backgroundColor: '#f5f5f5',
-  },
-  Carousel: {
-    height: height * 0.5,
-    marginTop: height * 0.1,
-    marginBottom: 20,
   },
   centeredMessage: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
->>>>>>> origin/main
   }
 })
