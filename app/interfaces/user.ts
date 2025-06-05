@@ -3,7 +3,7 @@ export type UserData = {
   username: string;
   full_name: string;
   id: string;
-  avatar_url: string | null;
+  avatar_url: string;
   bio: string | null;
   updated_at: string;
 }; 

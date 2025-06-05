@@ -6,10 +6,14 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+<<<<<<< HEAD
   Dimensions,
   SafeAreaView,
   ActivityIndicator,
   FlatList
+=======
+  SafeAreaView
+>>>>>>> origin/main
 } from 'react-native';
 import Post from "../index_home/post"
 import LeaderboardScreen from './leaderboard';
@@ -18,10 +22,14 @@ import DetailsScreen from './details';
 import { UserPostData, PostData } from '../../interfaces/post'; // Import PostData
 
 const TABS = ['Detail', 'Post', 'Ranking'];
-const { width, height } = Dimensions.get('window');
 
+<<<<<<< HEAD
 interface Challenge {
   id: string;
+=======
+// Define the Challenge interface (should be consistent with API response and parent component)
+interface Challenge {
+>>>>>>> origin/main
   title: string;
   description: string;
   due_date: string;
@@ -33,13 +41,19 @@ interface Challenge {
   check_in_time: string | null;
   is_private: boolean;
   time_window: number | null;
+<<<<<<< HEAD
   background_photo: string[] | null;
+=======
+  background_photo: string;
+  id: string;
+>>>>>>> origin/main
   creator_id: string;
   created_at: string;
   updated_at: string;
 }
 
 interface ChallengeViewProps {
+<<<<<<< HEAD
   selectedChallenge?: Challenge | null;
 }
 
@@ -156,15 +170,62 @@ const ChallengeView = ({ selectedChallenge }: ChallengeViewProps) => {
       fetchAndTransformPosts();
     }
   }, [selectedChallenge, activeTab]); 
+=======
+  allChallenges: Challenge[];
+  selectedChallengeFromScreen: Challenge | null;
+}
+
+const ChallengeView: React.FC<ChallengeViewProps> = ({ 
+  allChallenges, 
+  selectedChallengeFromScreen 
+}) => {
+  const [activeTab, setActiveTab] = useState('Detail');
+  const [currentChallengeDetail, setCurrentChallengeDetail] = useState<Challenge | null>(null);
+
+  useEffect(() => {
+    // When the selected challenge from the parent screen (carousel) changes
+    setCurrentChallengeDetail(selectedChallengeFromScreen);
+    // If a challenge is selected from parent, and we are not on Detail tab, switch to Detail tab
+    if (selectedChallengeFromScreen && activeTab !== 'Detail') {
+      setActiveTab('Detail');
+    }
+    // If no challenge is selected from parent (e.g., initial load before carousel interaction)
+    // and we have challenges, and current tab is Detail, set first challenge as default for Detail tab.
+    else if (!selectedChallengeFromScreen && activeTab === 'Detail' && allChallenges && allChallenges.length > 0) {
+      setCurrentChallengeDetail(allChallenges[0]);
+    }
+  }, [selectedChallengeFromScreen, allChallenges]); // Removed activeTab from deps to avoid loop on setActiveTab
+
+  useEffect(() => {
+    // When the active tab changes, ensure the Detail tab has the correct content.
+    if (activeTab === 'Detail') {
+      if (selectedChallengeFromScreen) {
+        setCurrentChallengeDetail(selectedChallengeFromScreen);
+      } else if (allChallenges && allChallenges.length > 0) {
+        setCurrentChallengeDetail(allChallenges[0]); // Default to first if no specific selection
+      } else {
+        setCurrentChallengeDetail(null); // No challenges to show
+      }
+    }
+  }, [activeTab, selectedChallengeFromScreen, allChallenges]);
+
+  const handleTabPress = (tab: string) => {
+    setActiveTab(tab);
+  };
+>>>>>>> origin/main
 
   const renderTabContent = () => {
     switch (activeTab) {
       case 'Detail':
+<<<<<<< HEAD
         return (
           <>
             <DetailsScreen challenge={selectedChallenge || undefined} />
           </>
         );
+=======
+        return <DetailsScreen challenge={currentChallengeDetail} />;
+>>>>>>> origin/main
       case 'Post':
         if (postsLoading) {
           return (
@@ -181,6 +242,7 @@ const ChallengeView = ({ selectedChallenge }: ChallengeViewProps) => {
           );
         }
         return (
+<<<<<<< HEAD
           <FlatList
             data={currentPosts}
             renderItem={({ item }) => (
@@ -203,6 +265,16 @@ const ChallengeView = ({ selectedChallenge }: ChallengeViewProps) => {
           // LeaderboardScreen might need to be updated to accept challengeId if it needs to be specific
           <LeaderboardScreen />
         );
+=======
+          <SafeAreaView style={styles.emptyTabContent}>
+            <Text style={styles.emptyTabText}>
+              No posts available for this challenge yet.
+            </Text>
+          </SafeAreaView>
+        );
+      case 'Ranking':
+        return <LeaderboardScreen />;
+>>>>>>> origin/main
       default:
         return null;
     }
@@ -218,7 +290,7 @@ const ChallengeView = ({ selectedChallenge }: ChallengeViewProps) => {
               styles.tab,
               activeTab === tab && styles.activeTab,
             ]}
-            onPress={() => setActiveTab(tab)}
+            onPress={() => handleTabPress(tab)}
           >
             <Text
               style={[
@@ -246,13 +318,12 @@ const ChallengeView = ({ selectedChallenge }: ChallengeViewProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'transparent',
   },
   tabContainer: {
     flexDirection: 'row',
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-    backgroundColor: '#fff',
+    borderBottomColor: '#eee',
   },
   tab: {
     flex: 1,
@@ -261,25 +332,36 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   activeTab: {
+<<<<<<< HEAD
     // borderBottomColor: '#000', 
+=======
+>>>>>>> origin/main
   },
   tabText: {
     fontSize: 16,
-    color: '#ccc',
+    color: '#999',
     fontWeight: '500',
   },
   activeTabText: {
-    color: '#000',
+    color: '#333',
     fontWeight: '600',
   },
   activeTabIndicator: {
     position: 'absolute',
+<<<<<<< HEAD
     bottom: -1, 
     left: '25%', 
     right: '25%',
     height: 3, 
     backgroundColor: '#000',
     borderRadius: 1.5, 
+=======
+    bottom: -1,
+    left: 0,
+    right: 0,
+    height: 2,
+    backgroundColor: '#333',
+>>>>>>> origin/main
   },
   content: {
     flex: 1,
@@ -295,14 +377,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   emptyTabContent: {
-    padding: 20,
-    alignItems: 'center',
+    flex: 1,
     justifyContent: 'center',
+<<<<<<< HEAD
     height: 300, 
+=======
+    alignItems: 'center',
+    padding: 20,
+>>>>>>> origin/main
   },
   emptyTabText: {
     fontSize: 16,
-    color: '#999',
+    color: '#666',
+    textAlign: 'center',
   },
   divider: {
     borderStyle: "solid",

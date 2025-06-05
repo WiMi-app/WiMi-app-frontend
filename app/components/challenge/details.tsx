@@ -255,138 +255,50 @@ const DetailsScreen = ({ challenge }: DetailsScreenProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'transparent',
   },
-  tabContainer: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-    backgroundColor: '#fff',
+  contentContainer: {
+    padding: 20,
   },
-  tab: {
-    flex: 1,
-    paddingVertical: 16,
-    alignItems: 'center',
-    position: 'relative',
-  },
-  activeTab: {
-    borderBottomColor: '#000',
-  },
-  tabText: {
-    fontSize: 16,
-    color: '#ccc',
-    fontWeight: '500',
-  },
-  activeTabText: {
-    color: '#000',
-    fontWeight: '600',
-  },
-  activeTabIndicator: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 2,
-    backgroundColor: '#000',
-  },
-  content: {
-    flex: 1,
-  },
-  eventHeader: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  eventTitle: {
+  title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 12,
-  },
-  locationContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  locationIcon: {
-    marginRight: 8,
-    fontSize: 16,
-  },
-  locationText: {
-    fontSize: 14,
-    color: '#666',
-  },
-  dateContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  dateIcon: {
-    marginRight: 8,
-    fontSize: 16,
-  },
-  dateText: {
-    fontSize: 14,
-    color: '#666',
-  },
-  participantsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  avatarsContainer: {
-    flexDirection: 'row',
-    marginRight: 8,
-  },
-  avatar: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    borderWidth: 2,
-    borderColor: '#fff',
-  },
-  participantsText: {
-    fontSize: 14,
+    marginBottom: 20,
     color: '#333',
-  },
-  section: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '600',
+    marginTop: 24,
     marginBottom: 12,
+    color: '#444',
+    paddingBottom: 5,
   },
   descriptionText: {
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 20,
-  },
-  readMoreText: {
-    color: '#3498db',
-    marginTop: 8,
-    fontSize: 14,
-  },
-  mapContainer: {
-    height: 250,
-    borderRadius: 8,
-    overflow: 'hidden',
-    marginTop: 8,
-  },
-  map: {
-    width: '100%',
-    height: '100%',
-  },
-  emptyTabContent: {
-    padding: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 300,
-  },
-  emptyTabText: {
     fontSize: 16,
-    color: '#999',
+    lineHeight: 24,
+    color: '#555',
+    marginBottom: 10,
+  },
+  detailItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f5f5f5',
+  },
+  detailLabel: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '500',
+    marginRight: 10,
+  },
+  detailValue: {
+    fontSize: 16,
+    color: '#555',
+    textAlign: 'right',
+    flexShrink: 1,
   },
   divider: {
     borderStyle: "solid",

@@ -11,7 +11,11 @@ import {
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
+<<<<<<< HEAD
 import { useRouter } from 'expo-router';
+=======
+import { useNavigation } from '@react-navigation/native';
+>>>>>>> origin/main
 
 const { width, height } = Dimensions.get('window');
 
@@ -23,6 +27,7 @@ export default function CameraScreen() {
   const cameraRef = useRef<CameraView>(null);
   const [permission, requestPermission] = useCameraPermissions();
   const scaleAnim = useRef(new Animated.Value(1)).current;
+  const navigation = useNavigation();
 
   const takePicture = async () => {
     if (cameraRef.current) {
@@ -129,8 +134,13 @@ export default function CameraScreen() {
           <Text style={styles.flashText}>{flash.toUpperCase()}</Text>
         </View>
 
+<<<<<<< HEAD
         <TouchableOpacity style={styles.topButton} onPress={handleCancel}>
           <Ionicons name="close" size={24} color="white" />
+=======
+        <TouchableOpacity style={styles.topButton} onPress={() => navigation.goBack()}>
+          <Ionicons name="close" size={28} color="white" />
+>>>>>>> origin/main
         </TouchableOpacity>
       </View>
 
@@ -139,8 +149,12 @@ export default function CameraScreen() {
 
       {/* Bottom Controls */}
       <View style={styles.bottomControls}>
+<<<<<<< HEAD
         {/* Empty space where gallery button was */}
         <View style={styles.emptySpace} />
+=======
+        <View style={styles.controlButtonPlaceholder} />
+>>>>>>> origin/main
 
         {/* Capture Button */}
         <Animated.View style={[styles.captureButtonContainer, { transform: [{ scale: scaleAnim }] }]}>
@@ -286,10 +300,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     zIndex: 1,
   },
+<<<<<<< HEAD
   emptySpace: {
     width: 50,
     height: 50,
   },
+=======
+>>>>>>> origin/main
   captureButtonContainer: {
     alignItems: 'center',
   },
@@ -316,6 +333,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  controlButtonPlaceholder: {
+    width: 50,
+    height: 50,
   },
   sideControls: {
     position: 'absolute',

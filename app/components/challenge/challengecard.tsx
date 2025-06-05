@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+<<<<<<< HEAD
 import { Camera } from 'react-native-feather';
 import { useRouter } from 'expo-router';
 import LeaderboardScreen from './leaderboard';
@@ -32,6 +33,12 @@ interface User {
   updated_at: string;
 }
 
+=======
+import { Ionicons } from '@expo/vector-icons';
+import LeaderboardScreen from './leaderboard';
+import { PlayerAvatar } from '../../interfaces/challenge';
+
+>>>>>>> origin/main
 export interface ChallengeCardProps {
   title?: string;
   description?: string;
@@ -40,6 +47,7 @@ export interface ChallengeCardProps {
   playerCount?: number; // This will be deprecated in favor of real data
   challengeId?: string; // Add challenge ID to fetch participants
   onPress?: () => void;
+  onPressCamera?: () => void;
 }
 
 const ChallengeCard: React.FC<ChallengeCardProps> = ({
@@ -50,6 +58,7 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
   playerCount = 0, // Fallback for backward compatibility
   challengeId,
   onPress = () => {},
+  onPressCamera,
 }) => {
   const router = useRouter();
   const [participants, setParticipants] = useState<User[]>([]);
@@ -178,8 +187,13 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
           </Text>
         </View>
 
+<<<<<<< HEAD
         <TouchableOpacity style={styles.arrowButton} onPress={handleCameraPress}>
           <Camera width={18} height={18} color="white" />
+=======
+        <TouchableOpacity style={styles.cameraButton} onPress={onPressCamera} activeOpacity={0.7}>
+          <Ionicons name="camera-outline" size={24} color="white" />
+>>>>>>> origin/main
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -190,14 +204,14 @@ const styles = StyleSheet.create({
   container: {
     width: 250,
     height: 350,
-    borderRadius: 25,
+    borderRadius: 16,
     overflow: 'hidden',
     position: 'relative',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 10,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+    elevation: 5,
   },
   backgroundImage: {
     width: '100%',
@@ -226,7 +240,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 14,
     color: 'white',
-    opacity: 0.9,
+    opacity: 0.8,
     lineHeight: 18,
   },
   bottomContainer: {
@@ -267,14 +281,20 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 10,
     marginTop: 5,
+    opacity: 0.9,
   },
-  arrowButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#0000',
+  cameraButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 165, 0, 0.8)',
     justifyContent: 'center',
     alignItems: 'center',
+<<<<<<< HEAD
+=======
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.5)',
+>>>>>>> origin/main
   },
 });
 
