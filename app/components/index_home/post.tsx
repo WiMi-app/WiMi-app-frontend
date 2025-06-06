@@ -85,7 +85,9 @@ const Post: React.FC<PostElements> = ({
           <Image
             style={[styles.iceBucketPhoto1, styles.iconLayout]}
             // contentFit="cover"
-            source={require("../../../assets/ice-bucket-photo.png")}
+          source={
+         { uri: post_pic }
+        }
           />
           <View style={[styles.descriptionLayout, styles.infoSpaceBlock]}>
             <Text style={[styles.description, styles.taskTypo]}>

@@ -1,43 +1,10 @@
-// import { View, Text, StyleSheet } from "react-native"
-
-// export default function HomeScreen() {
-//   return (
-//     <View style={styles.container}>
-//       <Text style={styles.title}>Explore</Text>
-//       <Text style={styles.subtitle}>Welcome to your new app!</Text>
-//     </View>
-//   )
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     alignItems: "center",
-//     justifyContent: "center",
-//     padding: 20,
-//   },
-//   title: {
-//     fontSize: 24,
-//     fontWeight: "bold",
-//     marginBottom: 10,
-//   },
-//   subtitle: {
-//     fontSize: 16,
-//     color: "#777",
-//   },
-// })
-
-
 import * as React from "react";
 import {
-  Pressable,
   StyleSheet,
   TextInput,
   View,
-  Text,
-  ImageBackground,
-  ScrollView,
   Image,
+  FlatList
 } from "react-native";
 // import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -55,6 +22,77 @@ import {
   Padding,
   Gap,
 } from "./GlobalStyles";
+
+import renderMessageItem from '../components/notifications/notifcard';
+
+
+// Sample data
+const messages = [
+  {
+    id: '1',
+    name: 'Darrell Steward',
+    username: 'darrtel_number1',
+    time: '',
+    notificationCount: null,
+    avatar: 'https://i.pravatar.cc/100?img=1',
+  },
+  {
+    id: '2',
+    name: 'Theresa Webb',
+    username: 'theresa_webb',
+    time: '',
+    notificationCount: null,
+    avatar: 'https://i.pravatar.cc/100?img=2',
+  },
+  {
+    id: '3',
+    name: 'Arlene McCoy',
+    username: 'arlene_MC',
+    time: '',
+    notificationCount: null,
+    avatar: 'https://i.pravatar.cc/100?img=3',
+  },
+  {
+    id: '4',
+    name: 'Darlene Robertson',
+    username: 'robertson123',
+    time: '',
+    notificationCount: null,
+    avatar: 'https://i.pravatar.cc/100?img=4',
+  },
+  {
+    id: '5',
+    name: 'Kristin Watson',
+    username: 'kristin_watson',
+    time: '',
+    notificationCount: null,
+    avatar: 'https://i.pravatar.cc/100?img=5',
+  },
+  {
+    id: '6',
+    name: 'Jacob Jones',
+    username: 'jacob_jones',
+    time: '',
+    notificationCount: null,
+    avatar: 'https://i.pravatar.cc/100?img=6',
+  },
+  {
+    id: '7',
+    name: 'Guy Hawkins',
+    username: 'hawkins',
+    time: '',
+    notificationCount: null,
+    avatar: 'https://i.pravatar.cc/100?img=7',
+  },
+  {
+    id: '8',
+    name: 'Albert Flores',
+    username: 'albert_flores',
+    time: '',
+    notificationCount: null,
+    avatar: 'https://i.pravatar.cc/100?img=8',
+  },
+];
 
 const ExploreScreen = () => {
   return (
@@ -74,11 +112,21 @@ const ExploreScreen = () => {
             style={[styles.iconlinearsetting4, {width:20, height:20}]}
             source={require("../../assets/iconlinearsetting4.png")}
           />
+
         </View>
-        <Pressable style={styles.dailyChallenge}>
+        <FlatList
+        data={messages}
+        renderItem={renderMessageItem}
+        keyExtractor={(item) => item.id}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.messagesList}
+        />
+        {/* Daily Challenge and Explore headers commented temporarily... */}
+        {/* <Pressable style={styles.dailyChallenge}>
           <View style={styles.heading}>
             <Text style={[styles.dailyChallenge1, styles.exploreTypo]}>{`Daily
-Challenge`}</Text>
+              Challenge`}
+            </Text>
             <Text style={styles.challengeDdlBefore}>
               Challenge DDL: Before 10 AM
             </Text>
@@ -114,13 +162,16 @@ Challenge`}</Text>
             />
           </ImageBackground>
         </Pressable>
-        <Text style={[styles.explore, styles.exploreTypo]}>Explore</Text>
+        <Text style={[styles.explore, styles.exploreTypo]}>Explore</Text> */}
       </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+    messagesList: {
+    paddingHorizontal: 16,
+  },
   exploreTopicsScrollViewContent: {
     flexDirection: "row",
     alignItems: "center",

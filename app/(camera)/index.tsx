@@ -11,16 +11,20 @@ import {
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
 
 const { width, height } = Dimensions.get('window');
 
 export default function CameraScreen() {
+  const router = useRouter();
   const [type, setType] = useState<'front' | 'back'>('back');
   const [flash, setFlash] = useState<'off' | 'on' | 'auto'>('off');
   const [isRecording, setIsRecording] = useState(false);
   const cameraRef = useRef<CameraView>(null);
   const [permission, requestPermission] = useCameraPermissions();
   const scaleAnim = useRef(new Animated.Value(1)).current;
+  const navigation = useNavigation();
 
   const takePicture = async () => {
     if (cameraRef.current) {
@@ -45,12 +49,21 @@ export default function CameraScreen() {
           skipProcessing: false,
         });
         console.log('Photo taken:', photo.uri);
-        Alert.alert('Success', 'Photo taken successfully!');
+        
+        // Navigate to post creation page with photo URI
+        router.push({
+          pathname: '/(camera)/post' as any,
+          params: { photoUri: photo.uri }
+        });
       } catch (error) {
         console.error('Error taking picture:', error);
         Alert.alert('Error', 'Failed to take picture');
       }
     }
+  };
+
+  const handleCancel = () => {
+    router.push('/(tabs)/challenges' as any);
   };
 
   const toggleFlash = () => {
@@ -85,7 +98,7 @@ export default function CameraScreen() {
   if (!permission.granted) {
     return (
       <View style={styles.permissionContainer}>
-        <Ionicons name="camera-off-outline" size={80} color="#666" />
+        <Ionicons name="camera-outline" size={80} color="#666" />
         <Text style={styles.permissionTitle}>Camera Access Required</Text>
         <Text style={styles.permissionText}>
           Please enable camera permissions to take photos
@@ -118,8 +131,8 @@ export default function CameraScreen() {
           <Text style={styles.flashText}>{flash.toUpperCase()}</Text>
         </View>
 
-        <TouchableOpacity style={styles.topButton}>
-          <Ionicons name="settings-outline" size={24} color="white" />
+        <TouchableOpacity style={styles.topButton} onPress={() => navigation.goBack()}>
+          <Ionicons name="close" size={28} color="white" />
         </TouchableOpacity>
       </View>
 
@@ -128,13 +141,6 @@ export default function CameraScreen() {
 
       {/* Bottom Controls */}
       <View style={styles.bottomControls}>
-        {/* Gallery Button */}
-        <TouchableOpacity style={styles.galleryButton}>
-          <View style={styles.galleryPreview}>
-            <Ionicons name="images-outline" size={20} color="white" />
-          </View>
-        </TouchableOpacity>
-
         {/* Capture Button */}
         <Animated.View style={[styles.captureButtonContainer, { transform: [{ scale: scaleAnim }] }]}>
           <TouchableOpacity style={styles.captureButton} onPress={takePicture}>
@@ -151,33 +157,6 @@ export default function CameraScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Side Controls */}
-      <View style={styles.sideControls}>
-        <TouchableOpacity style={styles.sideButton}>
-          <Ionicons name="videocam-outline" size={24} color="white" />
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.sideButton}>
-          <Ionicons name="timer-outline" size={24} color="white" />
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.sideButton}>
-          <Ionicons name="grid-outline" size={24} color="white" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Mode Selector */}
-      <View style={styles.modeSelector}>
-        <TouchableOpacity style={styles.modeButton}>
-          <Text style={[styles.modeText, styles.modeTextActive]}>PHOTO</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.modeButton}>
-          <Text style={styles.modeText}>VIDEO</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.modeButton}>
-          <Text style={styles.modeText}>PORTRAIT</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }
@@ -270,32 +249,17 @@ const styles = StyleSheet.create({
   },
   bottomControls: {
     position: 'absolute',
-    bottom: 40,
+    bottom: 20,
     left: 0,
     right: 0,
+    height: 120,
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 30,
-    zIndex: 1,
-  },
-  galleryButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 10,
-    overflow: 'hidden',
-  },
-  galleryPreview: {
-    flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: 'white',
-    borderRadius: 10,
+    paddingHorizontal: 20,
   },
   captureButtonContainer: {
-    alignItems: 'center',
+    // This container is now centered by the parent
   },
   captureButton: {
     width: 80,
@@ -314,12 +278,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   flipButton: {
+    position: 'absolute',
+    right: 20,
+    bottom: 45, // Adjust as needed
+  },
+  controlButtonPlaceholder: {
     width: 50,
     height: 50,
-    borderRadius: 25,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   sideControls: {
     position: 'absolute',

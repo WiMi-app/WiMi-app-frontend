@@ -1,15 +1,7 @@
-import React from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
-  Image 
-} from 'react-native';
+import {   View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { MessageItem } from '../../interfaces/notifications';
-import RenderNotifType from './notiftype';
 
-const renderMessageItem = ({ item }: { item: MessageItem }) => (
+const renderProfileSearchItem = ({ item }: { item: MessageItem }) => (
     <TouchableOpacity style={styles.messageItem}>
       <Image source={{ uri: item.avatar }} style={styles.avatar} />
       <View style={styles.messageContent}>
@@ -19,12 +11,15 @@ const renderMessageItem = ({ item }: { item: MessageItem }) => (
         </View>
         <Text style={styles.username}>{item.username}</Text>
       </View>
+      {item.notificationCount > 0 && (
         <View style={styles.badge}>
-          <RenderNotifType type={item.notificationCount} />
+          <Text style={styles.badgeText}>
+            {item.notificationCount > 9 ? '9+' : item.notificationCount}
+          </Text>
         </View>
+      )}
     </TouchableOpacity>
 );
-
 
 const styles = StyleSheet.create({
   container: {
@@ -139,6 +134,7 @@ const styles = StyleSheet.create({
     color: '#999',
   },
   badge: {
+    backgroundColor: '#8B5CF6',
     borderRadius: 12,
     width: 24,
     height: 24,
@@ -153,4 +149,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default renderMessageItem;
+export default renderProfileSearchItem;

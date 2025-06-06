@@ -4,6 +4,7 @@ import Button from "../components/button_"
 import { Ionicons } from "@expo/vector-icons"
 import BouncingCircle from "../components/animations/ball"
 import AnimatedCheck from "../components/animations/twinkle"
+
 const RegisterSuccessScreen = () => {
   const navigation = useNavigation()
 

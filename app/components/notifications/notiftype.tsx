@@ -13,12 +13,11 @@ const RenderNotifType: React.FC<RenderNotifTypeProps> = ({ type }) => {
       case 1:
         return <Ionicons name="person-add" size={24} color="#A29BFE" />; // Follow
       case 2:
-        return <Ionicons name="chatbubble" size={24} color="#00B894" />; // Comment
+        return <Ionicons name="chatbubble" size={24} color="#8B5CF6" />; // Comment
       default:
-        return <Ionicons name="notifications" size={24} color="#CCCCCC" />; // Default
+        return null; // Default
     }
   };
-
   return getIcon();
 };
 

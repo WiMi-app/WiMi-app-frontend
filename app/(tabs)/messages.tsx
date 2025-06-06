@@ -18,7 +18,7 @@ const messages = [
     name: 'Darrell Steward',
     username: 'darrtel_number1',
     time: '11:03 AM',
-    notificationCount: 9,
+    notificationCount: 1,
     avatar: 'https://i.pravatar.cc/100?img=1',
   },
   {

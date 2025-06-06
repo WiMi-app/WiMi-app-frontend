@@ -20,6 +20,16 @@ export type PostData = {
   }
 }; 
 
+
+export type postPush = {
+  content : string,
+  media_urls : string[],
+  location : string,
+  is_private : boolean,
+  challenge_id : string,
+  categories : string[]
+}
+
 export type UserPostData = {
   id: string;
   username: string;

@@ -75,7 +75,7 @@ const LoginScreen = () => {
       } else {
 
       }
-    } 
+    }
     catch (e) {
       setLoading(false);
       handleException(e);

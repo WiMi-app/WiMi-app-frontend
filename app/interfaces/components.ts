@@ -1,4 +1,5 @@
 import { TextInputProps, ViewStyle, TextStyle } from 'react-native';
+import { Ionicons } from "@expo/vector-icons";
 
 export interface InputProps extends TextInputProps {
   label?: string;
