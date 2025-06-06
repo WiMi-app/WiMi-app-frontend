@@ -157,33 +157,6 @@ export default function CameraScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Side Controls */}
-      <View style={styles.sideControls}>
-        <TouchableOpacity style={styles.sideButton}>
-          <Ionicons name="videocam-outline" size={24} color="white" />
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.sideButton}>
-          <Ionicons name="timer-outline" size={24} color="white" />
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.sideButton}>
-          <Ionicons name="grid-outline" size={24} color="white" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Mode Selector */}
-      <View style={styles.modeSelector}>
-        <TouchableOpacity style={styles.modeButton}>
-          <Text style={[styles.modeText, styles.modeTextActive]}>PHOTO</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.modeButton}>
-          <Text style={styles.modeText}>VIDEO</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.modeButton}>
-          <Text style={styles.modeText}>PORTRAIT</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }

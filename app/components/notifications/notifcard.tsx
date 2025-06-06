@@ -7,6 +7,7 @@ import {
   Image 
 } from 'react-native';
 import { MessageItem } from '../../interfaces/notifications';
+import RenderNotifType from './notiftype';
 
 const renderMessageItem = ({ item }: { item: MessageItem }) => (
     <TouchableOpacity style={styles.messageItem}>
@@ -18,13 +19,9 @@ const renderMessageItem = ({ item }: { item: MessageItem }) => (
         </View>
         <Text style={styles.username}>{item.username}</Text>
       </View>
-      {item.notificationCount > 0 && (
         <View style={styles.badge}>
-          <Text style={styles.badgeText}>
-            {item.notificationCount > 9 ? '9+' : item.notificationCount}
-          </Text>
+          <RenderNotifType type={item.notificationCount} />
         </View>
-      )}
     </TouchableOpacity>
 );
 
@@ -142,7 +139,6 @@ const styles = StyleSheet.create({
     color: '#999',
   },
   badge: {
-    backgroundColor: '#8B5CF6',
     borderRadius: 12,
     width: 24,
     height: 24,

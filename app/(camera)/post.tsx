@@ -13,6 +13,8 @@ import {
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { postPush } from '../interfaces/post';
+
 
 export default function PostCreationScreen() {
   const router = useRouter();
@@ -21,6 +23,31 @@ export default function PostCreationScreen() {
   const [selectedChallenge, setSelectedChallenge] = useState('');
   const [location, setLocation] = useState('');
   const [loading, setLoading] = useState(false);
+  const [post, setPost] = useState<postPush>({
+    content : '' ,
+    media_urls : [],
+    location : '',
+    is_private : false,
+    challenge_id : '',
+    categories : []
+  });
+
+{/* }
+{
+  "content": "string",
+  "media_urls": [
+    [
+      "string"
+    ]
+  ],
+  "location": "string",
+  "is_private": false,
+  "challenge_id": "string",
+  "categories": [
+    "string"
+  ]
+}
+  */}
 
   const handlePublish = async () => {
     if (!caption.trim()) {

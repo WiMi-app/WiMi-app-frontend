@@ -72,7 +72,7 @@ const LoginScreen = () => {
         // If token saving failed, an alert is already shown by saveToken.
         // User remains on the login page.
       }
-    } 
+    }
     catch (e) {
       setLoading(false);
       if (axios.isAxiosError(e)) {
