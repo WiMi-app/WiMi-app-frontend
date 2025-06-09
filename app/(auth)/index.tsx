@@ -1,11 +1,33 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
+import {useState, useEffect} from 'react';
+import { View, Text, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
 import Svg, {Path, Defs, Pattern, Use, Image  } from 'react-native-svg';
 import { useNavigation } from "@react-navigation/native"
 import Button from '../components/button_';
-
+import {getToken} from "../store/token";
+import { getMyData } from "../fetch/user"
+import { handleException } from '../utils/exceptionHandler';
+import { useRouter } from "expo-router"
 export default function Index() {
-    const navigation = useNavigation()
+    const navigation = useNavigation();
+    const router = useRouter();
+    const [loading, setLoading] = useState(false);
+
+    useEffect(()=>{
+      (async function checkRefresh() {
+        setLoading(true);
+        try{
+          const refreshToken = await getToken('refreshToken');
+          console.log(refreshToken);
+          const response = await getMyData();
+          setLoading(false);
+          router.push('/(tabs)' as any);
+        }catch(e){
+          handleException(e);
+          setLoading(false);
+        }
+      })();
+    },[]);
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
@@ -47,11 +69,13 @@ export default function Index() {
       {/* Buttons */}
       <View style={styles.buttonContainer}>
       <Button title="Log In" onPress={() => navigation.navigate("login")} style={styles.loginButton}
+              loading={loading}
               variant="gradient"
               gradientColors={['#5858E8', '#9B5EFC']}  />
 
 
         <Button title="Sign Up" onPress={() => navigation.navigate("register")} 
+              loading={loading}
               variant="outline"
               borderColor="#5858E8"
               customTextColor="#5858E8" />
