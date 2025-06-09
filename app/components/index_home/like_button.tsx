@@ -57,7 +57,7 @@ const LikeButton = ({
 const styles = StyleSheet.create({
     suggested: {
         fontFamily: FontFamily.poppinsSemiBold,
-        fontWeight: "600",
+        fontWeight: "bold",
         textAlign: "center",
     },
 
