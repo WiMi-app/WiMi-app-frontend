@@ -15,6 +15,7 @@ import { useNavigation } from "expo-router";
 import { getMyData } from "../fetch/user";
 import { UserData } from "../interfaces/user";
 
+
 const ProfileScreen = () => {
   const navigation = useNavigation();
   const [userData, setUserData] = useState<UserData | null>(null);

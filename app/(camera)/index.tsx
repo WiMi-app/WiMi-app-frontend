@@ -20,7 +20,6 @@ export default function CameraScreen() {
   const router = useRouter();
   const [type, setType] = useState<'front' | 'back'>('back');
   const [flash, setFlash] = useState<'off' | 'on' | 'auto'>('off');
-  const [isRecording, setIsRecording] = useState(false);
   const cameraRef = useRef<CameraView>(null);
   const [permission, requestPermission] = useCameraPermissions();
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -48,6 +47,7 @@ export default function CameraScreen() {
           base64: false,
           skipProcessing: false,
         });
+        
         console.log('Photo taken:', photo.uri);
         
         // Navigate to post creation page with photo URI

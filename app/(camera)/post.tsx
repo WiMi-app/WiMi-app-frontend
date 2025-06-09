@@ -23,6 +23,7 @@ export default function PostCreationScreen() {
   const [selectedChallenge, setSelectedChallenge] = useState('');
   const [location, setLocation] = useState('');
   const [loading, setLoading] = useState(false);
+  
   const [post, setPost] = useState<postPush>({
     content : '' ,
     media_urls : [],
