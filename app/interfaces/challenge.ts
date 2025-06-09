@@ -19,6 +19,7 @@ export type ChallengePush = {
   "time_window": number,
   "background_photo": String[]
 }
+
 export type UserPostData = {
   id: string;
   username: string;

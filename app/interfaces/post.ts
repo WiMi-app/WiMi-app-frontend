@@ -26,8 +26,7 @@ export type postPush = {
   media_urls : string[],
   location : string,
   is_private : boolean,
-  challenge_id : string,
-  categories : string[]
+  challenge_id : string | string[],
 }
 
 export type UserPostData = {

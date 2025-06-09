@@ -54,7 +54,6 @@ export async function deleteMyData(userID : String) : Promise<any> {
 export async function getUserData(userID : String): Promise<UserData | null> {
     try {
         const access_token = await getToken('accessToken');
-        
         const response = await apiClient.get<UserData>(`/users/${userID}`, {
             headers: { Authorization: `Bearer ${access_token}` },
         });

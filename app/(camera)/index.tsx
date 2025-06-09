@@ -11,12 +11,14 @@ import {
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 const { width, height } = Dimensions.get('window');
 
 export default function CameraScreen() {
+  const {title, id} = useLocalSearchParams();
+  console.log(title,id);
   const router = useRouter();
   const [type, setType] = useState<'front' | 'back'>('back');
   const [flash, setFlash] = useState<'off' | 'on' | 'auto'>('off');
@@ -53,7 +55,7 @@ export default function CameraScreen() {
         // Navigate to post creation page with photo URI
         router.push({
           pathname: '/(camera)/post' as any,
-          params: { photoUri: photo.uri}
+          params: { photoUri: photo.uri, title: title, id : id}
         });
 
         

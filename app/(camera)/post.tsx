@@ -15,16 +15,25 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { postPush } from '../interfaces/post';
 import * as FileSystem from 'expo-file-system';
-import { uploadPostPhoto } from '../fetch/posts';
+import { uploadPostPhoto, createPost } from '../fetch/posts';
+import { create } from 'react-test-renderer';
 
 export default function PostCreationScreen() {
   const router = useRouter();
-  const { photoUri} = useLocalSearchParams();
+  const {title, id, photoUri} = useLocalSearchParams();
   const [caption, setCaption] = useState('');
   const [selectedChallenge, setSelectedChallenge] = useState('');
   const [location, setLocation] = useState('');
   const [loading, setLoading] = useState(false);
   const [base64, setBase64] = useState<string | null>(null);
+
+  const [post, setPost] = useState<postPush>({
+    content : '' ,
+    media_urls : [],
+    location : 'Canton',
+    is_private : false,
+    challenge_id : '',
+  });
 
   useEffect(() => {
     const convertToBase64 = async () => {
@@ -40,16 +49,6 @@ export default function PostCreationScreen() {
     };
     convertToBase64();
   }, [photoUri]);
-
-  const [post, setPost] = useState<postPush>({
-    content : '' ,
-    media_urls : [],
-    location : '',
-    is_private : false,
-    challenge_id : '',
-    categories : []
-  });
-
 
   const handlePublish = async () => {
     if (!caption.trim()) {
@@ -67,10 +66,19 @@ export default function PostCreationScreen() {
       });
       
       const url = await uploadPostPhoto([base64]);
+      const mediaUrls = url.map((item: any[]) => item[1]);
+
       console.log(url);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      const newPost: postPush = {
+        content: caption,
+        media_urls: mediaUrls,
+        location: location || 'Canton',
+        is_private: false,
+        challenge_id: id as string, // If you're confident id is string
+      };
+      console.log(newPost);
+      const status = await createPost(newPost);
+      console.log(status);
       Alert.alert('Success', 'Your post has been published!', [
         {
           text: 'OK',
@@ -121,13 +129,12 @@ export default function PostCreationScreen() {
         <TouchableOpacity style={styles.optionRow}>
           <View style={styles.optionLeft}>
             <Ionicons name="trophy-outline" size={24} color="#666" />
-            <Text style={styles.optionText}>Add to Challenge</Text>
+            <Text style={styles.optionText}> Challenge</Text>
           </View>
           <View style={styles.optionRight}>
             <Text style={styles.optionValue}>
-              {selectedChallenge || 'Select Challenge'}
+              {title || 'None'}
             </Text>
-            <Ionicons name="chevron-forward" size={20} color="#999" />
           </View>
         </TouchableOpacity>
 

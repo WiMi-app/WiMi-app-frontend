@@ -9,7 +9,6 @@ import { getUserData } from '../fetch/user';
 import { getChallenge } from "../fetch/challenges";
 import { getLike } from "../fetch/likes";
 import { UserPostData } from "../interfaces/post";
-import { Plus } from 'react-native-feather';
 import { useNavigation } from "@react-navigation/native"
 
 // type UserPostData = {
@@ -57,7 +56,7 @@ useEffect(() => {
       postData.map(async (post) => {
         const user = await getUserData(post.user_id);
         const challenge = await getChallenge(post.challenge_id);
-        const likes_ = await getLike(post.id);
+        //const likes_ = await getLike(post.id);
         if (user && post && challenge) {
           const userPost: UserPostData = {
             id: post.id,
@@ -67,19 +66,22 @@ useEffect(() => {
             challenge: challenge.title,
             post_photo: post.media_urls[0],
             description: post.content,
-            likes: likes_ ? likes_.length : [],
+            likes: ["1"],
             comments: 4,
           };
+          console.log(userPost);
           return userPost;
         }
         return null;
       })
     );
-
+    console.log("done");
     // Filter out any null results
     setPostData(posts.filter((p): p is UserPostData => p !== null));
+    console.log(postData);
   })();
 }, []);
+
   return (
     <SafeAreaView style={styles.homeScreen}>
       {/* <View style={styles.postList}> */}
@@ -181,7 +183,7 @@ const styles = StyleSheet.create({
   },
   homeHeader: {
     height: 48,
-    justifyContent: "center",
+    justifyContent: "flex-end",
     alignSelf: "stretch",
     alignItems: "center",
   },

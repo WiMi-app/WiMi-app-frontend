@@ -6,6 +6,7 @@ import Header from "../components/challenge/header";
 import ChallengeView from "../components/challenge/challenge_view";
 import React, { useEffect, useState } from "react";
 import { useNavigation } from '@react-navigation/native';
+import { useRouter } from "expo-router";
 
 
 const { width, height } = Dimensions.get('window');
@@ -42,6 +43,7 @@ export default function ChallengeScreen() {
   const [loading, setLoading] = useState(true);
   const [currentChallengeIndex, setCurrentChallengeIndex] = useState(0);
   const navigation = useNavigation<any>();
+  const router = useRouter();
 
   const avatars : PlayerAvatar[] = [
     { id: '1', image: require('../../assets/test/profile.png') },
@@ -89,9 +91,14 @@ export default function ChallengeScreen() {
     setCurrentChallengeIndex(index);
   };
 
-  const handleOpenCameraPress = (challengeId: string) => {
-    console.log(`Camera icon pressed for challenge: ${challengeId}`);
-    navigation.navigate('(camera)', { challengeId });
+  const handleOpenCameraPress = (challenge: Challenge) => {
+    console.log(`Camera icon pressed for challenge: ${challenge.title}`);
+
+    router.push({
+          pathname: '(camera)' as any,
+          params: { title : challenge.title, id : challenge.id}
+  });
+    //navigation.navigate('(camera)', {params : { title : challenge.title, id : challenge.id} });
   };
 
   const challengeItems = challenges.map((item, index) => (
@@ -104,7 +111,7 @@ export default function ChallengeScreen() {
       playerAvatars={avatars}
       playerCount={item.participants_count || 0}
       onPress={() => handleChallengeCardPress(item, index)}
-      onPressCamera={() => handleOpenCameraPress(item.id)}
+      onPressCamera={() => handleOpenCameraPress(item)}
     />
   ));
 
@@ -129,6 +136,7 @@ export default function ChallengeScreen() {
   }
 
   return (
+    
     <ScrollView style={styles.container}>
       <Header title={headerTitle}/>
       <View style={styles.Carousel}>
