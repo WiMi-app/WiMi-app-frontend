@@ -67,8 +67,8 @@ export default function PostCreationScreen() {
       
       const url = await uploadPostPhoto([base64]);
       const mediaUrls = url.map((item: any[]) => item[1]);
-
       console.log(url);
+      
       const newPost: postPush = {
         content: caption,
         media_urls: mediaUrls,
@@ -76,6 +76,7 @@ export default function PostCreationScreen() {
         is_private: false,
         challenge_id: id as string, // If you're confident id is string
       };
+
       console.log(newPost);
       const status = await createPost(newPost);
       console.log(status);
