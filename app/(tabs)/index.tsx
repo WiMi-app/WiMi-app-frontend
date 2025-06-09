@@ -43,21 +43,23 @@ const PostItem = ({postItem}: UserPostProps) => (
 );
 
 export default function HomeScreen() {
-  const [postData, setPostData ] = useState<UserPostData[]>([]);
+  const [postData, setPostData] = useState<UserPostData[]>([]);
+  const [refreshing, setRefreshing] = useState(false); // new state
   const router = useRouter();
   const navigation = useNavigation();
 
-useEffect(() => {
-  (async () => {
+  const fetchPosts = async () => {
+    setRefreshing(true);
     const postData = await getListPosts();
-    if (!postData) return;
+    if (!postData) {
+      setRefreshing(false);
+      return;
+    }
 
     const posts = await Promise.all(
       postData.map(async (post) => {
         const user = await getUserData(post.user_id);
         const challenge = await getChallenge(post.challenge_id);
-        console.log(challenge);
-        //const likes_ = await getLike(post.id);
         if (user && post && challenge) {
           const userPost: UserPostData = {
             id: post.id,
@@ -67,51 +69,54 @@ useEffect(() => {
             challenge: challenge.title,
             post_photo: post.media_urls[0],
             description: post.content,
-            likes: ["1"],
-            comments: 4,
+            likes: ["1"], // placeholder
+            comments: 4,  // placeholder
           };
-          //console.log(userPost);
           return userPost;
         }
         return null;
       })
     );
-    // Filter out any null results
-    setPostData(posts.filter((p): p is UserPostData => p !== null));
 
-  })();
-}, []);
-    console.log(postData);
+    setPostData(posts.filter((p): p is UserPostData => p !== null));
+    setRefreshing(false);
+  };
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
   return (
     <SafeAreaView style={styles.homeScreen}>
-      {/* <View style={styles.postList}> */}
-        <View style={[styles.homeHeader, styles.postFlexBox]}>
-          <View style={[styles.headerLayout, styles.homeTabsFlexBox]}>
-            <Image
-              style={styles.iconLayout1}
-              // contentFit="cover"
-              source={require("../../assets/wimi-logo.png")}
-              width={48}
-              height={48}
-            />
-            <View style={[styles.homeTabs, styles.homeTabsFlexBox]}>
-              <Text style={[styles.suggested, styles.suggestedTypo]}>
-                Suggested
-              </Text>
-            </View>
+      <View style={[styles.homeHeader, styles.postFlexBox]}>
+        <View style={[styles.headerLayout, styles.homeTabsFlexBox]}>
+          <Image
+            style={styles.iconLayout1}
+            source={require("../../assets/wimi-logo.png")}
+            width={48}
+            height={48}
+          />
+          <View style={[styles.homeTabs, styles.homeTabsFlexBox]}>
+            <Text style={[styles.suggested, styles.suggestedTypo]}>
+              Suggested
+            </Text>
           </View>
         </View>
-        <FlatList
-          data={postData}
-          renderItem={({item}) => <PostItem postItem={item}/>}
-          keyExtractor={item => item.id}
-          style={[{width:"100%"}]}
-          showsVerticalScrollIndicator={false}
-        />
-      {/* </View> */}
+      </View>
+
+      <FlatList
+        data={postData}
+        renderItem={({ item }) => <PostItem postItem={item} />}
+        keyExtractor={(item) => item.id}
+        style={{ width: "100%" }}
+        showsVerticalScrollIndicator={false}
+        refreshing={refreshing}
+        onRefresh={fetchPosts}
+      />
     </SafeAreaView>
   );
-};
+}
+
 
 const styles = StyleSheet.create({
   postFlexBox: {

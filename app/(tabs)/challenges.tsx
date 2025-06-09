@@ -98,7 +98,6 @@ export default function ChallengeScreen() {
           pathname: '(camera)' as any,
           params: { title : challenge.title, id : challenge.id}
   });
-    //navigation.navigate('(camera)', {params : { title : challenge.title, id : challenge.id} });
   };
 
   const challengeItems = challenges.map((item, index) => (
