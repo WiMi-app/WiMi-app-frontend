@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
 
     postButton: {
         paddingBottom: 20,
-        gap: 24,
+        gap: 12,
         paddingHorizontal: Padding.p_9xl,
         flexDirection: "row",
         alignSelf: "stretch",

@@ -19,23 +19,24 @@ const CommentButton = ({
     const [commented, setCommented] = useState(false);
 
   return (
-    <Pressable style={[styles.commentButton, styles.buttonFlexBox]} 
+    <Pressable style={[styles.buttonFlexBox]} 
         onPress={() => {setCommented((isCommented) => !isCommented);
             // let test = getCommentList();
             // console.log("This is Test: ", test);
         }}>
         <CommentIcon/>
-        <MaskedView maskElement={
-            <Text style={[styles.suggested, styles.suggestedTypo]}>
-                {commented ? SimplifyNumber(comment_count+1) : SimplifyNumber(comment_count)}
-            </Text>
-            } 
-            style={styles.heart}>
+        <MaskedView 
+            maskElement={
+                <Text style={[styles.suggested, styles.suggestedTypo]}>
+                    {commented ? SimplifyNumber(comment_count+1) : SimplifyNumber(comment_count)}
+                </Text>
+            }
+            style={styles.textContainer}>
             <LinearGradient
                 start={{x:0.5, y:0}}
                 end={{x:0.5, y:1}}
-                colors={commented ? ["#FFC166", "#FF9966"] : ["#FFC166", "#FF9966"]}>
-                <Text style={[styles.suggested, styles.suggestedTypo, {opacity:0}]}>
+                colors={["#FFC166", "#FF9966"]}>
+                <Text style={[styles.suggested, styles.suggestedTypo, {opacity: 0}]}>
                     {commented ? SimplifyNumber(comment_count+1) : SimplifyNumber(comment_count)}
                 </Text>
             </LinearGradient>
@@ -53,23 +54,19 @@ const styles = StyleSheet.create({
 
     suggestedTypo: {
         textAlign: "center",
-        lineHeight: 24,
         fontSize: FontSize.size_base,
     },
 
-    commentButton: {
-        width: 40,
-    },
-
     buttonFlexBox: {
-        gap: Gap.gap_md,
+        gap: Gap.gap_sm,
         height: 20,
         flexDirection: "row",
         alignItems: "center",
     },
 
-    heart: {
-
+    textContainer: {
+        alignItems: "center",
+        justifyContent: "center",
     },
 
 });
