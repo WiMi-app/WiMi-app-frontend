@@ -80,8 +80,6 @@ useEffect(() => {
     setPostData(posts.filter((p): p is UserPostData => p !== null));
   })();
 }, []);
-
-  console.log(postData);
   return (
     <SafeAreaView style={styles.homeScreen}>
       {/* <View style={styles.postList}> */}
@@ -98,17 +96,7 @@ useEffect(() => {
               <Text style={[styles.suggested, styles.suggestedTypo]}>
                 Suggested
               </Text>
-              <Text style={[styles.following, styles.suggestedTypo]}>
-                Following
-              </Text>
             </View>
-            <TouchableOpacity 
-              style={styles.iconContainer} 
-              onPress={()=>{navigation.navigate('(createpost)' as never)}}
-              activeOpacity={0.7}
-            >
-              <Plus width={20} height={20} color="#f2f2f2" />
-            </TouchableOpacity>
           </View>
         </View>
         <FlatList
@@ -193,7 +181,7 @@ const styles = StyleSheet.create({
   },
   homeHeader: {
     height: 48,
-    justifyContent: "flex-end",
+    justifyContent: "center",
     alignSelf: "stretch",
     alignItems: "center",
   },

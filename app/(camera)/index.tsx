@@ -44,7 +44,7 @@ export default function CameraScreen() {
 
         const photo = await cameraRef.current.takePictureAsync({
           quality: 0.8,
-          base64: false,
+          base64: true,
           skipProcessing: false,
         });
         
@@ -53,8 +53,10 @@ export default function CameraScreen() {
         // Navigate to post creation page with photo URI
         router.push({
           pathname: '/(camera)/post' as any,
-          params: { photoUri: photo.uri }
+          params: { photoUri: photo.uri}
         });
+
+        
       } catch (error) {
         console.error('Error taking picture:', error);
         Alert.alert('Error', 'Failed to take picture');

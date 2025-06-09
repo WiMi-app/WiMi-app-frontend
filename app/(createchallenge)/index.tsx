@@ -2,9 +2,25 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView } from 
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import { LinearGradient } from 'expo-linear-gradient'
+import {ChallengePush} from '../interfaces/challenge';
+import { useState } from "react";
+import { createChallenge } from "../fetch/challenges";
 
 export default function CreateChallengeScreen() {
-  const router = useRouter()
+  const router = useRouter();
+  const [challenge, setChallenge] = useState<ChallengePush>({
+  title: "",
+  description: "",
+  due_date: new Date(),
+  location: "",
+  restriction: "",
+  repetition: "",
+  repetition_frequency: 0,
+  check_in_time: "",
+  is_private: false,
+  time_window: 0,
+  background_photo: [],
+});
 
   return (
     <View style={styles.container}>

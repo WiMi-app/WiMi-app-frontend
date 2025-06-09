@@ -1,7 +1,7 @@
 import { getToken } from "../store/token";
 import apiClient from "../api/refresh";
 
-export async function createChellenge(content : JSON): Promise<any> {
+export async function createChallenge(content : JSON): Promise<any> {
     try {
         const access_token = await getToken('accessToken');
         const response = await apiClient.post<any>('/challenges', content, {
@@ -129,6 +129,20 @@ export async function getMyChallenges(followID : string): Promise<any> {
         return response.data;
     } catch (error: any) {
         console.error('Failed to fetch challenge data:', error.response?.status || error.message);
+        return null;
+    }
+}
+
+export async function uploadChallengePhoto(base64_images: (string | null)[]): Promise<any> {
+    try {
+        const access_token = await getToken('accessToken');
+        const response = await apiClient.post<any>('posts/media/base64', {base64_images}, {
+            headers: { Authorization: `Bearer ${access_token}` },
+        });
+
+        return response.data;
+    } catch (error: any) {
+        console.error('Failed to fetch challenge data:', error.response?.data || error.message);
         return null;
     }
 }

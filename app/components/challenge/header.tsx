@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image } from 'react-native';
 import { Plus } from 'react-native-feather';
 import { useNavigation } from "@react-navigation/native"
 import { HeaderProps } from '../../interfaces/challenge';
@@ -11,8 +11,8 @@ const Header: React.FC<HeaderProps> = ({title, onNotificationPress }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}> {title}</Text>
-
+      <Text style={styles.title}> {title}
+      </Text>
         <View style={styles.subcontainer}>
           <TouchableOpacity 
             style={styles.iconContainer} 

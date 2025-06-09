@@ -5,6 +5,20 @@ export interface HeaderProps {
     onNotificationPress?: () => void;
 } 
 
+
+export type ChallengePush = {
+  "title": String,
+  "description": String,
+  "due_date": Date,
+  "location": String,
+  "restriction": String,
+  "repetition": String,
+  "repetition_frequency": 0,
+  "check_in_time": String,
+  "is_private": Boolean,
+  "time_window": number,
+  "background_photo": String[]
+}
 export type UserPostData = {
   id: string;
   username: string;

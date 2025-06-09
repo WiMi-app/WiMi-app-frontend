@@ -81,3 +81,27 @@ export async function updatePosts(data : JSON, postID : String): Promise<any> {
 }
 
 
+export async function uploadPostPhoto(base64_images: string[]): Promise<any> {
+  try {
+    const access_token = await getToken('accessToken');
+
+    const formData = new URLSearchParams();
+    base64_images.forEach(img => formData.append('base64_images', img));
+
+    const response = await apiClient.post<any>(
+      'posts/media/base64',
+      formData.toString(),
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error: any) {
+    console.error('Failed to upload post photo:', error.response?.data || error.message);
+    return null;
+  }
+}

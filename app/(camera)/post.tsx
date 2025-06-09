@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,16 +14,33 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { postPush } from '../interfaces/post';
-
+import * as FileSystem from 'expo-file-system';
+import { uploadPostPhoto } from '../fetch/posts';
 
 export default function PostCreationScreen() {
   const router = useRouter();
-  const { photoUri } = useLocalSearchParams();
+  const { photoUri} = useLocalSearchParams();
   const [caption, setCaption] = useState('');
   const [selectedChallenge, setSelectedChallenge] = useState('');
   const [location, setLocation] = useState('');
   const [loading, setLoading] = useState(false);
-  
+  const [base64, setBase64] = useState<string | null>(null);
+
+  useEffect(() => {
+    const convertToBase64 = async () => {
+      if (photoUri) {
+        const base64String = await FileSystem.readAsStringAsync(photoUri as string, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+
+        // Add prefix if needed
+        const dataUri = `data:image/jpeg;base64,${base64String}`;
+        setBase64(dataUri);
+      }
+    };
+    convertToBase64();
+  }, [photoUri]);
+
   const [post, setPost] = useState<postPush>({
     content : '' ,
     media_urls : [],
@@ -33,22 +50,6 @@ export default function PostCreationScreen() {
     categories : []
   });
 
-{/* }
-{
-  "content": "string",
-  "media_urls": [
-    [
-      "string"
-    ]
-  ],
-  "location": "string",
-  "is_private": false,
-  "challenge_id": "string",
-  "categories": [
-    "string"
-  ]
-}
-  */}
 
   const handlePublish = async () => {
     if (!caption.trim()) {
@@ -56,7 +57,6 @@ export default function PostCreationScreen() {
       return;
     }
 
-    setLoading(true);
     try {
       // Here you would implement the actual post creation logic
       console.log('Publishing post with:', {
@@ -66,6 +66,8 @@ export default function PostCreationScreen() {
         location,
       });
       
+      const url = await uploadPostPhoto([base64]);
+      console.log(url);
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       

@@ -153,6 +153,7 @@ const DetailsScreen = ({ challenge }: DetailsScreenProps) => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+
       <Modal
         animationType="fade"
         transparent={true}
@@ -179,11 +180,8 @@ const DetailsScreen = ({ challenge }: DetailsScreenProps) => {
         </TouchableOpacity>
       </Modal>
 
-      <View style={styles.header}>
-        <Text style={styles.title}>{challenge.title}</Text>
-      </View>
-
-      <View style={styles.section}>
+        <View style={styles.eventHeader}>
+              <Text style={styles.eventTitle}>{challenge.title}</Text>
         <View style={styles.detailItem}>
           <Ionicons name="calendar-outline" size={20} color="#5858E8" style={styles.icon} />
           <Text style={styles.detailText}>Due: {formatDate(challenge.due_date)}</Text>
@@ -196,24 +194,9 @@ const DetailsScreen = ({ challenge }: DetailsScreenProps) => {
           <Ionicons name="location-outline" size={20} color="#5858E8" style={styles.icon} />
           <Text style={styles.detailText}>{challenge.location || 'Any location'}</Text>
         </View>
-      </View>
+      
+        </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Description</Text>
-        <Text style={styles.descriptionText}>
-          {showFullDescription 
-            ? challenge.description 
-            : `${challenge.description.substring(0, 100)}...`
-          }
-        </Text>
-        {challenge.description.length > 100 && (
-          <TouchableOpacity onPress={() => setShowFullDescription(!showFullDescription)}>
-            <Text style={styles.readMore}>
-              {showFullDescription ? 'Show Less' : 'Read More'}
-            </Text>
-          </TouchableOpacity>
-        )}
-      </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Participants</Text>
@@ -235,6 +218,23 @@ const DetailsScreen = ({ challenge }: DetailsScreenProps) => {
             )}
             {participants.length === 0 && <Text style={styles.detailText}>No one has joined yet.</Text>}
           </View>
+        )}
+      </View>
+      
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Description</Text>
+        <Text style={styles.descriptionText}>
+          {showFullDescription 
+            ? challenge.description 
+            : `${challenge.description.substring(0, 100)}...`
+          }
+        </Text>
+        {challenge.description.length > 100 && (
+          <TouchableOpacity onPress={() => setShowFullDescription(!showFullDescription)}>
+            <Text style={styles.readMore}>
+              {showFullDescription ? 'Show Less' : 'Read More'}
+            </Text>
+          </TouchableOpacity>
         )}
       </View>
 
@@ -275,9 +275,147 @@ const DetailsScreen = ({ challenge }: DetailsScreenProps) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+    container: {
     flex: 1,
-    backgroundColor: '#F7F7F7',
+    backgroundColor: '#fff',
+  },
+  tabContainer: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+    backgroundColor: '#fff',
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 16,
+    alignItems: 'center',
+    position: 'relative',
+  },
+  activeTab: {
+    borderBottomColor: '#000',
+  },
+  tabText: {
+    fontSize: 16,
+    color: '#ccc',
+    fontWeight: '500',
+  },
+  activeTabText: {
+    color: '#000',
+    fontWeight: '600',
+  },
+  activeTabIndicator: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 2,
+    backgroundColor: '#000',
+  },
+  content: {
+    flex: 1,
+  },
+  eventHeader: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  eventTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 12,
+  },
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  locationIcon: {
+    marginRight: 8,
+    fontSize: 16,
+  },
+  locationText: {
+    fontSize: 14,
+    color: '#666',
+  },
+  dateContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  dateIcon: {
+    marginRight: 8,
+    fontSize: 16,
+  },
+  dateText: {
+    fontSize: 14,
+    color: '#666',
+  },
+  participantsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  avatarsContainer: {
+    flexDirection: 'row',
+    marginRight: 8,
+  },
+  avatar: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    borderWidth: 2,
+    borderColor: '#fff',
+  },
+  participantsText: {
+    fontSize: 14,
+    color: '#333',
+  },
+  section: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 12,
+  },
+  descriptionText: {
+    fontSize: 14,
+    color: '#666',
+    lineHeight: 20,
+  },
+  readMoreText: {
+    color: '#3498db',
+    marginTop: 8,
+    fontSize: 14,
+  },
+  mapContainer: {
+    height: 250,
+    borderRadius: 8,
+    overflow: 'hidden',
+    marginTop: 8,
+  },
+  map: {
+    width: '100%',
+    height: '100%',
+  },
+  emptyTabContent: {
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 300,
+  },
+  emptyTabText: {
+    fontSize: 16,
+    color: '#999',
+  },
+  divider: {
+    borderStyle: "solid",
+    borderColor: "#e5e7eb",
+    borderTopWidth: 1,
+    height: 1,
+    alignSelf: "stretch",
   },
   contentContainer: {
     padding: 20,
@@ -291,26 +429,6 @@ const styles = StyleSheet.create({
     color: '#1A1A1A',
     textAlign: 'center',
   },
-  section: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 12,
-  },
   detailItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -323,28 +441,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#555',
   },
-  descriptionText: {
-    fontSize: 16,
-    color: '#555',
-    lineHeight: 24,
-  },
   readMore: {
     color: '#5858E8',
     fontWeight: '600',
     marginTop: 8,
-  },
-  participantsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: -10,
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
   },
   avatarMore: {
     width: 40,
