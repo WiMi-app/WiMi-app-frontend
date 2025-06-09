@@ -56,6 +56,7 @@ useEffect(() => {
       postData.map(async (post) => {
         const user = await getUserData(post.user_id);
         const challenge = await getChallenge(post.challenge_id);
+        console.log(challenge);
         //const likes_ = await getLike(post.id);
         if (user && post && challenge) {
           const userPost: UserPostData = {
@@ -69,19 +70,18 @@ useEffect(() => {
             likes: ["1"],
             comments: 4,
           };
-          console.log(userPost);
+          //console.log(userPost);
           return userPost;
         }
         return null;
       })
     );
-    console.log("done");
     // Filter out any null results
     setPostData(posts.filter((p): p is UserPostData => p !== null));
-    console.log(postData);
+
   })();
 }, []);
-
+    console.log(postData);
   return (
     <SafeAreaView style={styles.homeScreen}>
       {/* <View style={styles.postList}> */}
