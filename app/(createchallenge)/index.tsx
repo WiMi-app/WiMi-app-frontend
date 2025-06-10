@@ -6,7 +6,7 @@ import * as ImagePicker from 'expo-image-picker'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import {ChallengePush} from '../interfaces/challenge';
 import { useState } from "react";
-import { createChallenge } from "../fetch/challenges";
+import { createChallenge, uploadChallengePhoto } from "../fetch/challenges";
 
 // Recurrence options
 const RECURRENCE_OPTIONS = [
@@ -72,12 +72,13 @@ export default function CreateChallengeScreen() {
       allowsEditing: true,
       aspect: [16, 9],
       quality: 0.8,
+      base64: true, 
     });
 
     if (!result.canceled && result.assets[0]) {
-      const imageUri = result.assets[0].uri;
-      setSelectedImage(imageUri);
-      updateChallenge('background_photo', [imageUri]);
+      const imageUri = result.assets[0];
+      setSelectedImage(imageUri.uri);
+      updateChallenge('background_photo', [imageUri.base64]);
     }
   };
 
@@ -143,7 +144,9 @@ export default function CreateChallengeScreen() {
     if (selectedTime) {
       setTempCheckInTime(selectedTime);
       if (Platform.OS === 'ios') {
-        updateChallenge('check_in_time', selectedTime.toISOString());
+        // Format time as HH:MM:SS.sssZ to match your required format
+        const timeString = selectedTime.toTimeString().split(' ')[0] + '.000Z';
+        updateChallenge('check_in_time', timeString);
       }
     }
   };
@@ -154,9 +157,78 @@ export default function CreateChallengeScreen() {
   };
 
   const confirmTimeSelection = () => {
-    updateChallenge('check_in_time', tempCheckInTime.toISOString());
+    // Format time as HH:MM:SS.sssZ to match your required format
+    const timeString = tempCheckInTime.toTimeString().split(' ')[0] + '.000Z';
+    updateChallenge('check_in_time', timeString);
     setShowCheckInTimePicker(false);
   };
+
+  // Validation function to ensure all required fields are filled
+  const validateChallenge = () => {
+    const requiredFields = {
+      title: challenge.title.trim(),
+      description: challenge.description.trim(),
+      due_date: challenge.due_date,
+      check_in_time: challenge.check_in_time,
+    };
+
+    const missingFields = Object.entries(requiredFields)
+      .filter(([key, value]) => !value)
+      .map(([key]) => key);
+
+    if (missingFields.length > 0) {
+      Alert.alert(
+        'Missing Information',
+        `Please fill in the following required fields: ${missingFields.join(', ')}`
+      );
+      return false;
+    }
+
+    return true;
+  };
+
+  async function publishChallenge() {
+    // Validate required fields first
+    if (!validateChallenge()) {
+      return;
+    }
+
+    try {
+      const photoURL = await uploadChallengePhoto(challenge.background_photo);
+      const mediaUrls = photoURL.map((item: any[]) => item[1]);
+
+      // Ensure due_date is in ISO string format
+      const formattedDueDate = challenge.due_date instanceof Date 
+        ? challenge.due_date.toISOString() 
+        : challenge.due_date;
+
+      // Rebuild the challenge object with proper formatting to match your required structure
+      const updatedChallenge = {
+        title: challenge.title.trim(),
+        description: challenge.description.trim(),
+        due_date: formattedDueDate,
+        location: challenge.location.trim() || "", // Ensure it's a string even if empty
+        restriction: challenge.restriction.trim() || "", // Ensure it's a string even if empty
+        repetition: challenge.repetition || "", // Default to empty string if not set
+        repetition_frequency: challenge.repetition_frequency || 0,
+        check_in_time: challenge.check_in_time || "07:00:00.000Z", // Default time if not set
+        is_private: challenge.is_private,
+        time_window: getDurationInMinutes() || 120, // Default to 120 minutes if not set
+        background_photo: mediaUrls.length > 0 ? mediaUrls : ["iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="], // Default placeholder if no photo
+      };
+
+      console.log('Challenge data to be sent:', updatedChallenge);
+
+      const data = await createChallenge(updatedChallenge);
+      console.log('Challenge created successfully:', data);
+
+      router.back();
+
+    } catch (error) {
+      console.error('Error creating challenge:', error);
+      Alert.alert('Error', 'Failed to create challenge. Please try again.');
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -186,7 +258,7 @@ export default function CreateChallengeScreen() {
         <View style={styles.section}>
           <View style={styles.row}>
             <View style={styles.dateTimeField}>
-              <Text style={styles.fieldLabel}>Due Date</Text>
+              <Text style={styles.fieldLabel}>Due Date *</Text>
               <TouchableOpacity 
                 style={styles.dateTimeButton}
                 onPress={() => {
@@ -202,16 +274,16 @@ export default function CreateChallengeScreen() {
             </View>
             
             <View style={styles.dateTimeField}>
-              <Text style={styles.fieldLabel}>Check-In Time</Text>
+              <Text style={styles.fieldLabel}>Check-In Time *</Text>
               <TouchableOpacity 
                 style={styles.dateTimeButton}
                 onPress={() => {
-                  setTempCheckInTime(challenge.check_in_time ? new Date(challenge.check_in_time) : new Date());
+                  setTempCheckInTime(challenge.check_in_time ? new Date(`2000-01-01T${challenge.check_in_time}`) : new Date());
                   setShowCheckInTimePicker(true);
                 }}
               >
                 <Text style={styles.dateTimeText}>
-                  {challenge.check_in_time ? formatTime(challenge.check_in_time) : "Set time"}
+                  {challenge.check_in_time ? formatTime(`2000-01-01T${challenge.check_in_time}`) : "Set time"}
                 </Text>
                 <View style={styles.iconContainer}>
                   <Ionicons name="time-outline" size={20} color="#6366f1" />
@@ -255,7 +327,7 @@ export default function CreateChallengeScreen() {
 
         {/* Description */}
         <View style={styles.section}>
-          <Text style={styles.fieldLabel}>Description</Text>
+          <Text style={styles.fieldLabel}>Description *</Text>
           <View style={styles.textAreaContainer}>
             <TextInput
               style={styles.textArea}
@@ -345,19 +417,7 @@ export default function CreateChallengeScreen() {
       <View style={styles.publishContainer}>
         <TouchableOpacity 
           style={styles.publishButton}
-          onPress={async () => {
-            try {
-              const updatedChallenge = {
-                ...challenge,
-                time_window: getDurationInMinutes()
-              };
-              await createChallenge(updatedChallenge);
-              router.back();
-            } catch (error) {
-              console.error('Error creating challenge:', error);
-              Alert.alert('Error', 'Failed to create challenge. Please try again.');
-            }
-          }}
+          onPress={publishChallenge}
         >
           <LinearGradient
             colors={['#6366f1', '#8b5cf6']}

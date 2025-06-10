@@ -59,6 +59,7 @@ export default function ChallengeScreen() {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
+        console.log("call");
         const data = await response.json();
         setChallenges(data);
         if (data.length > 0) {

@@ -33,7 +33,7 @@ interface User {
 export interface ChallengeCardProps {
   title?: string;
   description?: string;
-  backgroundImage?: string[] | null;
+  backgroundImage?: string[] ;
   playerAvatars?: PlayerAvatar[]; // This will be deprecated in favor of real data
   playerCount?: number; // This will be deprecated in favor of real data
   challengeId?: string; // Add challenge ID to fetch participants
@@ -108,7 +108,7 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
   const remainingPlayers = Math.max(0, currentPlayerCount - displayedParticipants.length);
 
   const finalBackgroundImageSource: ImageSourcePropType = {
-    uri: formatImageUrl(backgroundImage, 'background'),
+    uri: backgroundImage[0],
   };
 
   return (

@@ -7,17 +7,17 @@ export interface HeaderProps {
 
 
 export type ChallengePush = {
-  "title": String,
-  "description": String,
+  "title": string,
+  "description": string,
   "due_date": Date,
-  "location": String,
-  "restriction": String,
-  "repetition": String,
+  "location": string,
+  "restriction": string,
+  "repetition": string,
   "repetition_frequency": 0,
   "check_in_time": String,
   "is_private": Boolean,
   "time_window": number,
-  "background_photo": String[]
+  "background_photo": string[]
 }
 
 export type UserPostData = {
