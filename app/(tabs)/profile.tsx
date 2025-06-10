@@ -1,6 +1,6 @@
 import {useEffect,useState } from "react";
 import ProfileStats from "../components/profile/profilestats";
-import { StyleSheet, Text, View, Pressable, TextInput } from "react-native";
+import { StyleSheet, Text, View, Pressable, TextInput, ScrollView, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ProfilePhoto from "../components/profile/profilephoto";
 import {
@@ -14,12 +14,36 @@ import {
 import { useNavigation } from "expo-router";
 import { getMyData } from "../fetch/user";
 import { UserData } from "../interfaces/user";
+import { UserPostData } from "../interfaces/post";
+import Post from "../components/index_home/post";
+import { getUserData } from '../fetch/user';
+import { getChallenge } from "../fetch/challenges";
+import { getListPosts } from "../fetch/posts";
+
+type UserPostProps = {
+  postItem: UserPostData;
+};
+
+const PostItem = ({postItem}: UserPostProps) => (
+  <View style={[{paddingVertical:5}]}>
+    <Post 
+      profile_name={postItem.username} 
+      num_likes={postItem.likes.length} 
+      num_comments={postItem.comments}
+      profile_pic={postItem.profile_pic}
+      post_pic={postItem.post_photo}
+      challenge={postItem.challenge}
+      post_description={postItem.description}/>
+    <View style={styles.divider} />    
+  </View>
+);
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
   const [userData, setUserData] = useState<UserData | null>(null);
   const[error, setError] = useState<Boolean>(false);
-
+  const [postData, setPostData] = useState<UserPostData[]>([]);
+  const [refreshing, setRefreshing] = useState(false); // new state
   
   useEffect(() => {
     (async () => { 
@@ -28,45 +52,106 @@ const ProfileScreen = () => {
     })();
   }, []);
 
+  const fetchPosts = async () => {
+    setRefreshing(true);
+    const postData = await getListPosts();
+    if (!postData) {
+      setRefreshing(false);
+      return;
+    }
+
+    const posts = await Promise.all(
+      postData.map(async (post) => {
+        const user = await getUserData(post.user_id);
+        const challenge = await getChallenge(post.challenge_id);
+        if (user && post && challenge) {
+          const userPost: UserPostData = {
+            id: post.id,
+            username: user.username,
+            profile_pic: user.avatar_url,
+            elapsed_post_time: post.created_at,
+            challenge: challenge.title,
+            post_photo: post.media_urls[0],
+            description: post.content,
+            likes: ["1"], // placeholder
+            comments: 4,  // placeholder
+          };
+          return userPost;
+        }
+        return null;
+      })
+    );
+
+    setPostData(posts.filter((p): p is UserPostData => p !== null));
+    setRefreshing(false);
+  };
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
   return (
-    <SafeAreaView style={styles.profileScreen}>
-      <View style={styles.content}>
-        <View style={styles.profileInfoLayout}>
-          <View style={styles.profilePicname}>
+    <SafeAreaView style={styles.profileScreen} edges={['top', 'left', 'right']}>
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollViewContent}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        horizontal={false}
+      >
+        <View style={styles.content}>
+          <View style={styles.profileInfoLayout}>
+            <View style={styles.profilePicname}>
 
-            <ProfilePhoto photo={require('../../assets/test/profile.png')} Status={1} size={60}/>
+              <ProfilePhoto photo={require('../../assets/test/profile.png')} Status={1} size={60}/>
 
-            <View style={styles.profileName}>
-              <Text style={styles.name}>{userData?.full_name} </Text>
-              <Text style={styles.username}>@{userData?.username}</Text>
+              <View style={styles.profileName}>
+                <Text style={styles.name}>{userData?.full_name} </Text>
+                <Text style={styles.username}>@{userData?.username}</Text>
+              </View>
+
             </View>
+            
+            <ProfileStats posts = {0} followers={1_000_000} following={1_000}/>
 
+            <View style={styles.profileButtons}>
+              <Pressable style={styles.editProfileButton} onPress={() => navigation.navigate('(settings)')}>
+                <Text style={styles.editProfile}>Edit Profile</Text>
+              </Pressable>
+              <Pressable style={styles.shareProfileButton}>
+                <Text style={styles.shareProfile}>Share Profile</Text>
+              </Pressable>
+            </View>
+            <Text style={styles.bio} > {userData?.bio} </Text>
           </View>
-          
-          <ProfileStats posts = {0} followers={1_000_000} following={1_000}/>
-
-          <View style={styles.profileButtons}>
-            <Pressable style={styles.editProfileButton} onPress={() => navigation.navigate('(settings)')}>
-              <Text style={styles.editProfile}>Edit Profile</Text>
-            </Pressable>
-            <Pressable style={styles.shareProfileButton}>
-              <Text style={styles.shareProfile}>Share Profile</Text>
-            </Pressable>
-          </View>
-          <Text style={styles.bio} > {userData?.bio} </Text>
-        </View>
-        <View style={styles.photos}>
-          <View style={styles.title}>
-            <Text style={styles.tittle}>Posts</Text>
-            <Text style={styles.tittle1}>See All</Text>
+          <View style={styles.photos}>
+            <View style={styles.title}>
+              <Text style={styles.tittle}>Posts</Text>
+              <Text style={styles.tittle1}>See All</Text>
+            </View>
           </View>
         </View>
-      </View>
+        <FlatList
+              data={postData}
+              renderItem={({ item }) => <PostItem postItem={item} />}
+              keyExtractor={(item) => item.id}
+              style={{ width: "100%" }}
+              showsVerticalScrollIndicator={false}
+              refreshing={refreshing}
+              onRefresh={fetchPosts}
+        />
+      </ScrollView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollView: {
+    width: '100%',
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+  },
   profilePicIcon: {
     position: "relative",
     width: 96,
@@ -229,31 +314,27 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     paddingHorizontal: Padding.p_base,
     paddingVertical: 20,
-    gap: Gap.gap_lg,
   },
   content: {
-    alignSelf: "stretch",
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "flex-start",
     paddingHorizontal: 10,
-    paddingTop: 53,
     gap: 10,
   },
   profileScreen: {
-    position: "relative",
-    borderRadius: 40,
     backgroundColor: Color.primaryWhite,
     flex: 1,
     width: "100%",
-    height: 926,
-    overflow: "hidden",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "flex-start",
     minWidth: 360,
     maxWidth: 500,
-    padding: 20
+  },
+  divider: {
+    borderStyle: "solid",
+    borderColor: "#e5e7eb",
+    borderTopWidth: 1,
+    height: 1,
+    alignSelf: "stretch",
   },
 });
 
