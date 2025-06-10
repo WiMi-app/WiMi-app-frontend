@@ -16,7 +16,7 @@ const LikeButton = ({
 }) => {
     const [liked, setLiked] = useState(false);
   return (
-    <Pressable style={[styles.heartButton, styles.buttonFlexBox]} 
+    <Pressable style={[styles.buttonFlexBox]} 
     onPress={() => setLiked((isLiked) => !isLiked)}>
         <MaskedView maskElement={<MaterialCommunityIcons
             name={liked ? "heart" : "heart-outline"}
@@ -34,17 +34,18 @@ const LikeButton = ({
                 />
             </LinearGradient>
         </MaskedView>
-        <MaskedView maskElement={
-            <Text style={[styles.suggested, styles.suggestedTypo]}>
-                {liked ? SimplifyNumber(like_count+1) : SimplifyNumber(like_count)}
-            </Text>
-            } 
-            style={styles.heart}>
+        <MaskedView 
+            maskElement={
+                <Text style={[styles.suggested, styles.suggestedTypo]}>
+                    {liked ? SimplifyNumber(like_count+1) : SimplifyNumber(like_count)}
+                </Text>
+            }
+            style={styles.textContainer}>
             <LinearGradient
                 start={{x:0.5, y:0}}
                 end={{x:0.5, y:1}}
-                colors={liked ? ["#FF7854", "#FD267D"] : ["#FF7854", "#FD267D"]}>
-                <Text style={[styles.suggested, styles.suggestedTypo, {opacity:0}]}>
+                colors={["#FF7854", "#FD267D"]}>
+                <Text style={[styles.suggested, styles.suggestedTypo, {opacity: 0}]}>
                     {liked ? SimplifyNumber(like_count+1) : SimplifyNumber(like_count)}
                 </Text>
             </LinearGradient>
@@ -56,31 +57,33 @@ const LikeButton = ({
 const styles = StyleSheet.create({
     suggested: {
         fontFamily: FontFamily.poppinsSemiBold,
-        fontWeight: "600",
+        fontWeight: "bold",
         textAlign: "center",
     },
 
     suggestedTypo: {
         textAlign: "center",
-        lineHeight: 24,
         fontSize: FontSize.size_base,
     },
 
-    heartButton: {
-    width: 49,
-    },
-
     buttonFlexBox: {
-        gap: Gap.gap_md,
+        gap: Gap.gap_sm,
         height: 20,
         flexDirection: "row",
         alignItems: "center",
     },
 
     heart: {
-
+        height: 20,
+        width: 20,
+        alignItems: "center",
+        justifyContent: "center",
     },
 
+    textContainer: {
+        alignItems: "center",
+        justifyContent: "center",
+    },
 });
 
 export default LikeButton;
