@@ -1,11 +1,21 @@
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Image, Alert } from "react-native"
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Image, Alert, Modal, Platform } from "react-native"
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import { LinearGradient } from 'expo-linear-gradient'
 import * as ImagePicker from 'expo-image-picker'
+import DateTimePicker from '@react-native-community/datetimepicker'
 import {ChallengePush} from '../interfaces/challenge';
 import { useState } from "react";
 import { createChallenge } from "../fetch/challenges";
+
+// Recurrence options
+const RECURRENCE_OPTIONS = [
+  { label: "Does not repeat", value: "" },
+  { label: "Daily", value: "daily" },
+  { label: "Weekly", value: "weekly" },
+  { label: "Monthly", value: "monthly" },
+  { label: "Custom", value: "custom" },
+];
 
 export default function CreateChallengeScreen() {
   const router = useRouter();
@@ -23,6 +33,19 @@ export default function CreateChallengeScreen() {
     background_photo: [],
   });
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  
+  // Modal states
+  const [showDueDatePicker, setShowDueDatePicker] = useState(false);
+  const [showCheckInTimePicker, setShowCheckInTimePicker] = useState(false);
+  const [showRecurrenceModal, setShowRecurrenceModal] = useState(false);
+  const [showDurationModal, setShowDurationModal] = useState(false);
+  
+  // Duration state
+  const [duration, setDuration] = useState({ days: 0, hours: 0, minutes: 0 });
+  
+  // Temporary date/time states for pickers
+  const [tempDueDate, setTempDueDate] = useState(new Date());
+  const [tempCheckInTime, setTempCheckInTime] = useState(new Date());
 
   const updateChallenge = (field: keyof ChallengePush, value: any) => {
     setChallenge(prev => ({
@@ -33,7 +56,6 @@ export default function CreateChallengeScreen() {
 
   // Function to pick image from camera roll
   const pickImage = async () => {
-    // Request permission to access media library
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     
     if (status !== 'granted') {
@@ -45,197 +67,502 @@ export default function CreateChallengeScreen() {
       return;
     }
 
-    // Launch image picker
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [16, 9], // Good aspect ratio for challenge covers
+      aspect: [16, 9],
       quality: 0.8,
     });
 
     if (!result.canceled && result.assets[0]) {
       const imageUri = result.assets[0].uri;
       setSelectedImage(imageUri);
-      // Update the challenge state with the selected image
       updateChallenge('background_photo', [imageUri]);
     }
   };
 
   // Helper function to format date for display
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString();
+    return date.toLocaleDateString('en-US', { 
+      weekday: 'short',
+      month: 'short', 
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
+
+  // Helper function to format time for display
+  const formatTime = (timeString: string | Date) => {
+    if (!timeString) return "";
+    const date = typeof timeString === 'string' ? new Date(timeString) : timeString;
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
   // Helper function to get visibility text
   const getVisibilityText = () => {
-    return challenge.is_private ? "Private" : "Everyone";
+    return challenge.is_private ? "Private" : "Public";
   };
 
   // Helper function to get repetition text
   const getRepetitionText = () => {
     if (!challenge.repetition) return "Does not repeat";
-    return challenge.repetition_frequency > 0 
-      ? `${challenge.repetition} (${challenge.repetition_frequency}x)` 
-      : challenge.repetition;
+    const option = RECURRENCE_OPTIONS.find(opt => opt.value === challenge.repetition);
+    return option ? option.label : challenge.repetition;
+  };
+
+  // Helper function to format duration
+  const formatDuration = () => {
+    const parts = [];
+    if (duration.days > 0) parts.push(`${duration.days}d`);
+    if (duration.hours > 0) parts.push(`${duration.hours}h`);
+    if (duration.minutes > 0) parts.push(`${duration.minutes}m`);
+    return parts.length > 0 ? parts.join(' ') : "Not set";
+  };
+
+  // Convert duration to total minutes for time_window
+  const getDurationInMinutes = () => {
+    return duration.days * 24 * 60 + duration.hours * 60 + duration.minutes;
+  };
+
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    if (Platform.OS === 'android') {
+      setShowDueDatePicker(false);
+    }
+    if (selectedDate) {
+      setTempDueDate(selectedDate);
+      if (Platform.OS === 'ios') {
+        updateChallenge('due_date', selectedDate);
+      }
+    }
+  };
+
+  const handleTimeChange = (event: any, selectedTime?: Date) => {
+    if (Platform.OS === 'android') {
+      setShowCheckInTimePicker(false);
+    }
+    if (selectedTime) {
+      setTempCheckInTime(selectedTime);
+      if (Platform.OS === 'ios') {
+        updateChallenge('check_in_time', selectedTime.toISOString());
+      }
+    }
+  };
+
+  const confirmDateSelection = () => {
+    updateChallenge('due_date', tempDueDate);
+    setShowDueDatePicker(false);
+  };
+
+  const confirmTimeSelection = () => {
+    updateChallenge('check_in_time', tempCheckInTime.toISOString());
+    setShowCheckInTimePicker(false);
   };
 
   return (
     <View style={styles.container}>
+      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="chevron-back" size={24} color="#000" />
+          <Ionicons name="chevron-back" size={28} color="#1a1a1a" />
         </TouchableOpacity>
+        <Text style={styles.headerTitle}>Create Challenge</Text>
+        <View style={styles.headerSpacer} />
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <TextInput
-          style={styles.titleInput}
-          placeholder="Challenge Title"
-          placeholderTextColor="#777"
-          value={challenge.title}
-          onChangeText={(text) => updateChallenge('title', text)}
-        />
+        {/* Title Input */}
+        <View style={styles.section}>
+          <TextInput
+            style={styles.titleInput}
+            placeholder="What's your challenge?"
+            placeholderTextColor="#9ca3af"
+            value={challenge.title}
+            onChangeText={(text) => updateChallenge('title', text)}
+            maxLength={100}
+          />
+        </View>
 
-        <View style={styles.row}>
-          <View style={styles.dateTimeField}>
-            <Text style={styles.sectionTitle}>Due Date</Text>
+        {/* Date and Time Row */}
+        <View style={styles.section}>
+          <View style={styles.row}>
+            <View style={styles.dateTimeField}>
+              <Text style={styles.fieldLabel}>Due Date</Text>
+              <TouchableOpacity 
+                style={styles.dateTimeButton}
+                onPress={() => {
+                  setTempDueDate(challenge.due_date);
+                  setShowDueDatePicker(true);
+                }}
+              >
+                <Text style={styles.dateTimeText}>{formatDate(challenge.due_date)}</Text>
+                <View style={styles.iconContainer}>
+                  <Ionicons name="calendar-outline" size={20} color="#6366f1" />
+                </View>
+              </TouchableOpacity>
+            </View>
+            
+            <View style={styles.dateTimeField}>
+              <Text style={styles.fieldLabel}>Check-In Time</Text>
+              <TouchableOpacity 
+                style={styles.dateTimeButton}
+                onPress={() => {
+                  setTempCheckInTime(challenge.check_in_time ? new Date(challenge.check_in_time) : new Date());
+                  setShowCheckInTimePicker(true);
+                }}
+              >
+                <Text style={styles.dateTimeText}>
+                  {challenge.check_in_time ? formatTime(challenge.check_in_time) : "Set time"}
+                </Text>
+                <View style={styles.iconContainer}>
+                  <Ionicons name="time-outline" size={20} color="#6366f1" />
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+
+        {/* Photo Upload */}
+        <View style={styles.section}>
+          <Text style={styles.fieldLabel}>Cover Photo</Text>
+          <TouchableOpacity style={styles.photoUpload} onPress={pickImage}>
+            <View style={styles.photoContainer}>
+              {selectedImage ? (
+                <Image source={{ uri: selectedImage }} style={styles.selectedImage} />
+              ) : (
+                <View style={styles.photoPlaceholder}>
+                  <Ionicons name="camera" size={32} color="#6366f1" />
+                  <Text style={styles.photoPlaceholderText}>Add cover photo</Text>
+                </View>
+              )}
+            </View>
+          </TouchableOpacity>
+        </View>
+
+        {/* Location */}
+        <View style={styles.section}>
+          <Text style={styles.fieldLabel}>Location <Text style={styles.optional}>(Optional)</Text></Text>
+          <View style={styles.inputContainer}>
+            <Ionicons name="location-outline" size={20} color="#9ca3af" style={styles.inputIcon} />
             <TextInput
               style={styles.input}
-              placeholder="Select Date"
-              placeholderTextColor="#777"
-              value={formatDate(challenge.due_date)}
-              onChangeText={(text) => {
-                // You might want to implement proper date parsing here
-                // For now, this is a placeholder
-                const date = new Date(text);
-                if (!isNaN(date.getTime())) {
-                  updateChallenge('due_date', date);
-                }
-              }}
+              placeholder="Where will this challenge take place?"
+              placeholderTextColor="#9ca3af"
+              value={challenge.location}
+              onChangeText={(text) => updateChallenge('location', text)}
             />
           </View>
-          <View style={styles.dateTimeField}>
-            <Text style={styles.sectionTitle}>Check-In Time</Text>
+        </View>
+
+        {/* Description */}
+        <View style={styles.section}>
+          <Text style={styles.fieldLabel}>Description</Text>
+          <View style={styles.textAreaContainer}>
             <TextInput
-              style={styles.input}
-              placeholder="Select Time"
-              placeholderTextColor="#777"
-              value={challenge.check_in_time}
-              onChangeText={(text) => updateChallenge('check_in_time', text)}
+              style={styles.textArea}
+              placeholder="Describe your challenge in detail. What are the goals? What should participants expect?"
+              placeholderTextColor="#9ca3af"
+              multiline
+              numberOfLines={4}
+              value={challenge.description}
+              onChangeText={(text) => updateChallenge('description', text)}
+              textAlignVertical="top"
             />
           </View>
         </View>
 
-        <View style={styles.inputGroup}>
-          <TextInput
-            style={styles.input}
-            placeholder="Location"
-            placeholderTextColor="#777"
-            value={challenge.location}
-            onChangeText={(text) => updateChallenge('location', text)}
-          />
-          <Text style={styles.inputHint}>(Optional)</Text>
+        {/* Restrictions */}
+        <View style={styles.section}>
+          <Text style={styles.fieldLabel}>Rules & Restrictions <Text style={styles.optional}>(Optional)</Text></Text>
+          <View style={styles.textAreaContainer}>
+            <TextInput
+              style={styles.textArea}
+              placeholder="Any specific rules or restrictions participants should follow?"
+              placeholderTextColor="#9ca3af"
+              multiline
+              numberOfLines={3}
+              value={challenge.restriction}
+              onChangeText={(text) => updateChallenge('restriction', text)}
+              textAlignVertical="top"
+            />
+          </View>
         </View>
 
-        <TouchableOpacity style={styles.photoUpload} onPress={pickImage}>
-          <View style={styles.plusIconContainer}>
-            {selectedImage ? (
-              <Image source={{ uri: selectedImage }} style={styles.selectedImage} />
-            ) : (
-              <Ionicons name="add" size={48} color="#777" />
-            )}
-          </View>
-          <Text style={styles.photoUploadText}>
-            {selectedImage ? 'Tap to change photo' : 'Add a photo cover'}
-          </Text>
-        </TouchableOpacity> 
+        {/* Settings */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Challenge Settings</Text>
+          
+          <TouchableOpacity 
+            style={styles.settingItem}
+            onPress={() => setShowRecurrenceModal(true)}
+          >
+            <View style={styles.settingLeft}>
+              <View style={styles.settingIconContainer}>
+                <Ionicons name="repeat-outline" size={20} color="#6366f1" />
+              </View>
+              <Text style={styles.settingLabel}>Recurrence</Text>
+            </View>
+            <View style={styles.settingRight}>
+              <Text style={styles.settingValue}>{getRepetitionText()}</Text>
+              <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
+            </View>
+          </TouchableOpacity>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.sectionTitle}>Description</Text>
-          <TextInput
-            style={[styles.input, styles.multilineInput]}
-            placeholder="What is your challenge about? Write it down here..."
-            placeholderTextColor="#777"
-            multiline
-            value={challenge.description}
-            onChangeText={(text) => updateChallenge('description', text)}
-          />
+          <TouchableOpacity 
+            style={styles.settingItem}
+            onPress={() => setShowDurationModal(true)}
+          >
+            <View style={styles.settingLeft}>
+              <View style={styles.settingIconContainer}>
+                <Ionicons name="timer-outline" size={20} color="#6366f1" />
+              </View>
+              <Text style={styles.settingLabel}>Duration</Text>
+            </View>
+            <View style={styles.settingRight}>
+              <Text style={styles.settingValue}>{formatDuration()}</Text>
+              <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.settingItem}
+            onPress={() => updateChallenge('is_private', !challenge.is_private)}
+          >
+            <View style={styles.settingLeft}>
+              <View style={styles.settingIconContainer}>
+                <Ionicons name={challenge.is_private ? "lock-closed-outline" : "globe-outline"} size={20} color="#6366f1" />
+              </View>
+              <Text style={styles.settingLabel}>Visibility</Text>
+            </View>
+            <View style={styles.settingRight}>
+              <Text style={styles.settingValue}>{getVisibilityText()}</Text>
+              <Ionicons name="chevron-forward" size={16} color="#9ca3af" />
+            </View>
+          </TouchableOpacity>
         </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.sectionTitle}>Restrictions</Text>
-          <TextInput
-            style={[styles.input, styles.multilineInput]}
-            placeholder="Any rules required to follow? Write it down here..."
-            placeholderTextColor="#777"
-            multiline
-            value={challenge.restriction}
-            onChangeText={(text) => updateChallenge('restriction', text)}
-          />
-          <Text style={styles.inputHint}>(Optional)</Text>
-        </View>
-
-        <TouchableOpacity 
-          style={styles.settingButton}
-          onPress={() => {
-            // Handle recurrence selection - you might want to open a modal or navigate to a selection screen
-            console.log('Open recurrence selector');
-          }}
-        >
-          <Text style={styles.settingButtonText}>Recurrence</Text>
-          <View style={styles.settingValue}>
-            <Text style={styles.settingValueText}>{getRepetitionText()}</Text>
-            <Ionicons name="chevron-forward" size={20} color="#777" />
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={styles.settingButton}
-          onPress={() => {
-            // Toggle visibility
-            updateChallenge('is_private', !challenge.is_private);
-          }}
-        >
-          <Text style={styles.settingButtonText}>Visibility</Text>
-          <View style={styles.settingValue}>
-            <Text style={styles.settingValueText}>{getVisibilityText()}</Text>
-            <Ionicons name="chevron-forward" size={20} color="#777" />
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={styles.settingButton}
-          onPress={() => {
-            // Handle participation settings - you might want to navigate to another screen
-            console.log('Open participation settings');
-          }}
-        >
-          <Text style={styles.settingButtonText}>Participation Settings</Text>
-          <Ionicons name="chevron-forward" size={20} color="#777" />
-        </TouchableOpacity>
       </ScrollView>
 
-      <TouchableOpacity 
-        style={styles.publishButton}
-        onPress={async () => {
-          try {
-            await createChallenge(challenge);
-            router.back();
-          } catch (error) {
-            console.error('Error creating challenge:', error);
-            // Handle error appropriately
-          }
-        }}
-      >
-        <LinearGradient
-          colors={['#FFC166', '#FF9966']}
-          style={styles.gradient}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
+      {/* Publish Button */}
+      <View style={styles.publishContainer}>
+        <TouchableOpacity 
+          style={styles.publishButton}
+          onPress={async () => {
+            try {
+              const updatedChallenge = {
+                ...challenge,
+                time_window: getDurationInMinutes()
+              };
+              await createChallenge(updatedChallenge);
+              router.back();
+            } catch (error) {
+              console.error('Error creating challenge:', error);
+              Alert.alert('Error', 'Failed to create challenge. Please try again.');
+            }
+          }}
         >
-          <Text style={styles.publishButtonText}>Publish My Challenge</Text>
-        </LinearGradient>
-      </TouchableOpacity>
+          <LinearGradient
+            colors={['#6366f1', '#8b5cf6']}
+            style={styles.gradient}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+          >
+            <Text style={styles.publishButtonText}>Create Challenge</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
+
+      {/* Date Picker Modal */}
+      {showDueDatePicker && (
+        <Modal
+          transparent={true}
+          animationType="slide"
+          visible={showDueDatePicker}
+          onRequestClose={() => setShowDueDatePicker(false)}
+        >
+          <View style={styles.pickerModalOverlay}>
+            <View style={styles.pickerModalContent}>
+              <View style={styles.pickerHeader}>
+                <TouchableOpacity onPress={() => setShowDueDatePicker(false)}>
+                  <Text style={styles.pickerCancel}>Cancel</Text>
+                </TouchableOpacity>
+                <Text style={styles.pickerTitle}>Select Due Date</Text>
+                <TouchableOpacity onPress={confirmDateSelection}>
+                  <Text style={styles.pickerConfirm}>Done</Text>
+                </TouchableOpacity>
+              </View>
+              <DateTimePicker
+                value={tempDueDate}
+                mode="datetime"
+                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                onChange={handleDateChange}
+                style={styles.datePicker}
+              />
+            </View>
+          </View>
+        </Modal>
+      )}
+
+      {/* Time Picker Modal */}
+      {showCheckInTimePicker && (
+        <Modal
+          transparent={true}
+          animationType="slide"
+          visible={showCheckInTimePicker}
+          onRequestClose={() => setShowCheckInTimePicker(false)}
+        >
+          <View style={styles.pickerModalOverlay}>
+            <View style={styles.pickerModalContent}>
+              <View style={styles.pickerHeader}>
+                <TouchableOpacity onPress={() => setShowCheckInTimePicker(false)}>
+                  <Text style={styles.pickerCancel}>Cancel</Text>
+                </TouchableOpacity>
+                <Text style={styles.pickerTitle}>Select Check-in Time</Text>
+                <TouchableOpacity onPress={confirmTimeSelection}>
+                  <Text style={styles.pickerConfirm}>Done</Text>
+                </TouchableOpacity>
+              </View>
+              <DateTimePicker
+                value={tempCheckInTime}
+                mode="time"
+                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                onChange={handleTimeChange}
+                style={styles.datePicker}
+              />
+            </View>
+          </View>
+        </Modal>
+      )}
+
+      {/* Recurrence Selection Modal */}
+      <Modal
+        visible={showRecurrenceModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowRecurrenceModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Recurrence</Text>
+              <TouchableOpacity onPress={() => setShowRecurrenceModal(false)}>
+                <Ionicons name="close" size={24} color="#6b7280" />
+              </TouchableOpacity>
+            </View>
+            <ScrollView style={styles.optionsContainer}>
+              {RECURRENCE_OPTIONS.map((option) => (
+                <TouchableOpacity
+                  key={option.value}
+                  style={[
+                    styles.optionItem,
+                    challenge.repetition === option.value && styles.selectedOptionItem
+                  ]}
+                  onPress={() => {
+                    updateChallenge('repetition', option.value);
+                    setShowRecurrenceModal(false);
+                  }}
+                >
+                  <Text style={[
+                    styles.optionText,
+                    challenge.repetition === option.value && styles.selectedOptionText
+                  ]}>
+                    {option.label}
+                  </Text>
+                  {challenge.repetition === option.value && (
+                    <Ionicons name="checkmark" size={20} color="#6366f1" />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Duration Selection Modal */}
+      <Modal
+        visible={showDurationModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowDurationModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Set Duration</Text>
+              <TouchableOpacity onPress={() => setShowDurationModal(false)}>
+                <Ionicons name="close" size={24} color="#6b7280" />
+              </TouchableOpacity>
+            </View>
+            
+            <View style={styles.durationContainer}>
+              <View style={styles.durationField}>
+                <Text style={styles.durationLabel}>Days</Text>
+                <View style={styles.durationInputContainer}>
+                  <TouchableOpacity 
+                    style={styles.durationButton}
+                    onPress={() => setDuration(prev => ({ ...prev, days: Math.max(0, prev.days - 1) }))}
+                  >
+                    <Ionicons name="remove" size={20} color="#6366f1" />
+                  </TouchableOpacity>
+                  <Text style={styles.durationValue}>{duration.days}</Text>
+                  <TouchableOpacity 
+                    style={styles.durationButton}
+                    onPress={() => setDuration(prev => ({ ...prev, days: prev.days + 1 }))}
+                  >
+                    <Ionicons name="add" size={20} color="#6366f1" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              <View style={styles.durationField}>
+                <Text style={styles.durationLabel}>Hours</Text>
+                <View style={styles.durationInputContainer}>
+                  <TouchableOpacity 
+                    style={styles.durationButton}
+                    onPress={() => setDuration(prev => ({ ...prev, hours: Math.max(0, prev.hours - 1) }))}
+                  >
+                    <Ionicons name="remove" size={20} color="#6366f1" />
+                  </TouchableOpacity>
+                  <Text style={styles.durationValue}>{duration.hours}</Text>
+                  <TouchableOpacity 
+                    style={styles.durationButton}
+                    onPress={() => setDuration(prev => ({ ...prev, hours: Math.min(23, prev.hours + 1) }))}
+                  >
+                    <Ionicons name="add" size={20} color="#6366f1" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              <View style={styles.durationField}>
+                <Text style={styles.durationLabel}>Minutes</Text>
+                <View style={styles.durationInputContainer}>
+                  <TouchableOpacity 
+                    style={styles.durationButton}
+                    onPress={() => setDuration(prev => ({ ...prev, minutes: Math.max(0, prev.minutes - 5) }))}
+                  >
+                    <Ionicons name="remove" size={20} color="#6366f1" />
+                  </TouchableOpacity>
+                  <Text style={styles.durationValue}>{duration.minutes}</Text>
+                  <TouchableOpacity 
+                    style={styles.durationButton}
+                    onPress={() => setDuration(prev => ({ ...prev, minutes: Math.min(59, prev.minutes + 5) }))}
+                  >
+                    <Ionicons name="add" size={20} color="#6366f1" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+
+            <TouchableOpacity 
+              style={styles.confirmButton}
+              onPress={() => {
+                updateChallenge('time_window', getDurationInMinutes());
+                setShowDurationModal(false);
+              }}
+            >
+              <Text style={styles.confirmButtonText}>Set Duration</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   )
 }
@@ -243,116 +570,358 @@ export default function CreateChallengeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f8fafc',
   },
   header: {
-    paddingTop: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 60,
     paddingHorizontal: 20,
     paddingBottom: 20,
+    backgroundColor: '#ffffff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
   },
   backButton: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
     justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 22,
+    backgroundColor: '#f3f4f6',
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1f2937',
+  },
+  headerSpacer: {
+    width: 44,
   },
   content: {
     flex: 1,
     paddingHorizontal: 20,
   },
-  titleInput: {
-    fontSize: 24,
+  section: {
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 18,
     fontWeight: '600',
-    marginBottom: 20,
-    paddingVertical: 8,
+    color: '#1f2937',
+    marginBottom: 16,
+  },
+  titleInput: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#1f2937',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#e5e7eb',
+    marginTop: 20,
+  },
+  fieldLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 8,
+  },
+  optional: {
+    fontWeight: '400',
+    color: '#9ca3af',
   },
   row: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 20,
+    gap: 12,
   },
   dateTimeField: {
     flex: 1,
-    marginRight: 10,
+  },
+  dateTimeButton: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  dateTimeText: {
+    fontSize: 16,
+    color: '#1f2937',
+    fontWeight: '500',
+  },
+  iconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#f0f0ff',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    paddingHorizontal: 16,
+  },
+  inputIcon: {
+    marginRight: 12,
   },
   input: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
-    paddingVertical: 8,
+    flex: 1,
     fontSize: 16,
+    color: '#1f2937',
+    paddingVertical: 16,
   },
-  inputGroup: {
-    marginBottom: 20,
+  textAreaContainer: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    padding: 16,
   },
-  inputHint: {
-    fontSize: 12,
-    color: '#777',
-    marginTop: 4,
-  },
-  multilineInput: {
+  textArea: {
+    fontSize: 16,
+    color: '#1f2937',
     minHeight: 80,
     textAlignVertical: 'top',
   },
   photoUpload: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
+    marginTop: 8,
   },
-  plusIconContainer: {
-    width: 120,
-    height: 120,
-    backgroundColor: '#F5F5F5',
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 10,
+  photoContainer: {
+    height: 200,
+    borderRadius: 16,
     overflow: 'hidden',
+    backgroundColor: '#ffffff',
+    borderWidth: 2,
+    borderColor: '#e5e7eb',
+    borderStyle: 'dashed',
   },
   selectedImage: {
     width: '100%',
     height: '100%',
-    borderRadius: 8,
   },
-  photoUploadText: {
-    color: '#777',
+  photoPlaceholder: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  photoPlaceholderText: {
     fontSize: 16,
+    color: '#6366f1',
+    fontWeight: '500',
+    marginTop: 8,
   },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 10,
-  },
-  settingButton: {
+  settingItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    backgroundColor: '#ffffff',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
   },
-  settingButtonText: {
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  settingValue: {
+  settingLeft: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  settingValueText: {
-    color: '#777',
-    marginRight: 5,
+  settingIconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#f0f0ff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  settingLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#1f2937',
+  },
+  settingRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  settingValue: {
+    fontSize: 14,
+    color: '#6b7280',
+    marginRight: 8,
+  },
+  publishContainer: {
+    padding: 20,
+    backgroundColor: '#ffffff',
+    borderTopWidth: 1,
+    borderTopColor: '#e5e7eb',
   },
   publishButton: {
-    margin: 20,
-    borderRadius: 25,
+    borderRadius: 16,
     overflow: 'hidden',
+    shadowColor: '#6366f1',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
   gradient: {
-    paddingVertical: 15,
+    paddingVertical: 18,
     alignItems: 'center',
-    width: '100%',
   },
   publishButtonText: {
-    color: '#fff',
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  pickerModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  pickerModalContent: {
+    backgroundColor: '#ffffff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingBottom: 40,
+  },
+  pickerHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+  },
+  pickerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1f2937',
+  },
+  pickerCancel: {
+    fontSize: 16,
+    color: '#6b7280',
+  },
+  pickerConfirm: {
+    fontSize: 16,
+    color: '#6366f1',
+    fontWeight: '600',
+  },
+  datePicker: {
+    backgroundColor: '#ffffff',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: '#ffffff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 40,
+    maxHeight: '80%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1f2937',
+  },
+  optionsContainer: {
+    paddingVertical: 8,
+  },
+  optionItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    marginVertical: 4,
+  },
+  selectedOptionItem: {
+    backgroundColor: '#f0f0ff',
+  },
+  optionText: {
+    fontSize: 16,
+    color: '#1f2937',
+  },
+  selectedOptionText: {
+    color: '#6366f1',
+    fontWeight: '500',
+  },
+  durationContainer: {
+    paddingVertical: 20,
+  },
+  durationField: {
+    marginBottom: 20,
+  },
+  durationLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#374151',
+    marginBottom: 12,
+  },
+  durationInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#f9fafb',
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+  },
+  durationButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#ffffff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  durationValue: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#1f2937',
+    minWidth: 50,
+    textAlign: 'center',
+  },
+  confirmButton: {
+    backgroundColor: '#6366f1',
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  confirmButtonText: {
+    color: '#ffffff',
     fontSize: 16,
     fontWeight: '600',
   },

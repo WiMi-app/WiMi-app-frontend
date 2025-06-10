@@ -20,7 +20,9 @@ export default function Index() {
           console.log(refreshToken);
           const response = await getMyData();
           setLoading(false);
+          if(response){
           router.push('/(tabs)' as any);
+          }
         }catch(e){
           handleException(e);
           setLoading(false);

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import {
   View,
   Text,
@@ -17,7 +17,7 @@ import { Ionicons } from "@expo/vector-icons"
 import Input from "../components/input"
 import Button from "../components/button_"
 import axiosInstance from "../api/axios"
-import {saveToken, getToken} from "../store/token";
+import {saveToken} from "../store/token";
 import apiClient from "../api/refresh";
 import { getMyData } from "../fetch/user"
 import { handleException } from "../utils/exceptionHandler"
@@ -54,22 +54,6 @@ const LoginScreen = () => {
     setErrors(newErrors)
     return isValid
   }
-
-  useEffect(()=>{
-    (async function checkRefresh() {
-      setLoading(true);
-      try{
-        const refreshToken = await getToken('refreshToken');
-        console.log(refreshToken);
-        const response = await getMyData();
-        setLoading(false);
-        router.push('/(tabs)' as any);
-      }catch(e){
-        handleException(e);
-        setLoading(false);
-      }
-    })();
-  },[]);
 
   async function handleLogin() {
     if (!validateForm()) return;

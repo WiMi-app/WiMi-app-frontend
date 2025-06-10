@@ -1,6 +1,6 @@
 import { View, StyleSheet, ScrollView, Dimensions, Text } from "react-native"
 import ChallengeCard from "../components/challenge/challengecard"
-import { ImageSourcePropType } from 'react-native';
+import { ImageSourcePropType, RefreshControl} from 'react-native';
 import HorizontalCarousel from "../components/animations/carousel";
 import Header from "../components/challenge/header";
 import ChallengeView from "../components/challenge/challenge_view";
@@ -52,8 +52,7 @@ export default function ChallengeScreen() {
     { id: '4', image: require('../../assets/test/profile.png') },
   ];
 
-  useEffect(() => {
-    const fetchChallenges = async () => {
+  const fetchChallenges = async () => {
       setLoading(true);
       try {
         const response = await fetch('https://wimi-app-backend-999646107030.us-east5.run.app/api/v0/challenges/');
@@ -76,6 +75,8 @@ export default function ChallengeScreen() {
       }
     };
 
+
+  useEffect(() => {
     fetchChallenges();
   }, []);
 
@@ -136,7 +137,11 @@ export default function ChallengeScreen() {
 
   return (
     
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} 
+    refreshControl= {
+      <RefreshControl refreshing={loading} onRefresh={fetchChallenges} />
+    }
+      >
       <Header title={headerTitle}/>
       <View style={styles.Carousel}>
         {challenges.length > 0 ? (

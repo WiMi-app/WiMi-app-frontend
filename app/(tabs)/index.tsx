@@ -11,18 +11,6 @@ import { getLike } from "../fetch/likes";
 import { UserPostData } from "../interfaces/post";
 import { useNavigation } from "@react-navigation/native"
 
-// type UserPostData = {
-//   id: string;
-//   username: string;
-//   profile_pic: string;
-//   elapsed_post_time: string;
-//   challenge: string;
-//   post_photo: string;
-//   description: string;
-//   likes: number[];
-//   comments: number;
-// }
-
 type UserPostProps = {
   postItem: UserPostData;
 };
