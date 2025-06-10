@@ -9,6 +9,7 @@ export interface InputProps extends TextInputProps {
 }
 
 export interface PostElements {
+    postId? : string,
     profile_name?: string,
     profile_pic?: string,
     num_likes?: number,

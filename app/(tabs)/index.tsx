@@ -18,6 +18,7 @@ type UserPostProps = {
 const PostItem = ({postItem}: UserPostProps) => (
   <View style={[{paddingVertical:5}]}>
     <Post 
+      postId={postItem.id}
       profile_name={postItem.username} 
       num_likes={postItem.likes.length} 
       num_comments={postItem.comments}
@@ -104,7 +105,6 @@ export default function HomeScreen() {
     </SafeAreaView>
   );
 }
-
 
 const styles = StyleSheet.create({
   postFlexBox: {

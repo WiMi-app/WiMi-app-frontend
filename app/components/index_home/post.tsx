@@ -21,6 +21,7 @@ import ShareButton from './share_button';
 import { PostElements } from '../../interfaces/components';
 
 const Post: React.FC<PostElements> = ({
+    postId = "",
     profile_name = "",
     num_likes = 0,
     num_comments = 0,
@@ -98,7 +99,7 @@ const Post: React.FC<PostElements> = ({
             </Text>
           </View>
           <View style={styles.postButton}>
-            <LikeButton like_count={num_likes}/>
+            <LikeButton post_id={postId}/>
             <CommentButton comment_count={num_comments}/>
             <View style={styles.deadSpace} />
             <ShareButton message="IGNORE THIS TEST FOR HOME SHARE BUTTON"/>

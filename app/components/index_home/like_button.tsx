@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
@@ -9,15 +9,64 @@ import {
 import SimplifyNumber from "../../utils/simplify_num";
 import { LinearGradient } from "expo-linear-gradient";
 import MaskedView from '@react-native-masked-view/masked-view';
-import { num_likes } from "../../interfaces/components";
+import { Like, unLike, getLike } from "@/app/fetch/likes";
+import { getMyData } from "@/app/fetch/user";
 
 const LikeButton = ({
-    like_count = 0,
+    post_id = ""
 }) => {
-    const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState(false);
+  const [likeD , setLikeID] = useState("");
+  const [Likes, setLikes] = useState([]);
+  useEffect(()=>{
+    try{
+        (async () => {
+            const data = await getMyData();
+            const likes = await getLike(post_id);
+
+            if (likes && data) {
+              setLikes(likes);
+            
+              // Find the like object that matches the user id
+              const matchingLike = likes.find((item: { id: string }) => item.id === data.id);
+            
+              if (matchingLike) {
+                setLiked(true);
+                setLikeID(matchingLike.id); // Set likeD to the matching like's id
+                console.log(matchingLike);
+              } else {
+                setLiked(false);
+                setLikeID(""); // No match found — clear likeD
+              }
+            } else {
+              setLikes([]);
+              setLiked(false);
+              setLikeID("");
+            }
+        })()
+    }catch(error){
+        console.log(error);
+    }
+  },[]);
+
+  async function Like_(){
+    try{
+        setLiked((isLiked) => !isLiked);
+        console.log(liked);
+        if(!liked){
+            const like = await Like(post_id);
+            setLikeID(like.id);
+        } else{
+            await unLike(likeD);
+        }
+    } catch (error){
+        console.log(error);
+    }
+  }
+
   return (
     <Pressable style={[styles.buttonFlexBox]} 
-    onPress={() => setLiked((isLiked) => !isLiked)}>
+    onPress={Like_}>
         <MaskedView maskElement={<MaterialCommunityIcons
             name={liked ? "heart" : "heart-outline"}
             size={20}/>
@@ -37,7 +86,7 @@ const LikeButton = ({
         <MaskedView 
             maskElement={
                 <Text style={[styles.suggested, styles.suggestedTypo]}>
-                    {liked ? SimplifyNumber(like_count+1) : SimplifyNumber(like_count)}
+                    {SimplifyNumber(Likes.length)}
                 </Text>
             }
             style={styles.textContainer}>
@@ -46,7 +95,7 @@ const LikeButton = ({
                 end={{x:0.5, y:1}}
                 colors={["#FF7854", "#FD267D"]}>
                 <Text style={[styles.suggested, styles.suggestedTypo, {opacity: 0}]}>
-                    {liked ? SimplifyNumber(like_count+1) : SimplifyNumber(like_count)}
+                    {SimplifyNumber(Likes.length)}
                 </Text>
             </LinearGradient>
         </MaskedView>
