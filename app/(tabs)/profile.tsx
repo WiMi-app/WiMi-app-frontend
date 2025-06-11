@@ -41,14 +41,21 @@ const PostItem = ({postItem}: UserPostProps) => (
 const ProfileScreen = () => {
   const navigation = useNavigation();
   const [userData, setUserData] = useState<UserData | null>(null);
-  const[error, setError] = useState<Boolean>(false);
+  const [error, setError] = useState<Boolean>(false);
   const [postData, setPostData] = useState<UserPostData[]>([]);
-  const [refreshing, setRefreshing] = useState(false); // new state
+  const [refreshing, setRefreshing] = useState(false);
+  const [bioText, setBioText] = useState(userData?.bio || "");
+  const [isBioFocused, setIsBioFocused] = useState(false);
   
   useEffect(() => {
     (async () => { 
       const data = await getMyData(); 
-      data?setUserData(data):setError(true);
+      if (data) {
+        setUserData(data);
+        setBioText(data.bio || "");
+      } else {
+        setError(true);
+      }
     })();
   }, []);
 
@@ -122,7 +129,22 @@ const ProfileScreen = () => {
                 <Text style={styles.shareProfile}>Share Profile</Text>
               </Pressable>
             </View>
-            <Text style={styles.bio} > {userData?.bio} </Text>
+            <TextInput 
+              style={styles.bio}
+              placeholder="Add Bio"
+              placeholderTextColor="#777"
+              multiline={true}
+              textAlignVertical="top"
+              numberOfLines={4}
+              maxLength={150}
+              value={bioText}
+              onChangeText={setBioText}
+              onFocus={() => setIsBioFocused(true)}
+              onBlur={() => setIsBioFocused(false)}
+            />
+            {isBioFocused && (
+              <Text style={styles.charCount}>{bioText.length}/150</Text>
+            )}
           </View>
           <View style={styles.photos}>
             <View style={styles.title}>
@@ -245,14 +267,20 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     borderRadius: Border.br_xs,
     backgroundColor: Color.primaryWhite,
-    height: 70,
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
+    minHeight: 70,
+    padding: 12,
     width: "100%",
     fontWeight: "500",
     fontFamily: FontFamily.interMedium,
     fontSize: FontSize.size_sm,
+    textAlignVertical: 'top',
+  },
+  charCount: {
+    alignSelf: 'flex-end',
+    color: Color.gray1,
+    fontSize: FontSize.size_xs,
+    marginTop: 4,
+    marginRight: 4,
   },
   profileInfoLayout: {
     alignSelf: "stretch",
