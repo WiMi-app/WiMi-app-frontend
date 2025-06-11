@@ -1,6 +1,6 @@
 import {useEffect,useState } from "react";
 import ProfileStats from "../components/profile/profilestats";
-import { StyleSheet, Text, View, Pressable, TextInput, ScrollView, FlatList } from "react-native";
+import { StyleSheet, Text, View, Pressable, TextInput, ScrollView, FlatList, Share } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ProfilePhoto from "../components/profile/profilephoto";
 import {
@@ -46,7 +46,25 @@ const ProfileScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [bioText, setBioText] = useState(userData?.bio || "");
   const [isBioFocused, setIsBioFocused] = useState(false);
-  
+
+  // Share profile funciton (placeholder for now)
+  const handleShare = async () => {
+    try {
+      const result = await Share.share({
+        message: "IGNORE THIS TEST FOR PROFILE SHARE BUTTON",
+      });
+
+      if (result.action === Share.sharedAction) {
+        console.log('Shared successfully');
+      } else if (result.action === Share.dismissedAction) {
+        console.log('Sharing dismissed');
+      }
+    } catch (error:any) {
+      console.error('Error sharing:', error.message);
+      alert(error.message)
+    }
+  };
+
   useEffect(() => {
     (async () => { 
       const data = await getMyData(); 
@@ -125,7 +143,7 @@ const ProfileScreen = () => {
               <Pressable style={styles.editProfileButton} onPress={() => navigation.navigate('(settings)')}>
                 <Text style={styles.editProfile}>Edit Profile</Text>
               </Pressable>
-              <Pressable style={styles.shareProfileButton}>
+              <Pressable style={styles.shareProfileButton} onPress={handleShare}>
                 <Text style={styles.shareProfile}>Share Profile</Text>
               </Pressable>
             </View>
