@@ -1,6 +1,6 @@
 import {useEffect,useState } from "react";
 import ProfileStats from "../components/profile/profilestats";
-import { StyleSheet, Text, View, Pressable, TextInput, ScrollView, FlatList, Share } from "react-native";
+import { StyleSheet, Text, View, Pressable, TextInput, ScrollView, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ProfilePhoto from "../components/profile/profilephoto";
 import {
@@ -25,10 +25,9 @@ type UserPostProps = {
 
 const PostItem = ({postItem}: UserPostProps) => (
   <View style={[{paddingVertical:5}]}>
-    <Post 
+    <Post
       postId={postItem.id}
       profile_name={postItem.username} 
-      num_likes={0} // Not Needed
       num_comments={postItem.comments}
       profile_pic={postItem.profile_pic}
       post_pic={postItem.post_photo}
@@ -41,39 +40,16 @@ const PostItem = ({postItem}: UserPostProps) => (
 const ProfileScreen = () => {
   const navigation = useNavigation();
   const [userData, setUserData] = useState<UserData | null>(null);
-  const [error, setError] = useState<Boolean>(false);
+  const[error, setError] = useState<Boolean>(false);
   const [postData, setPostData] = useState<UserPostData[]>([]);
-  const [refreshing, setRefreshing] = useState(false);
-  const [bioText, setBioText] = useState(userData?.bio || "");
-  const [isBioFocused, setIsBioFocused] = useState(false);
-
-  // Share profile funciton (placeholder for now)
-  const handleShare = async () => {
-    try {
-      const result = await Share.share({
-        message: "IGNORE THIS TEST FOR PROFILE SHARE BUTTON",
-      });
-
-      if (result.action === Share.sharedAction) {
-        console.log('Shared successfully');
-      } else if (result.action === Share.dismissedAction) {
-        console.log('Sharing dismissed');
-      }
-    } catch (error:any) {
-      console.error('Error sharing:', error.message);
-      alert(error.message)
-    }
-  };
-
+  const [refreshing, setRefreshing] = useState(false); // new state
+  
   useEffect(() => {
     (async () => { 
       const data = await getMyData(); 
-      if (data) {
-        setUserData(data);
-        setBioText(data.bio || "");
-      } else {
-        setError(true);
-      }
+      data?setUserData(data):setError(true);
+      console.log(data)
+      
     })();
   }, []);
 
@@ -128,7 +104,7 @@ const ProfileScreen = () => {
           <View style={styles.profileInfoLayout}>
             <View style={styles.profilePicname}>
 
-              <ProfilePhoto photo={require('../../assets/test/profile.png')} Status={1} size={60}/>
+              <ProfilePhoto photo={userData?.avatar_url ? { uri: userData?.avatar_url[0] } :require('../../assets/images/defaultprofile.jpg')} Status={1} size={60}/>
 
               <View style={styles.profileName}>
                 <Text style={styles.name}>{userData?.full_name} </Text>
@@ -137,37 +113,21 @@ const ProfileScreen = () => {
 
             </View>
             
-            <ProfileStats posts = {postData.length} followers={1_000_000} following={1_000}/>
+            <ProfileStats posts = {0} followers={1_000_000} following={1_000}/>
 
             <View style={styles.profileButtons}>
               <Pressable style={styles.editProfileButton} onPress={() => navigation.navigate('(settings)')}>
                 <Text style={styles.editProfile}>Edit Profile</Text>
               </Pressable>
-              <Pressable style={styles.shareProfileButton} onPress={handleShare}>
+              <Pressable style={styles.shareProfileButton}>
                 <Text style={styles.shareProfile}>Share Profile</Text>
               </Pressable>
             </View>
-            <TextInput 
-              style={styles.bio}
-              placeholder="Add Bio"
-              placeholderTextColor="#777"
-              multiline={true}
-              textAlignVertical="top"
-              numberOfLines={4}
-              maxLength={150}
-              value={bioText}
-              onChangeText={setBioText}
-              onFocus={() => setIsBioFocused(true)}
-              onBlur={() => setIsBioFocused(false)}
-            />
-            {isBioFocused && (
-              <Text style={styles.charCount}>{bioText.length}/150</Text>
-            )}
+            {userData?.bio ? <Text style={styles.bio} > {userData?.bio} </Text> : null}
           </View>
           <View style={styles.photos}>
             <View style={styles.title}>
-              <Text style={styles.tittle}>Posts</Text>
-              <Text style={styles.tittle1}>See All</Text>
+              <Text style={styles.tittle}>My Posts</Text>
             </View>
           </View>
         </View>
@@ -285,20 +245,14 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     borderRadius: Border.br_xs,
     backgroundColor: Color.primaryWhite,
-    minHeight: 70,
-    padding: 12,
+    height: 70,
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
     width: "100%",
     fontWeight: "500",
     fontFamily: FontFamily.interMedium,
     fontSize: FontSize.size_sm,
-    textAlignVertical: 'top',
-  },
-  charCount: {
-    alignSelf: 'flex-end',
-    color: Color.gray1,
-    fontSize: FontSize.size_xs,
-    marginTop: 4,
-    marginRight: 4,
   },
   profileInfoLayout: {
     alignSelf: "stretch",
@@ -306,6 +260,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     justifyContent: "flex-start",
     gap: Gap.gap_lg,
+    padding: 20
   },
   tittle: {
     position: "relative",
@@ -365,8 +320,6 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "flex-start",
-    paddingHorizontal: 10,
-    gap: 10,
   },
   profileScreen: {
     backgroundColor: Color.primaryWhite,

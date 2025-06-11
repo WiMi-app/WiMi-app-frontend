@@ -20,7 +20,6 @@ const PostItem = ({postItem}: UserPostProps) => (
     <Post 
       postId={postItem.id}
       profile_name={postItem.username} 
-      num_likes={postItem.likes.length} 
       num_comments={postItem.comments}
       profile_pic={postItem.profile_pic}
       post_pic={postItem.post_photo}

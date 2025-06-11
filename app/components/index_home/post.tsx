@@ -1,10 +1,11 @@
-import React from 'react';
+import { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Image,
-  Pressable
+  Pressable,
+  TouchableOpacity
 } from 'react-native';
 import {
     FontFamily,
@@ -19,11 +20,11 @@ import SimplifyNumber from '../../utils/simplify_num';
 import CommentButton from './comment_button';
 import ShareButton from './share_button';
 import { PostElements } from '../../interfaces/components';
+import ProfilePhoto from '../profile/profilephoto';
 
 const Post: React.FC<PostElements> = ({
     postId = "",
     profile_name = "",
-    num_likes = 0,
     num_comments = 0,
     profile_pic = "",
     post_pic = "",
@@ -31,37 +32,13 @@ const Post: React.FC<PostElements> = ({
     elapsed_post_time = "",
     challenge = ""
 }) => {
-
-    const images = {
-      'default_profile_pic': require('../../../assets/profile img.png'),
-      'default_post_pic': require('../../../assets/ice-bucket-photo.png'),
-    };
+  const [expanded, setExpanded] = useState(false);
+  const isLong = post_description.length > 100;
 
   return (
         <View style={[styles.post, styles.postFlexBox]}>
           <View style={[styles.postInfo, styles.infoSpaceBlock]}>
-            <Image 
-              style={styles.iconLayout1} 
-              width={48} 
-              height={48} 
-              source={require("../../../assets/profile img.png")}
-            />
-           {/* if (profile_pic) {
-                <Image 
-                    style={styles.iconLayout1} 
-                    width={48} 
-                    height={48} 
-                    source={require("../../../assets/profile img.png")}
-                />
-            }
-            else {
-                <Image 
-                style={styles.iconLayout1} 
-                width={48} 
-                height={48} 
-                source={images["default_post_pic"]}
-                />
-            } */}
+              <ProfilePhoto  photo={profile_pic ? { uri: profile_pic[0] } :require('../../../assets/images/defaultprofile.jpg')} Status={1} size={48}/>
             <Pressable style={styles.userPostInfo}>
               <Text style={[styles.username, styles.usernameFlexBox]}>
                 {profile_name}
@@ -92,10 +69,23 @@ const Post: React.FC<PostElements> = ({
           />
           <View style={[styles.descriptionLayout, styles.infoSpaceBlock]}>
             <Text style={[styles.description, styles.taskTypo]}>
-              <Text
-                style={styles.taskClr}
-              >{post_description}</Text>
-              <Text style={styles.seeMoreTypo}>See more</Text>
+
+            <View>
+              <Text style={styles.taskClr}>
+                {isLong && !expanded
+                  ? post_description.substring(0, 99) + '...'
+                  : post_description}
+              </Text>
+                
+              {isLong && (
+                <TouchableOpacity onPress={() => setExpanded(prev => !prev)}>
+                  <Text style={styles.seeMoreTypo}>
+                    {expanded ? ' See less' : ' See more'}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
+
             </Text>
           </View>
           <View style={styles.postButton}>

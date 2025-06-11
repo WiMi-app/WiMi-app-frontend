@@ -3,7 +3,15 @@ import { Ionicons } from "@expo/vector-icons"
 import { View, Image, StyleSheet } from "react-native"
 import ProfilePhoto from "../components/profile/profilephoto"
 import Logo from "../components/icons/logo"
+import { getUserData } from "../store/userData"
+import { useEffect,useState } from "react"
+
 export default function TabsLayout() {
+  const [profilepic, setProfilepic] = useState();
+  useEffect(()=> {
+      (async ()=>{await getUserData().then((data)=>setProfilepic(data.avatar_url))})();
+  },[])
+
   return (
     <Tabs
       screenOptions={{
@@ -59,7 +67,7 @@ export default function TabsLayout() {
         name="profile"
         options={{
           tabBarIcon: ({ focused }) => (
-            <ProfilePhoto photo = {require('../../assets/test/profile.png')} Status={ focused ? 2 : 0 } size={30}/>
+            <ProfilePhoto photo = {profilepic ? { uri: profilepic[0] } :require('../../assets/images/defaultprofile.jpg')} Status={ focused ? 2 : 0 } size={30}/>
           )
         }}
       />
