@@ -7,6 +7,7 @@ import {getToken} from "../store/token";
 import { getMyData } from "../fetch/user"
 import { handleException } from '../utils/exceptionHandler';
 import { useRouter } from "expo-router"
+import { saveUserData } from '../store/userData';
 export default function Index() {
     const navigation = useNavigation();
     const router = useRouter();
@@ -19,6 +20,9 @@ export default function Index() {
           const refreshToken = await getToken('refreshToken');
           console.log(refreshToken);
           const response = await getMyData();
+          console.log(response);
+          const datasaved = await saveUserData(response);
+          console.log(datasaved);
           setLoading(false);
           if(response){
           router.push('/(tabs)' as any);

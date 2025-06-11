@@ -16,10 +16,9 @@ import { getMyData } from "../fetch/user";
 import { UserData } from "../interfaces/user";
 import { UserPostData } from "../interfaces/post";
 import Post from "../components/index_home/post";
-import { getUserData } from '../fetch/user';
 import { getChallenge } from "../fetch/challenges";
 import { getListPosts } from "../fetch/posts";
-
+import { getUserData } from "../store/userData";
 type UserPostProps = {
   postItem: UserPostData;
 };
@@ -49,6 +48,7 @@ const ProfileScreen = () => {
     (async () => { 
       const data = await getMyData(); 
       data?setUserData(data):setError(true);
+      console.log(data);
     })();
   }, []);
 
