@@ -119,7 +119,7 @@ const ProfileScreen = () => {
 
             </View>
             
-            <ProfileStats posts = {0} followers={1_000_000} following={1_000}/>
+            <ProfileStats posts = {postData.length} followers={1_000_000} following={1_000}/>
 
             <View style={styles.profileButtons}>
               <Pressable style={styles.editProfileButton} onPress={() => navigation.navigate('(settings)')}>
