@@ -38,7 +38,7 @@ const Post: React.FC<PostElements> = ({
   return (
         <View style={[styles.post, styles.postFlexBox]}>
           <View style={[styles.postInfo, styles.infoSpaceBlock]}>
-              <ProfilePhoto  photo={profile_pic ? { uri: profile_pic[0] } :require('../../../assets/images/defaultprofile.jpg')} Status={1} size={48}/>
+              <ProfilePhoto  photo={profile_pic ? { uri: profile_pic[0] } :require('../../../assets/images/defaultprofile.jpg')} Status={1} width={48} height={48}/>
             <Pressable style={styles.userPostInfo}>
               <Text style={[styles.username, styles.usernameFlexBox]}>
                 {profile_name}
@@ -90,7 +90,7 @@ const Post: React.FC<PostElements> = ({
           </View>
           <View style={styles.postButton}>
             <LikeButton post_id={postId}/>
-            <CommentButton comment_count={num_comments}/>
+            <CommentButton comment_count={num_comments} postId={postId}/>
             <View style={styles.deadSpace} />
             <ShareButton message="IGNORE THIS TEST FOR HOME SHARE BUTTON"/>
           </View>
