@@ -64,3 +64,23 @@ export async function getUserData(userID : String): Promise<UserData | null> {
     }
 }
 
+/**
+ * 
+ * @param userID 
+ * @param type activate this bit if you want to find by username
+ * @returns 
+ */
+export async function getUserDataByUsername(username : String | null): Promise<UserData | null> {
+    try {
+        console.log(username);
+        const access_token = await getToken('accessToken');
+        const response = await apiClient.get<UserData>(`/users/by-username/${username}`, {
+            headers: { Authorization: `Bearer ${access_token}` },
+        });
+        return response.data;
+    } catch (error: any) {
+        console.error('Failed to fetch user data:', error.response?.status || error.message);
+        return null;
+    }
+}
+

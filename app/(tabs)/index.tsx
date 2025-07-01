@@ -19,6 +19,7 @@ const PostItem = ({postItem}: UserPostProps) => (
   <View style={[{paddingVertical:5}]}>
     <Post 
       postId={postItem.id}
+      user_id={postItem.user_id}
       profile_name={postItem.username} 
       num_comments={postItem.comments}
       profile_pic={postItem.profile_pic}
@@ -51,6 +52,7 @@ export default function HomeScreen() {
         if (user && post && challenge) {
           const userPost: UserPostData = {
             id: post.id,
+            user_id: user.id,
             username: user.username,
             profile_pic: user.avatar_url,
             elapsed_post_time: post.created_at,
