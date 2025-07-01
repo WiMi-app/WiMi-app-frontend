@@ -21,6 +21,9 @@ import CommentButton from './comment_button';
 import ShareButton from './share_button';
 import { PostElements } from '../../interfaces/components';
 import ProfilePhoto from '../profile/profilephoto';
+import { useNavigation } from '@react-navigation/native';
+import { UserData } from '@/app/interfaces/user';
+import { router } from 'expo-router';
 
 const Post: React.FC<PostElements> = ({
     postId = "",
@@ -32,6 +35,7 @@ const Post: React.FC<PostElements> = ({
     elapsed_post_time = "",
     challenge = ""
 }) => {
+  const navigation = useNavigation();
   const [expanded, setExpanded] = useState(false);
   const isLong = post_description.length > 100;
 
@@ -39,7 +43,10 @@ const Post: React.FC<PostElements> = ({
         <View style={[styles.post, styles.postFlexBox]}>
           <View style={[styles.postInfo, styles.infoSpaceBlock]}>
               <ProfilePhoto  photo={profile_pic ? { uri: profile_pic[0] } :require('../../../assets/images/defaultprofile.jpg')} Status={1} width={48} height={48}/>
-            <Pressable style={styles.userPostInfo}>
+            <Pressable style={styles.userPostInfo} onPress={() => {router.push({
+  pathname: '(otherProfile)',
+  params: { username: profile_name },
+});}}>
               <Text style={[styles.username, styles.usernameFlexBox]}>
                 {profile_name}
               </Text>

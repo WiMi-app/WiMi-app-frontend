@@ -10,7 +10,7 @@ export default function RootLayout() {
         <Stack.Screen name="(newprofile)" options={{ headerShown: false, gestureEnabled: false  }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false, gestureEnabled: false }} />
         <Stack.Screen name="(settings)" options={{ headerShown: false, gestureEnabled: false  }} />
-        <Stack.Screen name="(otherProfile)" options={{ headerShown: false, gestureEnabled: false  }} />
+        <Stack.Screen name="(otherProfile)" options={{ headerShown: false, gestureEnabled: true  }} />
         <Stack.Screen name="(camera)" options={{ headerShown: false, gestureEnabled: false  }} />
         <Stack.Screen name="(createchallenge)" options={{ headerShown: false, gestureEnabled: true  }} />
         <Stack.Screen name="(createpost)" options={{ headerShown: false, gestureEnabled: true  }} />
