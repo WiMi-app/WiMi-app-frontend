@@ -13,6 +13,7 @@ import {
   ActivityIndicator,
 } from "react-native"
 import * as ImagePicker from "expo-image-picker"
+import { getUserData } from "../store/userData"
 
 interface ProfileData {
   username: string
@@ -51,13 +52,8 @@ export default function ProfilePage() {
     // In a real app, this would fetch from your backend/database
     try {
       // Mock data - replace with actual API call
-      const mockProfile = {
-        username: "johndoe",
-        full_name: "John Doe",
-        bio: "Software developer passionate about mobile apps",
-        avatar_url: null,
-      }
-      setProfile(mockProfile)
+      const profile = await getUserData();
+      setProfile(profile);
     } catch (error) {
       console.error("Error loading profile:", error)
     }
@@ -70,6 +66,7 @@ export default function ProfilePage() {
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.8,
+        base64: true
       })
 
       if (!result.canceled && result.assets[0]) {

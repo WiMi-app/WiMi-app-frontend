@@ -8,6 +8,7 @@ import { getMyData } from "../fetch/user"
 import { handleException } from '../utils/exceptionHandler';
 import { useRouter } from "expo-router"
 import { saveUserData } from '../store/userData';
+
 export default function Index() {
     const navigation = useNavigation();
     const router = useRouter();

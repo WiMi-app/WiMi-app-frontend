@@ -7,7 +7,6 @@ import { Color, Gap, FontSize, Padding, FontFamily } from "./GlobalStyles";
 import { getListPosts } from "../fetch/posts";
 import { getUserData } from '../fetch/user';
 import { getChallenge } from "../fetch/challenges";
-import { getLike } from "../fetch/likes";
 import { UserPostData } from "../interfaces/post";
 import { useNavigation } from "@react-navigation/native"
 
