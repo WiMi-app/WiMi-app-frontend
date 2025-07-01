@@ -84,3 +84,17 @@ export async function getUserDataByUsername(username : String | null): Promise<U
     }
 }
 
+export async function SearchUsers(query:string): Promise<UserData[] | null> {
+    try {
+        const access_token = await getToken('accessToken');
+        const response = await apiClient.get<UserData[]>('/users/search', {
+            headers: { Authorization: `Bearer ${access_token}` },
+            params: {query}
+        });
+        return response.data;
+    } catch (error: any) {
+        console.error('Failed to search users:', error.response?.status || error.message);
+        return null;
+    }
+}
+

@@ -14,6 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 // import Iconlinearsetting4 from "../../assets/iconlinearsetting4.png";
 // import Ellipse1 from "../../assets/ellipse-1.png";
 // import Flamevector from "../../assets/flame-vector.png";
+import { SearchUsers } from "../fetch/user";
 import {
   FontFamily,
   FontSize,
@@ -24,77 +25,38 @@ import {
 } from "./GlobalStyles";
 
 import renderMessageItem from '../components/notifications/notifcard';
+import { UserData } from "../interfaces/user"; // Ensure you have this interface defined
 
-
-// Sample data
-const messages = [
-  {
-    id: '1',
-    name: 'Darrell Steward',
-    username: 'darrtel_number1',
-    time: '',
-    notificationCount: null,
-    avatar: 'https://i.pravatar.cc/100?img=1',
-  },
-  {
-    id: '2',
-    name: 'Theresa Webb',
-    username: 'theresa_webb',
-    time: '',
-    notificationCount: null,
-    avatar: 'https://i.pravatar.cc/100?img=2',
-  },
-  {
-    id: '3',
-    name: 'Arlene McCoy',
-    username: 'arlene_MC',
-    time: '',
-    notificationCount: null,
-    avatar: 'https://i.pravatar.cc/100?img=3',
-  },
-  {
-    id: '4',
-    name: 'Darlene Robertson',
-    username: 'robertson123',
-    time: '',
-    notificationCount: null,
-    avatar: 'https://i.pravatar.cc/100?img=4',
-  },
-  {
-    id: '5',
-    name: 'Kristin Watson',
-    username: 'kristin_watson',
-    time: '',
-    notificationCount: null,
-    avatar: 'https://i.pravatar.cc/100?img=5',
-  },
-  {
-    id: '6',
-    name: 'Jacob Jones',
-    username: 'jacob_jones',
-    time: '',
-    notificationCount: null,
-    avatar: 'https://i.pravatar.cc/100?img=6',
-  },
-  {
-    id: '7',
-    name: 'Guy Hawkins',
-    username: 'hawkins',
-    time: '',
-    notificationCount: null,
-    avatar: 'https://i.pravatar.cc/100?img=7',
-  },
-  {
-    id: '8',
-    name: 'Albert Flores',
-    username: 'albert_flores',
-    time: '',
-    notificationCount: null,
-    avatar: 'https://i.pravatar.cc/100?img=8',
-  },
-];
 
 const ExploreScreen = () => {
+  const [searchTerm, setSearchTerm] = React.useState(''); // controlled input state
+  // Define UserData type if not already imported
+  // type UserData = { id: string; name: string; username: string; ... };
+  
+  const [searchResults, setSearchResults] = React.useState<any[]>([]); // state for search results
+  React.useEffect(() => {
+    if (searchTerm.length > 0) {
+      console.log('Searching for:', searchTerm);
+      (async () => {
+        const data = await SearchUsers(searchTerm);
+        const messages: React.SetStateAction<null> | { id: string; name: string; username: string; time: string; notificationCount: null; avatar: string; }[] = [];
+        data?.forEach(element => {
+          messages.push({
+            id: element.id,
+            name: element.full_name,
+            username: element.username,
+            time: '',
+            notificationCount: null,
+            avatar: element.avatar_url,
+          });
+        });
+        setSearchResults(messages);
+      })();
+      // TODO: Call your autocomplete function here (e.g., fetch from API)
+    }
+  }, [searchTerm]);
+  
+
   return (
     <SafeAreaView style={styles.exploreScreen}>
       <View style={styles.content}>
@@ -107,6 +69,11 @@ const ExploreScreen = () => {
             style={styles.searchHere}
             placeholder="Search here. . ."
             placeholderTextColor="#808080"
+            value={searchTerm}                     // controlled input value
+            onChangeText={text => {
+              setSearchTerm(text);                // update state on each keystroke
+              console.log('User typed:', text);   // optional: trigger fetch/autocomplete
+            }}
           />
           <Image
             style={[styles.iconlinearsetting4, {width:20, height:20}]}
@@ -115,7 +82,7 @@ const ExploreScreen = () => {
 
         </View>
         <FlatList
-        data={messages}
+        data={searchTerm.length > 0 ? searchResults : []} // Show results only when searchTerm is not empty
         renderItem={renderMessageItem}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
