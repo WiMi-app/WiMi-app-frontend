@@ -19,6 +19,8 @@ import Post from "../components/index_home/post";
 import { getChallenge } from "../fetch/challenges";
 import { getListPosts } from "../fetch/posts";
 import { getUserData } from "../store/userData";
+import handleShareProfile from "../components/profile/shareprofile";
+
 type UserPostProps = {
   postItem: UserPostData;
 };
@@ -121,7 +123,7 @@ const ProfileScreen = () => {
                       <Pressable style={styles.editProfileButton} onPress={() => navigation.navigate('(settings)')}>
                         <Text style={styles.editProfile}>Edit Profile</Text>
                       </Pressable>
-                      <Pressable style={styles.shareProfileButton}>
+                      <Pressable style={styles.shareProfileButton} onPress={handleShareProfile}>
                         <Text style={styles.shareProfile}>Share Profile</Text>
                       </Pressable>
                     </View>

@@ -19,6 +19,8 @@ import { getChallenge } from "../fetch/challenges";
 import { getListPosts } from "../fetch/posts";
 import { getUserDataByUsername } from "../fetch/user";
 import { useLocalSearchParams } from "expo-router";
+import handleShareProfile from "../components/profile/shareprofile";
+
 type UserPostProps = {
   postItem: UserPostData;
 };
@@ -120,10 +122,7 @@ const OtherProfileScreen = () => {
                     <ProfileStats posts = {0} followers={1_000_000} following={1_000}/>
 
                     <View style={styles.profileButtons}>
-                      <Pressable style={styles.editProfileButton} onPress={() => navigation.navigate('(settings)')}>
-                        <Text style={styles.editProfile}>Edit Profile</Text>
-                      </Pressable>
-                      <Pressable style={styles.shareProfileButton}>
+                      <Pressable style={styles.shareProfileButton} onPress={handleShareProfile}>
                         <Text style={styles.shareProfile}>Share Profile</Text>
                       </Pressable>
                     </View>
