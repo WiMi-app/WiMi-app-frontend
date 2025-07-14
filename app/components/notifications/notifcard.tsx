@@ -8,9 +8,13 @@ import {
 } from 'react-native';
 import { MessageItem } from '../../interfaces/notifications';
 import RenderNotifType from './notiftype';
+import { router } from 'expo-router';
 
 const renderMessageItem = ({ item }: { item: MessageItem }) => (
-    <TouchableOpacity style={styles.messageItem}>
+    <TouchableOpacity style={styles.messageItem} onPress={() => {router.push({
+  pathname: '(otherProfile)',
+  params: { username: item.name },
+});}}>
       <Image source={{ uri: item.avatar }} style={styles.avatar} />
       <View style={styles.messageContent}>
         <View style={styles.messageHeader}>
