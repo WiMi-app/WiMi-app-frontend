@@ -1,6 +1,6 @@
 import {useEffect,useState } from "react";
 import ProfileStats from "../components/profile/profilestats";
-import { StyleSheet, Text, View, Pressable, TextInput, ScrollView, FlatList } from "react-native";
+import { StyleSheet, Text, View, Pressable, TextInput, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ProfilePhoto from "../components/profile/profilephoto";
 import {
@@ -93,44 +93,6 @@ const ProfileScreen = () => {
 
   return (
     <SafeAreaView style={styles.profileScreen} edges={['top', 'left', 'right']}>
-      <ScrollView 
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollViewContent}
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-        horizontal={false}
-      >
-        <View style={styles.content}>
-          <View style={styles.profileInfoLayout}>
-            <View style={styles.profilePicname}>
-
-              <ProfilePhoto photo={userData?.avatar_url ? { uri: userData?.avatar_url[0] } :require('../../assets/images/defaultprofile.jpg')} Status={1} size={60}/>
-
-              <View style={styles.profileName}>
-                <Text style={styles.name}>{userData?.full_name} </Text>
-                <Text style={styles.username}>@{userData?.username}</Text>
-              </View>
-
-            </View>
-            
-            <ProfileStats posts = {0} followers={1_000_000} following={1_000}/>
-
-            <View style={styles.profileButtons}>
-              <Pressable style={styles.editProfileButton} onPress={() => navigation.navigate('(settings)')}>
-                <Text style={styles.editProfile}>Edit Profile</Text>
-              </Pressable>
-              <Pressable style={styles.shareProfileButton}>
-                <Text style={styles.shareProfile}>Share Profile</Text>
-              </Pressable>
-            </View>
-            {userData?.bio ? <Text style={styles.bio} > {userData?.bio} </Text> : null}
-          </View>
-          <View style={styles.photos}>
-            <View style={styles.title}>
-              <Text style={styles.tittle}>My Posts</Text>
-            </View>
-          </View>
-        </View>
         <FlatList
               data={postData}
               renderItem={({ item }) => <PostItem postItem={item} />}
@@ -139,19 +101,45 @@ const ProfileScreen = () => {
               showsVerticalScrollIndicator={false}
               refreshing={refreshing}
               onRefresh={fetchPosts}
+              ListHeaderComponent={
+                <View style={styles.content}>
+                  <View style={styles.profileInfoLayout}>
+                    <View style={styles.profilePicname}>
+
+                      <ProfilePhoto photo={userData?.avatar_url ? { uri: userData?.avatar_url[0] } :require('../../assets/images/defaultprofile.jpg')} Status={1} size={60}/>
+
+                      <View style={styles.profileName}>
+                        <Text style={styles.name}>{userData?.full_name} </Text>
+                        <Text style={styles.username}>@{userData?.username}</Text>
+                      </View>
+
+                    </View>
+                    
+                    <ProfileStats posts = {0} followers={1_000_000} following={1_000}/>
+
+                    <View style={styles.profileButtons}>
+                      <Pressable style={styles.editProfileButton} onPress={() => navigation.navigate('(settings)')}>
+                        <Text style={styles.editProfile}>Edit Profile</Text>
+                      </Pressable>
+                      <Pressable style={styles.shareProfileButton} onPress={handleShareProfile}>
+                        <Text style={styles.shareProfile}>Share Profile</Text>
+                      </Pressable>
+                    </View>
+                    {userData?.bio ? <Text style={styles.bio} > {userData?.bio} </Text> : null}
+                  </View>
+                  <View style={styles.photos}>
+                    <View style={styles.title}>
+                      <Text style={styles.tittle}>My Posts</Text>
+                    </View>
+                  </View>
+                </View>
+              }
         />
-      </ScrollView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  scrollView: {
-    width: '100%',
-  },
-  scrollViewContent: {
-    flexGrow: 1,
-  },
   profilePicIcon: {
     position: "relative",
     width: 96,

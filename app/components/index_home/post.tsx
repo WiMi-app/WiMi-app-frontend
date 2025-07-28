@@ -42,7 +42,12 @@ const Post: React.FC<PostElements> = ({
   return (
         <View style={[styles.post, styles.postFlexBox]}>
           <View style={[styles.postInfo, styles.infoSpaceBlock]}>
-              <ProfilePhoto  photo={profile_pic ? { uri: profile_pic[0] } :require('../../../assets/images/defaultprofile.jpg')} Status={1} width={48} height={48}/>
+            <Pressable onPress={() => {router.push({
+  pathname: '(otherProfile)',
+  params: { username: profile_name },
+});}}>
+              <ProfilePhoto  photo={profile_pic ? { uri: profile_pic[0] } :require('../../../assets/images/defaultprofile.jpg')} Status={1} width={48} height={48}/>              
+            </Pressable>
             <Pressable style={styles.userPostInfo} onPress={() => {router.push({
   pathname: '(otherProfile)',
   params: { username: profile_name },
@@ -52,12 +57,6 @@ const Post: React.FC<PostElements> = ({
               </Text>
               <Text style={[styles.postTime, styles.taskClr]}>1 hr ago</Text>
             </Pressable>
-            <Image 
-              style={styles.moreButton} 
-              width={24} 
-              height={24} 
-              source={require("../../../assets/more--button.png")}
-            />
           </View>
           <View style={[styles.taskInfo, styles.infoSpaceBlock]}>
             <Image
