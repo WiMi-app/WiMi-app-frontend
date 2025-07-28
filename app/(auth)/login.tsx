@@ -18,9 +18,7 @@ import Input from "../components/input"
 import Button from "../components/button_"
 import axiosInstance from "../api/axios"
 import {saveToken} from "../store/token";
-import { getMyData } from "../fetch/user"
 import { handleException } from "../utils/exceptionHandler"
-import { saveUserData } from "../store/userData"
 
 const LoginScreen = () => {
   const router = useRouter();
@@ -64,13 +62,8 @@ const LoginScreen = () => {
       });
       
       console.log(response.data);
-      // If token saving failed, an alert is already shown by saveToken.
-      // User remains on the login page.
-      const MyData = await getMyData();
-      console.log(MyData);
       const refreshTokenSaved = await saveToken('refreshToken', response.data.refresh_token);
       const accessTokenSaved = await saveToken('accessToken', response.data.access_token);
-       const datasaved = await saveUserData(MyData);
       setLoading(false);
 
       if (refreshTokenSaved && accessTokenSaved) {

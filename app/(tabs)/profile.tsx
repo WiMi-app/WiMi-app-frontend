@@ -18,7 +18,7 @@ import { UserPostData } from "../interfaces/post";
 import Post from "../components/index_home/post";
 import { getChallenge } from "../fetch/challenges";
 import { getListPosts } from "../fetch/posts";
-import { getUserData } from "../store/userData";
+import { getUserData } from "../fetch/user";
 type UserPostProps = {
   postItem: UserPostData;
 };
