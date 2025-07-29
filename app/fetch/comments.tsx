@@ -2,16 +2,17 @@ import { getToken } from "../store/token";
 import apiClient from "../api/refresh";
 
 
-export async function createComment(comment: JSON): Promise<any> {
+export async function createComment(data: any): Promise<any> {
     try {
         const access_token = await getToken('accessToken');
-        const response = await apiClient.post<any>('/comments', comment, {
+        console.log(data);
+        const response = await apiClient.post<any>('/comments', data, {
             headers: { Authorization: `Bearer ${access_token}` },
         });
-        console.log('User data:', response.data);
+        console.log('comment data:', response.data);
         return response.data;
     } catch (error: any) {
-        console.error('Failed to fetch user data:', error.response?.status || error.message);
+        console.error('Failed to post comment data:', error.response?.status || error.message);
         return null;
     }
 }

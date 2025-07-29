@@ -3,13 +3,13 @@ import { Ionicons } from "@expo/vector-icons"
 import { View, Image, StyleSheet } from "react-native"
 import ProfilePhoto from "../components/profile/profilephoto"
 import Logo from "../components/icons/logo"
-import { getUserData } from "../store/userData"
+import { getMyData } from "../fetch/user"
 import { useEffect,useState } from "react"
 
 export default function TabsLayout() {
   const [profilepic, setProfilepic] = useState();
   useEffect(()=> {
-      (async ()=>{await getUserData().then((data)=>setProfilepic(data.avatar_url))})();
+      (async ()=>{await getMyData().then((data)=>setProfilepic(data.avatar_url))})();
   },[])
 
   return (

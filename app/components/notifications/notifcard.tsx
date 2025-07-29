@@ -15,7 +15,7 @@ const renderMessageItem = ({ item }: { item: MessageItem }) => (
   pathname: '(otherProfile)',
   params: { username: item.name },
 });}}>
-      <Image source={{ uri: item.avatar }} style={styles.avatar} />
+      <Image source={{ uri: item.avatar[0] }} style={styles.avatar} />
       <View style={styles.messageContent}>
         <View style={styles.messageHeader}>
           <Text style={styles.name}>{item.name}</Text>

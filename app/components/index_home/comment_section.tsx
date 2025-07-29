@@ -61,12 +61,11 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, onClose }) => {
     if (!newComment.trim()) return;
 
     try {
-      const commentData = {
+      
+      await createComment({
         post_id: postId,
         content: newComment.trim()
-      };
-
-      await createComment(commentData as any);
+      });
       setNewComment('');
       Keyboard.dismiss();
       fetchComments(); // Refresh comments after adding

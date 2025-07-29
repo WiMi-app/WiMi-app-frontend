@@ -15,6 +15,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 // import Ellipse1 from "../../assets/ellipse-1.png";
 // import Flamevector from "../../assets/flame-vector.png";
 import { SearchUsers } from "../fetch/user";
+
+
 import {
   FontFamily,
   FontSize,
@@ -25,8 +27,6 @@ import {
 } from "./GlobalStyles";
 
 import renderMessageItem from '../components/notifications/notifcard';
-import { UserData } from "../interfaces/user"; // Ensure you have this interface defined
-
 
 const ExploreScreen = () => {
   const [searchTerm, setSearchTerm] = React.useState(''); // controlled input state
@@ -49,6 +49,7 @@ const ExploreScreen = () => {
             notificationCount: null,
             avatar: element.avatar_url,
           });
+          console.log(element.id);
         });
         setSearchResults(messages);
       })();

@@ -19,6 +19,8 @@ import Post from "../components/index_home/post";
 import { getChallenge } from "../fetch/challenges";
 import { getListPosts } from "../fetch/posts";
 import { getUserData } from "../fetch/user";
+import handleShareProfile from "../components/profile/shareprofile";
+
 type UserPostProps = {
   postItem: UserPostData;
 };

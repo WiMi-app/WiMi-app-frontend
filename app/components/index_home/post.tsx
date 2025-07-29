@@ -22,7 +22,6 @@ import ShareButton from './share_button';
 import { PostElements } from '../../interfaces/components';
 import ProfilePhoto from '../profile/profilephoto';
 import { useNavigation } from '@react-navigation/native';
-import { UserData } from '@/app/interfaces/user';
 import { router } from 'expo-router';
 
 const Post: React.FC<PostElements> = ({
